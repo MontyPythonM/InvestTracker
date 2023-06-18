@@ -1,6 +1,6 @@
 ﻿namespace InvestTracker.Offers.Api;
 
-public class OffersModule
+internal class OffersModule
 {
     public const string BasePath = "offers-module";
 }

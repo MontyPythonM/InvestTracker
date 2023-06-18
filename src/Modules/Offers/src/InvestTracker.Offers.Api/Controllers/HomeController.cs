@@ -6,5 +6,5 @@ namespace InvestTracker.Offers.Api.Controllers;
 internal class HomeController : ApiControllerBase
 {
     [HttpGet]
-    public ActionResult<string> Get() => "Offers API";
+    public ActionResult<string> Get() => "InvestTracker.Offers API";
 }
