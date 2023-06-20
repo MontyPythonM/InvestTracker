@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using InvestTracker.Shared.Infrastructure.Api;
+using InvestTracker.Shared.Infrastructure.Exceptions;
 using InvestTracker.Shared.Infrastructure.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +14,10 @@ internal static class Extensions
     public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services)
     {
         services
-            .AddSwashbuckleSwagger()
+            .AddExceptionHandling()
+            .AddSwashbuckleSwagger();
+            
+        services
             .AddControllers()
             .ConfigureApplicationPartManager(manager =>
             {
@@ -25,6 +29,7 @@ internal static class Extensions
 
     public static IApplicationBuilder UseSharedInfrastructure(this IApplicationBuilder app)
     {
+        app.UseExceptionHandling();
         app.UseSwashbuckleSwagger();
         app.UseRouting();
         app.UseEndpoints(endpoints =>
