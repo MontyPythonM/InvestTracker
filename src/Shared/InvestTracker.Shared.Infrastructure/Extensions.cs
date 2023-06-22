@@ -1,6 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using InvestTracker.Shared.Infrastructure.Api;
+using InvestTracker.Shared.Infrastructure.Commands;
 using InvestTracker.Shared.Infrastructure.Exceptions;
+using InvestTracker.Shared.Infrastructure.Queries;
 using InvestTracker.Shared.Infrastructure.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -11,11 +14,13 @@ namespace InvestTracker.Shared.Infrastructure;
 
 internal static class Extensions
 {
-    public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IList<Assembly> assemblies)
     {
         services
             .AddExceptionHandling()
-            .AddSwashbuckleSwagger();
+            .AddSwashbuckleSwagger()
+            .AddQueries(assemblies)
+            .AddCommands(assemblies);
             
         services
             .AddControllers()
