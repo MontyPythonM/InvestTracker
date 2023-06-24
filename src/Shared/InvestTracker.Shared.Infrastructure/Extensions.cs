@@ -1,12 +1,15 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
+using InvestTracker.Shared.Abstractions.Time;
 using InvestTracker.Shared.Infrastructure.Api;
 using InvestTracker.Shared.Infrastructure.Commands;
 using InvestTracker.Shared.Infrastructure.Exceptions;
 using InvestTracker.Shared.Infrastructure.Queries;
 using InvestTracker.Shared.Infrastructure.Swagger;
+using InvestTracker.Shared.Infrastructure.Time;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: InternalsVisibleTo("InvestTracker.Bootstrapper")]
@@ -18,9 +21,10 @@ internal static class Extensions
     {
         services
             .AddExceptionHandling()
-            .AddSwashbuckleSwagger()
+            .AddOpenApiDocumentation()
             .AddQueries(assemblies)
-            .AddCommands(assemblies);
+            .AddCommands(assemblies)
+            .AddSingleton<ITime, UtcTime>();
             
         services
             .AddControllers()
@@ -35,7 +39,7 @@ internal static class Extensions
     public static IApplicationBuilder UseSharedInfrastructure(this IApplicationBuilder app)
     {
         app.UseExceptionHandling();
-        app.UseSwashbuckleSwagger();
+        app.UseOpenApiDocumentation();
         app.UseRouting();
         app.UseEndpoints(endpoints =>
         {
@@ -44,5 +48,21 @@ internal static class Extensions
         });
 
         return app;
+    }
+    
+    public static T GetOptions<T>(this IServiceCollection services, string sectionName)
+        where T : class, new()
+    {
+        using var serviceProvider = services.BuildServiceProvider();
+        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        return configuration.GetOptions<T>(sectionName);
+    }
+
+    public static T GetOptions<T>(this IConfiguration configuration, string sectionName) 
+        where T : class, new()
+    {
+        var options = new T();
+        configuration.GetSection(sectionName).Bind(options);
+        return options;
     }
 }
