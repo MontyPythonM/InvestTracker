@@ -4,11 +4,10 @@ using Microsoft.EntityFrameworkCore;
 namespace InvestTracker.Offers.Core.Persistence;
 
 // dotnet ef database update -s ..\..\..\..\Bootstrapper\InvestTracker.Bootstrapper
-// dotnet ef migrations add Offers_Module_Init -s ..\..\..\..\Bootstrapper\InvestTracker.Bootstrapper
+// dotnet ef migrations add <name> -s ..\..\..\..\Bootstrapper\InvestTracker.Bootstrapper
 internal class OffersDbContext : DbContext
 {
     public DbSet<Offer> Offers { get; set; }
-    public DbSet<OfferTag> OfferTags { get; set; }
     public DbSet<Advisor> Advisors { get; set; }
     public DbSet<Investor> Investors { get; set; }
     public DbSet<InvestmentStrategy> InvestmentStrategies { get; set; }

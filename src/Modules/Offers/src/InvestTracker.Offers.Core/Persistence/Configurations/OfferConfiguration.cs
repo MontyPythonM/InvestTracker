@@ -1,6 +1,7 @@
 ﻿using InvestTracker.Offers.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Newtonsoft.Json;
 
 namespace InvestTracker.Offers.Core.Persistence.Configurations;
 
@@ -12,12 +13,17 @@ public class OfferConfiguration : IEntityTypeConfiguration<Offer>
             .WithMany(offer => offer.Offers)
             .HasForeignKey(offer => offer.AdvisorId)
             .IsRequired();
-        
-        builder.HasMany(offer => offer.Tags)
-            .WithOne(offer => offer.Offer);
 
+        builder.Property(offer => offer.Tags)
+            .HasDefaultValue(null)
+            .HasConversion(
+                tag => JsonConvert.SerializeObject(tag),
+                tag => JsonConvert.DeserializeObject<List<string>>(tag)!
+            );
+            
+        
         builder.Property(offer => offer.Price)
-            .HasPrecision(2);
+            .HasPrecision(18, 2);
 
         builder.Property(offer => offer.Description)
             .HasMaxLength(3000);

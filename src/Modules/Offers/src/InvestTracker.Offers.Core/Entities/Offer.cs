@@ -10,7 +10,7 @@ public class Offer
     public DateTime? UpdatedAt { get; private set; }
     public Advisor Advisor { get; private set; }
     public Guid AdvisorId { get; private set; }
-    public ICollection<OfferTag> Tags { get; private set; } = new List<OfferTag>();
+    public ICollection<string> Tags { get; private set; } = new List<string>();
 
     private Offer()
     {
@@ -27,7 +27,7 @@ public class Offer
         CreatedAt = now;
         UpdatedAt = null;
         Advisor = advisor;
-        AddTags(CreateTags(tags));
+        AddTags(tags);
     }
 
     public void Update(string title, string? description, decimal? price, DateTime now, IEnumerable<string> tags)
@@ -36,19 +36,10 @@ public class Offer
         Description = description;
         Price = price;
         UpdatedAt = now;
-        AddTags(CreateTags(tags));
-    }
-    
-    private IEnumerable<OfferTag> CreateTags(IEnumerable<string> tagValues)
-    {
-        return tagValues.Select(value => new OfferTag
-        {
-            Id = Guid.NewGuid(),
-            Value = value
-        });
+        AddTags(tags);
     }
 
-    private void AddTags(IEnumerable<OfferTag> tags)
+    private void AddTags(IEnumerable<string> tags)
     {
         Tags.Clear();
         tags.ToList().ForEach(tag => Tags.Add(tag));

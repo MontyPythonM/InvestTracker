@@ -20,7 +20,6 @@ internal sealed class GetOfferDetailsHandler : IQueryHandler<GetOfferDetails, Of
         var offerDetails = await _context.Offers
             .AsNoTracking()
             .Include(offer => offer.Advisor)
-            .Include(offer => offer.Tags)
             .Select(entity => new OfferDetailsDto
             {
                 Id = entity.Id,
@@ -39,13 +38,7 @@ internal sealed class GetOfferDetailsHandler : IQueryHandler<GetOfferDetails, Of
                     CompanyName = entity.Advisor.CompanyName,
                     AvatarUrl = entity.Advisor.AvatarUrl
                 },
-                Tags = entity.Tags
-                    .Select(tag => new OfferTagDto()
-                    {
-                        Id = tag.Id,
-                        Value = tag.Value
-                    })
-                    .ToList()
+                Tags = entity.Tags.ToList()
             })
             .SingleOrDefaultAsync(offer => offer.Id == query.Id, token);
 

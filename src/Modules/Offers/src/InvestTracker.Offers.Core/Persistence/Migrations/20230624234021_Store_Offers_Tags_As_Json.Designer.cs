@@ -3,6 +3,7 @@ using System;
 using InvestTracker.Offers.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InvestTracker.Offers.Core.Persistence.Migrations
 {
     [DbContext(typeof(OffersDbContext))]
-    partial class OffersDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230624234021_Store_Offers_Tags_As_Json")]
+    partial class Store_Offers_Tags_As_Json
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -144,8 +147,8 @@ namespace InvestTracker.Offers.Core.Persistence.Migrations
                         .HasColumnType("character varying(3000)");
 
                     b.Property<decimal?>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
+                        .HasPrecision(2)
+                        .HasColumnType("numeric(2)");
 
                     b.Property<string>("Tags")
                         .IsRequired()

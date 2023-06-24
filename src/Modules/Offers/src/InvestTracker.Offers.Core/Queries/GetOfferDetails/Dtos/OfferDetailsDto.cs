@@ -9,7 +9,7 @@ internal class OfferDetailsDto
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public AdvisorDetailsDto Advisor { get; set; }
-    public List<OfferTagDto> Tags { get; set; }
+    public List<string> Tags { get; set; }
 }
 
 
