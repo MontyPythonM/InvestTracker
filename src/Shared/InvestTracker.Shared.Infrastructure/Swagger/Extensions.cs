@@ -1,27 +1,59 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.OpenApi.Models;
 
 namespace InvestTracker.Shared.Infrastructure.Swagger;
 
 internal static class Extensions
 {
-   public static IServiceCollection AddSwashbuckleSwagger(this IServiceCollection services)
+   private const string AppName = "InvestTracker API";
+   
+   public static IServiceCollection AddOpenApiDocumentation(this IServiceCollection services)
    {
-      services.AddSwaggerGen();
-      services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfiguration>();
+      services.AddSwaggerGen(options =>
+      {
+         options.EnableAnnotations();
+         
+         options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+         {
+            In = ParameterLocation.Header,
+            Description = "Please provide a valid token",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            Scheme = "Bearer"
+         });
+         
+         options.AddSecurityRequirement(new OpenApiSecurityRequirement
+         {
+            {
+               new OpenApiSecurityScheme
+               {
+                  Reference = new OpenApiReference
+                  {
+                     Type = ReferenceType.SecurityScheme, 
+                     Id = "Bearer"
+                  }
+               },
+               ArraySegment<string>.Empty
+            }
+         });
+         
+         
+         options.SwaggerDoc("v1", new OpenApiInfo
+         {
+            Title = AppName,
+            Version = "v1",
+         });
+      });
       
       return services;
    }
-
-   /// <summary>
-   /// UI available at http://localhost:5200/swagger/index.html
-   /// </summary>
-   public static IApplicationBuilder UseSwashbuckleSwagger(this IApplicationBuilder app)
+   
+   public static IApplicationBuilder UseOpenApiDocumentation(this IApplicationBuilder app)
    {
       app.UseSwagger();
-      app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "InvestTracker API"));
+      app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", AppName));
       
       return app;
    }

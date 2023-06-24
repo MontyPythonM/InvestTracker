@@ -1,3 +1,4 @@
+using InvestTracker.Bootstrapper;
 using InvestTracker.Calculators.Api;
 using InvestTracker.Exports.Api;
 using InvestTracker.InvestmentStrategies.Api;
@@ -7,9 +8,10 @@ using InvestTracker.Shared.Infrastructure;
 using InvestTracker.Users.Api;
 
 var builder = WebApplication.CreateBuilder(args);
+var assemblies = ModuleLoader.LoadAssemblies();
 
 builder.Services
-    .AddSharedInfrastructure()
+    .AddSharedInfrastructure(assemblies)
     .AddOffersModule()
     .AddCalculatorsModule()
     .AddNotificationsModule()

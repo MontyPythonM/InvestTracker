@@ -10,4 +10,9 @@
       <ProjectReference Include="..\..\..\..\Shared\InvestTracker.Shared.Infrastructure\InvestTracker.Shared.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Events\" />
+      <Folder Include="Persistence\Migrations\" />
+    </ItemGroup>
+    
 </Project>

@@ -15,7 +15,7 @@ internal class ExceptionToResponse : IExceptionToResponse
             InvestTrackerException ex => new ExceptionResponse(new ErrorsResponse(new Error(GetExceptionCode(ex), ex.Message)), 
                 HttpStatusCode.BadRequest),
             
-            _ => new ExceptionResponse(new Error("error", "There was an error."), 
+            _ => new ExceptionResponse(new Error("Error", "There was an error."), 
                 HttpStatusCode.InternalServerError)
         };
 
