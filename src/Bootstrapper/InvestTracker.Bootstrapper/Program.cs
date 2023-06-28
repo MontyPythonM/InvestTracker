@@ -5,11 +5,13 @@ using InvestTracker.InvestmentStrategies.Api;
 using InvestTracker.Notifications.Api;
 using InvestTracker.Offers.Api;
 using InvestTracker.Shared.Infrastructure;
+using InvestTracker.Shared.Infrastructure.Modules;
 using InvestTracker.Users.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 var assemblies = ModuleLoader.LoadAssemblies();
 
+builder.Host.ConfigureModules();
 builder.Services
     .AddSharedInfrastructure(assemblies)
     .AddOffersModule()
