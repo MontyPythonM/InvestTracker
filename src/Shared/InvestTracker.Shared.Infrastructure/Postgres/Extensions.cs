@@ -13,11 +13,20 @@ public static class Extensions
         return services;
     }
     
-    public static IServiceCollection AddPostgres<T>(this IServiceCollection services)
+    public static IServiceCollection AddPostgres<T>(this IServiceCollection services, bool useLazyLoading = false)
         where T : DbContext
     {
         var options = services.GetOptions<PostgresOptions>(PostgresOptions.SectionName);
-        services.AddDbContext<T>(option => option.UseNpgsql(options.ConnectionString));
+        services.AddDbContext<T>(option =>
+            {
+                option.UseNpgsql(options.ConnectionString);
+
+                if (useLazyLoading)
+                {
+                    option.UseLazyLoadingProxies();
+                }
+            }
+        );
         
         return services;
     }

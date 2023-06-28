@@ -2,8 +2,11 @@
 
 public class Collaboration
 {
-    public Guid Id { get; set; }
-    public Advisor Advisor { get; set; }
-    public Investor Investor { get; set; }
-    public InvestmentStrategy? InvestmentStrategy { get; set; }
+    public Guid AdvisorId { get; set; }
+    public Guid InvestorId { get; set; }
+    public virtual Advisor Advisor { get; set; }
+    public virtual Investor Investor { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? CancelledAt { get; set; }
+    public bool IsCancelled { get; set; }
 }

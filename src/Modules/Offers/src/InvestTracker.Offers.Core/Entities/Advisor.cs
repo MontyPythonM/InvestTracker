@@ -9,6 +9,6 @@ public class Advisor
     public string? Bio { get; set; }
     public string? CompanyName { get; set; }
     public string? AvatarUrl { get; set; }
-    public ICollection<Offer> Offers { get; set; } = new List<Offer>();
-    public ICollection<Collaboration> Collaborations { get; set; } = new List<Collaboration>();
+    public virtual ICollection<Offer> Offers { get; set; } = new List<Offer>();
+    public virtual ICollection<Collaboration> Collaborations { get; set; } = new List<Collaboration>();
 }
