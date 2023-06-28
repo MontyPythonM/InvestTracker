@@ -11,7 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Events\" />
+      <Folder Include="Features\Offers\Commands\" />
       <Folder Include="Persistence\Migrations\" />
     </ItemGroup>
     

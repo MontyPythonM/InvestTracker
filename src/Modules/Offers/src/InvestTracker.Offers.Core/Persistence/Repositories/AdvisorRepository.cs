@@ -14,7 +14,7 @@ internal class AdvisorRepository : IAdvisorRepository
     }
 
     public async Task<Advisor?> GetAsync(Guid advisorId, CancellationToken token)
-        => await _context.Advisors.SingleOrDefaultAsync(advisor => advisor!.Id == advisorId, token);
+        => await _context.Advisors.SingleOrDefaultAsync(advisor => advisor.Id == advisorId, token);
 
     public async Task CreateAsync(Advisor advisor, CancellationToken token)
     {
@@ -28,9 +28,6 @@ internal class AdvisorRepository : IAdvisorRepository
         await _context.SaveChangesAsync(token);
     }
 
-    public async Task DeleteAsync(Advisor advisor, CancellationToken token)
-    {
-        _context.Advisors.Remove(advisor);
-        await _context.SaveChangesAsync(token);
-    }
+    public async Task<bool> ExistsAsync(Guid id, CancellationToken token)
+        => await _context.Advisors.AnyAsync(advisor => advisor.Id == id, token);
 }

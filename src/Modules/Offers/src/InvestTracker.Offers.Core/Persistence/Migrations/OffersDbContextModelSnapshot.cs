@@ -19,6 +19,9 @@ namespace InvestTracker.Offers.Core.Persistence.Migrations
             modelBuilder
                 .HasDefaultSchema("offers")
                 .HasAnnotation("ProductVersion", "7.0.8")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -58,53 +61,26 @@ namespace InvestTracker.Offers.Core.Persistence.Migrations
 
             modelBuilder.Entity("InvestTracker.Offers.Core.Entities.Collaboration", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("AdvisorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("InvestmentStrategyId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("InvestorId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("AdvisorId");
-
-                    b.HasIndex("InvestmentStrategyId");
-
-                    b.HasIndex("InvestorId");
-
-                    b.ToTable("Collaborations", "offers");
-                });
-
-            modelBuilder.Entity("InvestTracker.Offers.Core.Entities.InvestmentStrategy", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("boolean");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                    b.HasKey("AdvisorId", "InvestorId");
 
-                    b.Property<Guid>("OwnerId")
-                        .HasColumnType("uuid");
+                    b.HasIndex("InvestorId");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("InvestmentStrategies", "offers");
+                    b.ToTable("Collaborations", "offers");
                 });
 
             modelBuilder.Entity("InvestTracker.Offers.Core.Entities.Investor", b =>
@@ -125,6 +101,40 @@ namespace InvestTracker.Offers.Core.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Investors", "offers");
+                });
+
+            modelBuilder.Entity("InvestTracker.Offers.Core.Entities.Invitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("OfferId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("StatusChangedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OfferId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Invitations", "offers");
                 });
 
             modelBuilder.Entity("InvestTracker.Offers.Core.Entities.Offer", b =>
@@ -174,10 +184,6 @@ namespace InvestTracker.Offers.Core.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("InvestTracker.Offers.Core.Entities.InvestmentStrategy", "InvestmentStrategy")
-                        .WithMany("Collaborations")
-                        .HasForeignKey("InvestmentStrategyId");
-
                     b.HasOne("InvestTracker.Offers.Core.Entities.Investor", "Investor")
                         .WithMany("Collaborations")
                         .HasForeignKey("InvestorId")
@@ -186,9 +192,26 @@ namespace InvestTracker.Offers.Core.Persistence.Migrations
 
                     b.Navigation("Advisor");
 
-                    b.Navigation("InvestmentStrategy");
-
                     b.Navigation("Investor");
+                });
+
+            modelBuilder.Entity("InvestTracker.Offers.Core.Entities.Invitation", b =>
+                {
+                    b.HasOne("InvestTracker.Offers.Core.Entities.Offer", "Offer")
+                        .WithMany("Invitations")
+                        .HasForeignKey("OfferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InvestTracker.Offers.Core.Entities.Investor", "Sender")
+                        .WithMany("Invitations")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Offer");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("InvestTracker.Offers.Core.Entities.Offer", b =>
@@ -209,14 +232,16 @@ namespace InvestTracker.Offers.Core.Persistence.Migrations
                     b.Navigation("Offers");
                 });
 
-            modelBuilder.Entity("InvestTracker.Offers.Core.Entities.InvestmentStrategy", b =>
-                {
-                    b.Navigation("Collaborations");
-                });
-
             modelBuilder.Entity("InvestTracker.Offers.Core.Entities.Investor", b =>
                 {
                     b.Navigation("Collaborations");
+
+                    b.Navigation("Invitations");
+                });
+
+            modelBuilder.Entity("InvestTracker.Offers.Core.Entities.Offer", b =>
+                {
+                    b.Navigation("Invitations");
                 });
 #pragma warning restore 612, 618
         }

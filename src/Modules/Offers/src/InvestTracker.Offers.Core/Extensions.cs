@@ -12,10 +12,13 @@ internal static class Extensions
 {
     public static IServiceCollection AddCore(this IServiceCollection services)
     {
-        services.AddPostgres<OffersDbContext>();
-        
+        services.AddPostgres<OffersDbContext>(useLazyLoading: true);
+
         services.AddScoped<IOfferRepository, OfferRepository>()
-            .AddScoped<IAdvisorRepository, AdvisorRepository>();
+            .AddScoped<IAdvisorRepository, AdvisorRepository>()
+            .AddScoped<IInvestorRepository, InvestorRepository>()
+            .AddScoped<ICollaborationRepository, CollaborationRepository>()
+            .AddScoped<IInvitationRepository, InvitationRepository>();
         
         return services;
     }

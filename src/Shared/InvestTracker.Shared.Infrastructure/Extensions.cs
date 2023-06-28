@@ -4,6 +4,8 @@ using InvestTracker.Shared.Abstractions.Time;
 using InvestTracker.Shared.Infrastructure.Api;
 using InvestTracker.Shared.Infrastructure.Commands;
 using InvestTracker.Shared.Infrastructure.Exceptions;
+using InvestTracker.Shared.Infrastructure.IntegrationEvents;
+using InvestTracker.Shared.Infrastructure.Modules;
 using InvestTracker.Shared.Infrastructure.Queries;
 using InvestTracker.Shared.Infrastructure.Swagger;
 using InvestTracker.Shared.Infrastructure.Time;
@@ -22,8 +24,10 @@ internal static class Extensions
         services
             .AddExceptionHandling()
             .AddOpenApiDocumentation()
+            .AddModuleRequests(assemblies)
             .AddQueries(assemblies)
             .AddCommands(assemblies)
+            .AddIntegrationEvents(assemblies)
             .AddSingleton<ITime, UtcTime>();
             
         services

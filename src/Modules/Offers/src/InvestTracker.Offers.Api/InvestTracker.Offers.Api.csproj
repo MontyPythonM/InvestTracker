@@ -10,4 +10,15 @@
       <ProjectReference Include="..\InvestTracker.Offers.Core\InvestTracker.Offers.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="module.offers.json" />
+      <Content Include="module.offers.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="module.offers.development.json" />
+      <Content Include="module.offers.development.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>
