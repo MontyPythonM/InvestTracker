@@ -2,6 +2,8 @@
 using System.Runtime.CompilerServices;
 using InvestTracker.Shared.Abstractions.Time;
 using InvestTracker.Shared.Infrastructure.Api;
+using InvestTracker.Shared.Infrastructure.Authentication;
+using InvestTracker.Shared.Infrastructure.Authorization;
 using InvestTracker.Shared.Infrastructure.Commands;
 using InvestTracker.Shared.Infrastructure.Exceptions;
 using InvestTracker.Shared.Infrastructure.IntegrationEvents;
@@ -28,7 +30,9 @@ internal static class Extensions
             .AddQueries(assemblies)
             .AddCommands(assemblies)
             .AddIntegrationEvents(assemblies)
-            .AddSingleton<ITime, UtcTime>();
+            .AddSingleton<ITime, UtcTime>()
+            .AddAppAuthentication()
+            .AddAppAuthorization();
             
         services
             .AddControllers()
@@ -44,7 +48,9 @@ internal static class Extensions
     {
         app.UseExceptionHandling();
         app.UseOpenApiDocumentation();
+        app.UseAuthentication();
         app.UseRouting();
+        app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();

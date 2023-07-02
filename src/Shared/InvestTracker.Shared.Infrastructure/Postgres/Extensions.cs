@@ -30,4 +30,21 @@ public static class Extensions
         
         return services;
     }
+    
+    public static IServiceCollection AddPostgres<T>(this IServiceCollection services, string connectionString, 
+        bool useLazyLoading = false) where T : DbContext
+    {
+        services.AddDbContext<T>(option =>
+            {
+                option.UseNpgsql(connectionString);
+
+                if (useLazyLoading)
+                {
+                    option.UseLazyLoadingProxies();
+                }
+            }
+        );
+        
+        return services;
+    }
 }

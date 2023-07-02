@@ -5,16 +5,16 @@ using InvestTracker.Shared.Abstractions.IntegrationEvents;
 
 namespace InvestTracker.Offers.Core.Events.External.Handlers;
 
-internal sealed class InvestorAppointedHandler : IEventHandler<InvestorAppointed>
+internal sealed class InvestorCreatedHandler : IEventHandler<InvestorCreated>
 {
     private readonly IInvestorRepository _investorRepository;
 
-    public InvestorAppointedHandler(IInvestorRepository investorRepository)
+    public InvestorCreatedHandler(IInvestorRepository investorRepository)
     {
         _investorRepository = investorRepository;
     }
     
-    public async Task HandleAsync(InvestorAppointed @event)
+    public async Task HandleAsync(InvestorCreated @event)
     {
         if (await _investorRepository.ExistsAsync(@event.Id, CancellationToken.None))
         {
