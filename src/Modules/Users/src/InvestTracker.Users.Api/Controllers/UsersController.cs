@@ -1,4 +1,4 @@
-﻿using InvestTracker.Shared.Abstractions.SystemPermissions;
+﻿using InvestTracker.Shared.Abstractions.Authorization;
 using InvestTracker.Users.Api.Controllers.Base;
 using InvestTracker.Users.Core.Dtos;
 using InvestTracker.Users.Core.Interfaces;

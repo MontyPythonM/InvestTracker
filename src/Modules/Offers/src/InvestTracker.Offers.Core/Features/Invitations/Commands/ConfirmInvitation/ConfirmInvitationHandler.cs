@@ -4,22 +4,22 @@ using InvestTracker.Offers.Core.Events;
 using InvestTracker.Offers.Core.Exceptions;
 using InvestTracker.Offers.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.Commands;
-using InvestTracker.Shared.Abstractions.IntegrationEvents;
+using InvestTracker.Shared.Abstractions.Messages;
 using InvestTracker.Shared.Abstractions.Time;
 
 namespace InvestTracker.Offers.Core.Features.Invitations.Commands.ConfirmInvitation;
 
 internal sealed class ConfirmInvitationHandler : ICommandHandler<ConfirmInvitation>
 {
-    private readonly IEventDispatcher _eventDispatcher;
+    private readonly IMessageBroker _messageBroker;
     private readonly IInvitationRepository _invitationRepository;
     private readonly ICollaborationRepository _collaborationRepository;
     private readonly ITime _time;
 
-    public ConfirmInvitationHandler(IEventDispatcher eventDispatcher, IInvitationRepository invitationRepository,
+    public ConfirmInvitationHandler(IMessageBroker messageBroker, IInvitationRepository invitationRepository,
         ICollaborationRepository collaborationRepository, ITime time)
     {
-        _eventDispatcher = eventDispatcher;
+        _messageBroker = messageBroker;
         _invitationRepository = invitationRepository;
         _collaborationRepository = collaborationRepository;
         _time = time;
@@ -48,6 +48,6 @@ internal sealed class ConfirmInvitationHandler : ICommandHandler<ConfirmInvitati
 
         await _invitationRepository.UpdateAsync(invitation, token);
         await _collaborationRepository.CreateAsync(collaboration, token);
-        await _eventDispatcher.PublishAsync(new CollaborationStarted(advisorId, investorId));
+        await _messageBroker.PublishAsync(new CollaborationStarted(advisorId, investorId));
     }
 }

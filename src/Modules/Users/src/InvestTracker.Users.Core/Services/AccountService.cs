@@ -1,6 +1,6 @@
 ﻿using InvestTracker.Shared.Abstractions.Authentication;
-using InvestTracker.Shared.Abstractions.Modules;
-using InvestTracker.Shared.Abstractions.SystemPermissions;
+using InvestTracker.Shared.Abstractions.Authorization;
+using InvestTracker.Shared.Abstractions.Messages;
 using InvestTracker.Shared.Abstractions.Time;
 using InvestTracker.Users.Core.Dtos;
 using InvestTracker.Users.Core.Entities;
@@ -16,16 +16,16 @@ internal sealed class AccountService : IAccountService
     private readonly IAuthenticator _authenticator;
     private readonly IPasswordManager _passwordManager;
     private readonly ITime _time;
-    private readonly IModuleClient _moduleClient;
+    private readonly IMessageBroker _messageBroker;
 
     public AccountService(IUserRepository userRepository, IAuthenticator authenticator, 
-        IPasswordManager passwordManager, ITime time, IModuleClient moduleClient)
+        IPasswordManager passwordManager, ITime time, IMessageBroker messageBroker)
     {
         _userRepository = userRepository;
         _authenticator = authenticator;
         _passwordManager = passwordManager;
         _time = time;
-        _moduleClient = moduleClient;
+        _messageBroker = messageBroker;
     }
     
     public async Task SignUpAsync(SignUpDto dto, CancellationToken token)
@@ -54,7 +54,7 @@ internal sealed class AccountService : IAccountService
         };
 
         await _userRepository.CreateAsync(user, token);
-        await _moduleClient.PublishAsync(new InvestorCreated(user.Id, user.FullName, user.Email));
+        await _messageBroker.PublishAsync(new InvestorCreated(user.Id, user.FullName, user.Email));
     }
 
     public async Task<JsonWebToken> SignInAsync(SignInDto dto, CancellationToken token)

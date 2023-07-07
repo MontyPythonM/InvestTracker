@@ -2,21 +2,21 @@
 using InvestTracker.Offers.Core.Exceptions;
 using InvestTracker.Offers.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.Commands;
-using InvestTracker.Shared.Abstractions.IntegrationEvents;
+using InvestTracker.Shared.Abstractions.Messages;
 using InvestTracker.Shared.Abstractions.Time;
 
 namespace InvestTracker.Offers.Core.Features.Collaborations.Commands.CancelCollaboration;
 
 internal sealed class CancelCollaborationHandler : ICommandHandler<CancelCollaboration>
 {
-    private readonly IEventDispatcher _eventDispatcher;
+    private readonly IMessageBroker _messageBroker;
     private readonly ICollaborationRepository _collaborationRepository;
     private readonly ITime _time;
 
-    public CancelCollaborationHandler(IEventDispatcher eventDispatcher, ICollaborationRepository collaborationRepository,
+    public CancelCollaborationHandler(IMessageBroker messageBroker, ICollaborationRepository collaborationRepository,
         ITime time)
     {
-        _eventDispatcher = eventDispatcher;
+        _messageBroker = messageBroker;
         _collaborationRepository = collaborationRepository;
         _time = time;
     }
@@ -34,6 +34,6 @@ internal sealed class CancelCollaborationHandler : ICommandHandler<CancelCollabo
         collaboration.CancelledAt = _time.Current();
         
         await _collaborationRepository.UpdateAsync(collaboration, token);
-        await _eventDispatcher.PublishAsync(new CollaborationCancelled(collaboration.AdvisorId, collaboration.InvestorId));
+        await _messageBroker.PublishAsync(new CollaborationCancelled(collaboration.AdvisorId, collaboration.InvestorId));
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace InvestTracker.Shared.Abstractions.IntegrationEvents;
+﻿using InvestTracker.Shared.Abstractions.Messages;
 
-/// <summary>
-/// Integration event marker
-/// </summary>
-public interface IEvent
+namespace InvestTracker.Shared.Abstractions.IntegrationEvents;
+
+public interface IEvent : IMessage
 {
 }

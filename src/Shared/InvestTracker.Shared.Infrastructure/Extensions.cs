@@ -7,6 +7,7 @@ using InvestTracker.Shared.Infrastructure.Authorization;
 using InvestTracker.Shared.Infrastructure.Commands;
 using InvestTracker.Shared.Infrastructure.Exceptions;
 using InvestTracker.Shared.Infrastructure.IntegrationEvents;
+using InvestTracker.Shared.Infrastructure.Messages;
 using InvestTracker.Shared.Infrastructure.Modules;
 using InvestTracker.Shared.Infrastructure.Queries;
 using InvestTracker.Shared.Infrastructure.Swagger;
@@ -29,6 +30,7 @@ internal static class Extensions
             .AddModuleRequests(assemblies)
             .AddQueries(assemblies)
             .AddCommands(assemblies)
+            .AddAsyncMessages()
             .AddIntegrationEvents(assemblies)
             .AddSingleton<ITime, UtcTime>()
             .AddAppAuthentication()

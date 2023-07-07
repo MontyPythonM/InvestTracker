@@ -1,4 +1,4 @@
-﻿namespace InvestTracker.Shared.Abstractions.SystemPermissions;
+﻿namespace InvestTracker.Shared.Abstractions.Authorization;
 
 public static class SystemRole
 {

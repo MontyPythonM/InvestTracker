@@ -1,8 +1,7 @@
-﻿namespace InvestTracker.Shared.Abstractions.Commands;
+﻿using InvestTracker.Shared.Abstractions.Messages;
 
-/// <summary>
-/// Marker
-/// </summary>
-public interface ICommand
+namespace InvestTracker.Shared.Abstractions.Commands;
+
+public interface ICommand : IMessage
 {
 }

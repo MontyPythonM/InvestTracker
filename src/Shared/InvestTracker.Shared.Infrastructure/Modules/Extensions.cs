@@ -59,7 +59,7 @@ public static class Extensions
                 registry.AddBroadcastAction(type, @event =>
                     ((Task) eventDispatcherType.GetMethod(nameof(eventDispatcher.PublishAsync))?
                         .MakeGenericMethod(type)
-                        .Invoke(eventDispatcher, new[] {@event})!)!);
+                        .Invoke(eventDispatcher, new[] {@event})!));
             }
 
             return registry;
