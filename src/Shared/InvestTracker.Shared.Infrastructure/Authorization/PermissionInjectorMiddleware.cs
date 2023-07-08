@@ -1,18 +1,18 @@
 ﻿using InvestTracker.Shared.Abstractions.Authorization;
-using InvestTracker.Shared.Abstractions.Context;
+using InvestTracker.Shared.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InvestTracker.Shared.Infrastructure.Authorization;
 
-public class PermissionInjectorMiddleware : IMiddleware
+internal sealed class PermissionInjectorMiddleware : IMiddleware
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly IServiceProvider _serviceProvider;
 
-    public PermissionInjectorMiddleware(IServiceScopeFactory serviceScopeFactory)
+    public PermissionInjectorMiddleware(IServiceProvider serviceProvider)
     {
-        _serviceScopeFactory = serviceScopeFactory;
+        _serviceProvider = serviceProvider;
     }
     
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -23,18 +23,15 @@ public class PermissionInjectorMiddleware : IMiddleware
             return;
         }
 
-        var assembly = actionDescriptor.ControllerTypeInfo.Assembly;
-
-        var modulePermissionClasses = assembly
-            .GetTypes()
-            .Where(type => typeof(IModulePermissions).IsAssignableFrom(type) && !type.IsInterface);
-
+        var currentAssembly = actionDescriptor.ControllerTypeInfo.Assembly;
+        var permissionMatrices = _serviceProvider.GetServices<IModulePermissionMatrix>();
         
-        
-        // pobrac z assembly zapytania wszystkie permissiony
-        
-        // podpiać do context.items te permissiony
+        var currentModulePermissions = permissionMatrices
+            .Where(module => module.GetModuleName() == currentAssembly.GetName().Name)
+            .SelectMany(module => module.Permissions)
+            .ToHashSet();
 
-        next.Invoke(context);
+        context.Items.Add(CustomClaim.Permissions, currentModulePermissions);
+        await next.Invoke(context);
     }
 }

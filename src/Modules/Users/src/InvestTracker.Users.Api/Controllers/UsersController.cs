@@ -1,8 +1,9 @@
-﻿using InvestTracker.Shared.Abstractions.Authorization;
+﻿using InvestTracker.Shared.Abstractions.Context;
+using InvestTracker.Shared.Infrastructure.Authorization;
 using InvestTracker.Users.Api.Controllers.Base;
+using InvestTracker.Users.Api.Permissions;
 using InvestTracker.Users.Core.Dtos;
 using InvestTracker.Users.Core.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -11,26 +12,27 @@ namespace InvestTracker.Users.Api.Controllers;
 internal class UsersController : ApiControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IContext _context;
 
-    public UsersController(IUserService userService)
+    public UsersController(IUserService userService, IContext context)
     {
         _userService = userService;
+        _context = context;
     }
     
-    // TODO: use httpContext user id instead of id from route
-    [HttpGet("{id:guid}")]
+    [HttpGet]
     [SwaggerOperation("Returns current user details")]
-    public async Task<ActionResult<UserDto?>> GetUser(Guid id, CancellationToken token)
-        => OkOrNotFound(await _userService.GetUserAsync(id, token));
+    public async Task<ActionResult<UserDto?>> GetUser(CancellationToken token)
+        => OkOrNotFound(await _userService.GetUserAsync(_context.Identity.UserId, token));
     
-    [HttpGet]    
-    [Authorize(Roles = SystemRole.SystemAdministrator)]
+    [HttpGet("all")]
+    [HasPermission(UserPermission.GetUsers)]
     [SwaggerOperation("Returns list of application users")]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers(CancellationToken token)
         => OkOrNotFound(await _userService.GetUsersAsync(token));
     
     [HttpGet("{id:guid}/details")]
-    [Authorize(Roles = SystemRole.SystemAdministrator)]
+    [HasPermission(UserPermission.GetUserDetails)]
     [SwaggerOperation("Returns selected user details")]
     public async Task<ActionResult<UserDetailsDto?>> GetUserDetails(Guid id, CancellationToken token)
         => OkOrNotFound(await _userService.GetUserDetailsAsync(id, token));
