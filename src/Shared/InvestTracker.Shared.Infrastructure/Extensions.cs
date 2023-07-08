@@ -5,6 +5,7 @@ using InvestTracker.Shared.Infrastructure.Api;
 using InvestTracker.Shared.Infrastructure.Authentication;
 using InvestTracker.Shared.Infrastructure.Authorization;
 using InvestTracker.Shared.Infrastructure.Commands;
+using InvestTracker.Shared.Infrastructure.Context;
 using InvestTracker.Shared.Infrastructure.Exceptions;
 using InvestTracker.Shared.Infrastructure.IntegrationEvents;
 using InvestTracker.Shared.Infrastructure.Messages;
@@ -25,6 +26,7 @@ internal static class Extensions
     public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IList<Assembly> assemblies)
     {
         services
+            .AddContext()
             .AddExceptionHandling()
             .AddOpenApiDocumentation()
             .AddModuleRequests(assemblies)

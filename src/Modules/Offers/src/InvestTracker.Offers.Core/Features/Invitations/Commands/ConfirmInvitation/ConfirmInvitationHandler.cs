@@ -4,6 +4,7 @@ using InvestTracker.Offers.Core.Events;
 using InvestTracker.Offers.Core.Exceptions;
 using InvestTracker.Offers.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.Commands;
+using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.Messages;
 using InvestTracker.Shared.Abstractions.Time;
 
@@ -15,14 +16,16 @@ internal sealed class ConfirmInvitationHandler : ICommandHandler<ConfirmInvitati
     private readonly IInvitationRepository _invitationRepository;
     private readonly ICollaborationRepository _collaborationRepository;
     private readonly ITime _time;
+    private readonly IContext _context;
 
     public ConfirmInvitationHandler(IMessageBroker messageBroker, IInvitationRepository invitationRepository,
-        ICollaborationRepository collaborationRepository, ITime time)
+        ICollaborationRepository collaborationRepository, ITime time, IContext context)
     {
         _messageBroker = messageBroker;
         _invitationRepository = invitationRepository;
         _collaborationRepository = collaborationRepository;
         _time = time;
+        _context = context;
     }
     
     public async Task HandleAsync(ConfirmInvitation command, CancellationToken token)
@@ -36,6 +39,12 @@ internal sealed class ConfirmInvitationHandler : ICommandHandler<ConfirmInvitati
         var investorId = invitation.SenderId;
         var advisorId = invitation.Offer.AdvisorId;
 
+        if (_context.Identity.UserId != investorId && 
+            _context.Identity.UserId != advisorId)
+        {
+            throw new CannotConfirmNotOwnCollaborationsException();
+        }
+        
         var collaboration = new Collaboration
         {
             AdvisorId = advisorId,

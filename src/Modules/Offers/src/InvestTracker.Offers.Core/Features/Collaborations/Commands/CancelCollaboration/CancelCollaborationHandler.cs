@@ -2,6 +2,7 @@
 using InvestTracker.Offers.Core.Exceptions;
 using InvestTracker.Offers.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.Commands;
+using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.Messages;
 using InvestTracker.Shared.Abstractions.Time;
 
@@ -12,17 +13,25 @@ internal sealed class CancelCollaborationHandler : ICommandHandler<CancelCollabo
     private readonly IMessageBroker _messageBroker;
     private readonly ICollaborationRepository _collaborationRepository;
     private readonly ITime _time;
+    private readonly IContext _context;
 
     public CancelCollaborationHandler(IMessageBroker messageBroker, ICollaborationRepository collaborationRepository,
-        ITime time)
+        ITime time, IContext context)
     {
         _messageBroker = messageBroker;
         _collaborationRepository = collaborationRepository;
         _time = time;
+        _context = context;
     }
     
     public async Task HandleAsync(CancelCollaboration command, CancellationToken token)
     {
+        if (_context.Identity.UserId != command.AdvisorId && 
+            _context.Identity.UserId != command.InvestorId)
+        {
+            throw new CannotCancelNotOwnCollaborationsException();
+        }
+
         var collaboration = await _collaborationRepository.GetAsync(command.AdvisorId, command.InvestorId, token);
 
         if (collaboration is null)
