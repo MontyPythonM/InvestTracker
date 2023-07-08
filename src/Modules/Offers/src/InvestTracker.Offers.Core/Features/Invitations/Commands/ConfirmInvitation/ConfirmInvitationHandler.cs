@@ -4,25 +4,28 @@ using InvestTracker.Offers.Core.Events;
 using InvestTracker.Offers.Core.Exceptions;
 using InvestTracker.Offers.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.Commands;
-using InvestTracker.Shared.Abstractions.IntegrationEvents;
+using InvestTracker.Shared.Abstractions.Context;
+using InvestTracker.Shared.Abstractions.Messages;
 using InvestTracker.Shared.Abstractions.Time;
 
 namespace InvestTracker.Offers.Core.Features.Invitations.Commands.ConfirmInvitation;
 
 internal sealed class ConfirmInvitationHandler : ICommandHandler<ConfirmInvitation>
 {
-    private readonly IEventDispatcher _eventDispatcher;
+    private readonly IMessageBroker _messageBroker;
     private readonly IInvitationRepository _invitationRepository;
     private readonly ICollaborationRepository _collaborationRepository;
     private readonly ITime _time;
+    private readonly IContext _context;
 
-    public ConfirmInvitationHandler(IEventDispatcher eventDispatcher, IInvitationRepository invitationRepository,
-        ICollaborationRepository collaborationRepository, ITime time)
+    public ConfirmInvitationHandler(IMessageBroker messageBroker, IInvitationRepository invitationRepository,
+        ICollaborationRepository collaborationRepository, ITime time, IContext context)
     {
-        _eventDispatcher = eventDispatcher;
+        _messageBroker = messageBroker;
         _invitationRepository = invitationRepository;
         _collaborationRepository = collaborationRepository;
         _time = time;
+        _context = context;
     }
     
     public async Task HandleAsync(ConfirmInvitation command, CancellationToken token)
@@ -36,6 +39,12 @@ internal sealed class ConfirmInvitationHandler : ICommandHandler<ConfirmInvitati
         var investorId = invitation.SenderId;
         var advisorId = invitation.Offer.AdvisorId;
 
+        if (_context.Identity.UserId != investorId && 
+            _context.Identity.UserId != advisorId)
+        {
+            throw new CannotConfirmNotOwnCollaborationsException();
+        }
+        
         var collaboration = new Collaboration
         {
             AdvisorId = advisorId,
@@ -48,6 +57,6 @@ internal sealed class ConfirmInvitationHandler : ICommandHandler<ConfirmInvitati
 
         await _invitationRepository.UpdateAsync(invitation, token);
         await _collaborationRepository.CreateAsync(collaboration, token);
-        await _eventDispatcher.PublishAsync(new CollaborationStarted(advisorId, investorId));
+        await _messageBroker.PublishAsync(new CollaborationStarted(advisorId, investorId));
     }
 }

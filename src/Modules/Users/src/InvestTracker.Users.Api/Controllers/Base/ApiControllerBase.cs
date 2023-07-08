@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace InvestTracker.Users.Api.Controllers;
+namespace InvestTracker.Users.Api.Controllers.Base;
 
 [ApiController]
 [Route(UsersModule.BasePath + "/[controller]")]
