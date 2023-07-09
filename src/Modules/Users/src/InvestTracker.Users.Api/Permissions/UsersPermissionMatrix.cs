@@ -7,11 +7,11 @@ internal sealed class UsersPermissionMatrix : IModulePermissionMatrix
 {
     public string GetModuleName() => Assembly.GetExecutingAssembly().GetName().Name!;
     
-    public List<Permission> Permissions { get; set; } = new()
+    public ISet<Permission> Permissions { get; } = new HashSet<Permission>()
     {
-        new Permission(SystemRole.SystemAdministrator, UserPermission.GetUsers.ToString()),
-        new Permission(SystemRole.SystemAdministrator, UserPermission.GetUserDetails.ToString()),
+        new(SystemRole.SystemAdministrator, UsersPermission.GetUsers.ToString()),
+        new(SystemRole.SystemAdministrator, UsersPermission.GetUserDetails.ToString()),
         
-        new Permission(SystemRole.BusinessAdministrator, UserPermission.GetUsers.ToString())
+        new(SystemRole.BusinessAdministrator, UsersPermission.GetUsers.ToString())
     };
 }

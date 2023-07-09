@@ -1,6 +1,6 @@
 ﻿namespace InvestTracker.Users.Api.Permissions;
 
-public enum UserPermission
+public enum UsersPermission
 {
     GetUsers,
     GetUserDetails

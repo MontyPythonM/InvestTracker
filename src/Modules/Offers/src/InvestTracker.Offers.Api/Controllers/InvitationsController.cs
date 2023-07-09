@@ -1,4 +1,5 @@
 ﻿using InvestTracker.Offers.Api.Controllers.Base;
+using InvestTracker.Offers.Api.Permissions;
 using InvestTracker.Offers.Core.Features.Invitations.Commands.ConfirmInvitation;
 using InvestTracker.Offers.Core.Features.Invitations.Commands.RejectInvitation;
 using InvestTracker.Offers.Core.Features.Invitations.Commands.SendInvitation;
@@ -6,7 +7,7 @@ using InvestTracker.Offers.Core.Features.Invitations.Queries.GetInvitations;
 using InvestTracker.Shared.Abstractions.Commands;
 using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.Queries;
-using Microsoft.AspNetCore.Authorization;
+using InvestTracker.Shared.Infrastructure.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -27,7 +28,7 @@ internal class InvitationsController : ApiControllerBase
     }
 
     [HttpGet]
-    [Authorize]
+    [HasPermission(OffersPermission.GetUserInvitations)]
     [SwaggerOperation("Returns current user invitations")]
     public async Task<ActionResult<IEnumerable<InvitationDto>>> GetUserInvitations(CancellationToken token)
     {
@@ -35,7 +36,7 @@ internal class InvitationsController : ApiControllerBase
     }
 
     [HttpPost]
-    [Authorize]
+    [HasPermission(OffersPermission.SendCollaborationInvitation)]
     [SwaggerOperation("Allows investor to send an invitation to collaboration on the basis of the selected offer")]
     public async Task<ActionResult> SendCollaborationInvitation([FromBody] SendInvitation command, CancellationToken token)
     {
@@ -44,7 +45,7 @@ internal class InvitationsController : ApiControllerBase
     }
     
     [HttpPatch("{id:guid}")]
-    [Authorize]
+    [HasPermission(OffersPermission.ConfirmCollaborationInvitation)]
     [SwaggerOperation("Advisor can confirm the invitation sent to him")]
     public async Task<ActionResult> ConfirmCollaborationInvitation(Guid id, CancellationToken token)
     {
@@ -53,7 +54,7 @@ internal class InvitationsController : ApiControllerBase
     }
     
     [HttpDelete("{id:guid}")]
-    [Authorize]
+    [HasPermission(OffersPermission.RejectCollaborationInvitation)]
     [SwaggerOperation("Advisor can reject the invitation sent to him")]
     public async Task<ActionResult> RejectCollaborationInvitation(Guid id, CancellationToken token)
     {        

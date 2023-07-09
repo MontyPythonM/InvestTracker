@@ -51,7 +51,6 @@ internal static class Extensions
     public static IApplicationBuilder UseSharedInfrastructure(this IApplicationBuilder app)
     {
         app.UseExceptionHandling();
-        
         app.UseOpenApiDocumentation();
         app.UseAuthentication();
         app.UseRouting();

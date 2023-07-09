@@ -5,6 +5,5 @@ namespace InvestTracker.Shared.Abstractions.Authorization;
 public interface IModulePermissionMatrix
 {
     public string GetModuleName();
-    public List<Permission> Permissions { get; }
+    public ISet<Permission> Permissions { get; }
 }
-
