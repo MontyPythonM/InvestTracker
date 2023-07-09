@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace InvestTracker.Users.Core.Persistence;
 
 // dotnet ef database update -s ..\..\..\..\Bootstrapper\InvestTracker.Bootstrapper
-// dotnet ef migrations add <name> -s ..\..\..\..\Bootstrapper\InvestTracker.Bootstrapper
+// dotnet ef migrations add <name> -s ..\..\..\..\Bootstrapper\InvestTracker.Bootstrapper --context UsersDbContext
 internal class UsersDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }

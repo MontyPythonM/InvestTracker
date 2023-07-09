@@ -10,10 +10,10 @@ public class Offer
     public DateTime? UpdatedAt { get; private set; }
     public virtual Advisor Advisor { get; private set; }
     public Guid AdvisorId { get; private set; }
-    public virtual ICollection<string> Tags { get; private set; } = new List<string>();
+    public ICollection<string> Tags { get; private set; } = new List<string>();
     public virtual ICollection<Invitation> Invitations { get; private set; } = new List<Invitation>();
 
-    private Offer()
+    public Offer()
     {
         // for EF
     }

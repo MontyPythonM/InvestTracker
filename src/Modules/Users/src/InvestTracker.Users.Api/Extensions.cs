@@ -1,4 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
+using InvestTracker.Shared.Abstractions.Authorization;
+using InvestTracker.Users.Api.Permissions;
 using InvestTracker.Users.Core;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +12,7 @@ internal static class Extensions
     public static IServiceCollection AddUsersModule(this IServiceCollection services)
     {
         services.AddCore();
+        services.AddSingleton<IModulePermissionMatrix, UsersPermissionMatrix>();
         
         return services;
     }

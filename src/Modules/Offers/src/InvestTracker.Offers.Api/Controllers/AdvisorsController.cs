@@ -1,7 +1,9 @@
 ﻿using InvestTracker.Offers.Api.Controllers.Base;
+using InvestTracker.Offers.Api.Permissions;
 using InvestTracker.Offers.Core.Features.Advisors.UpdateAdvisor;
 using InvestTracker.Shared.Abstractions.Commands;
 using InvestTracker.Shared.Abstractions.Context;
+using InvestTracker.Shared.Infrastructure.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -19,6 +21,7 @@ internal class AdvisorsController : ApiControllerBase
     }
     
     [HttpPatch]
+    [HasPermission(OffersPermission.UpdateAdvisorDetails)]
     [SwaggerOperation("Advisor can update a few data about himself")]
     public async Task<ActionResult> UpdateAdvisorDetails([FromBody] UpdateAdvisor command, CancellationToken token)
     {
