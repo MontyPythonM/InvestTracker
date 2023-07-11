@@ -23,7 +23,7 @@ internal sealed class InvestorCreatedHandler : IEventHandler<InvestorCreated>
         
         var investor = new Investor
         {
-            Id = Guid.NewGuid(),
+            Id = @event.Id,
             Email = @event.Email,
             FullName = @event.FullName,
         };

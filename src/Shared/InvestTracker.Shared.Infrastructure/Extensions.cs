@@ -36,7 +36,7 @@ internal static class Extensions
             .AddIntegrationEvents(assemblies)
             .AddSingleton<ITime, UtcTime>()
             .AddAppAuthentication()
-            .AddPermissions();
+            .AddPermissionAuthorization();
             
         services
             .AddControllers()

@@ -7,6 +7,7 @@ using InvestTracker.Offers.Core.Features.Offers.Queries.GetOfferDetails;
 using InvestTracker.Offers.Core.Features.Offers.Queries.GetOfferDetails.Dtos;
 using InvestTracker.Offers.Core.Features.Offers.Queries.GetOffers;
 using InvestTracker.Shared.Abstractions.Commands;
+using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.Queries;
 using InvestTracker.Shared.Infrastructure.Authorization;
 using Microsoft.AspNetCore.Authorization;
@@ -19,11 +20,14 @@ internal class OffersController : ApiControllerBase
 {
     private readonly ICommandDispatcher _commandDispatcher;
     private readonly IQueryDispatcher _queryDispatcher;
+    private readonly IContext _context;
 
-    public OffersController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher)
+    public OffersController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher,
+        IContext context)
     {
         _commandDispatcher = commandDispatcher;
         _queryDispatcher = queryDispatcher;
+        _context = context;
     }
     
     [HttpGet("{id:guid}")]
@@ -43,7 +47,7 @@ internal class OffersController : ApiControllerBase
     [SwaggerOperation("Advisor can add his own offer")]
     public async Task<ActionResult> CreateOffer([FromBody] CreateOffer command, CancellationToken token)
     {
-        await _commandDispatcher.SendAsync(command with { Id = Guid.NewGuid() }, token);
+        await _commandDispatcher.SendAsync(command, token);
         return Ok();
     }
 

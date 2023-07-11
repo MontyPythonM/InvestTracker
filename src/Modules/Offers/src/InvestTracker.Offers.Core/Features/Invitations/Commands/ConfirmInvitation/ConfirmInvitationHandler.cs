@@ -39,8 +39,7 @@ internal sealed class ConfirmInvitationHandler : ICommandHandler<ConfirmInvitati
         var investorId = invitation.SenderId;
         var advisorId = invitation.Offer.AdvisorId;
 
-        if (_context.Identity.UserId != investorId && 
-            _context.Identity.UserId != advisorId)
+        if (_context.Identity.UserId != advisorId)
         {
             throw new CannotConfirmNotOwnCollaborationsException();
         }

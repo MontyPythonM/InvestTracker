@@ -34,12 +34,13 @@ internal class CollaborationsController : ApiControllerBase
         return OkOrNotFound(await _queryDispatcher.QueryAsync(new GetCollaborations(_context.Identity.UserId), token));
     }
     
-    [HttpGet("{id:guid}")]
+    [HttpGet("details")]
     [HasPermission(OffersPermission.GetUserCollaboration)]
     [SwaggerOperation("Returns current user collaboration details")]
-    public async Task<ActionResult<CollaborationDetailsDto>> GetUserCollaboration(Guid id, CancellationToken token)
+    public async Task<ActionResult<CollaborationDetailsDto>> GetUserCollaboration([FromQuery] GetCollaboration query, 
+        CancellationToken token)
     {
-        return OkOrNotFound(await _queryDispatcher.QueryAsync(new GetCollaboration(id, _context.Identity.UserId), token));
+        return OkOrNotFound(await _queryDispatcher.QueryAsync(query, token))!;
     }
     
     [HttpDelete("own")]

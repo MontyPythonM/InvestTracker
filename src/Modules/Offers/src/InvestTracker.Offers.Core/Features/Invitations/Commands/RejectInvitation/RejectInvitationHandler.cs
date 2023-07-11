@@ -2,6 +2,7 @@
 using InvestTracker.Offers.Core.Exceptions;
 using InvestTracker.Offers.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.Commands;
+using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.Time;
 
 namespace InvestTracker.Offers.Core.Features.Invitations.Commands.RejectInvitation;
@@ -10,11 +11,13 @@ internal sealed class RejectInvitationHandler : ICommandHandler<RejectInvitation
 {
     private readonly IInvitationRepository _invitationRepository;
     private readonly ITime _time;
+    private readonly IContext _context;
 
-    public RejectInvitationHandler(IInvitationRepository invitationRepository, ITime time)
+    public RejectInvitationHandler(IInvitationRepository invitationRepository, ITime time, IContext context)
     {
         _invitationRepository = invitationRepository;
         _time = time;
+        _context = context;
     }
     
     public async Task HandleAsync(RejectInvitation command, CancellationToken token)
@@ -24,7 +27,12 @@ internal sealed class RejectInvitationHandler : ICommandHandler<RejectInvitation
         {
             throw new InvitationNotFoundException(command.Id);
         }
-
+        
+        if (_context.Identity.UserId != invitation.Offer.AdvisorId)
+        {
+            throw new CannotConfirmNotOwnCollaborationsException();
+        }
+        
         invitation.Status = InvitationStatus.Rejected;
         invitation.StatusChangedAt = _time.Current();
 

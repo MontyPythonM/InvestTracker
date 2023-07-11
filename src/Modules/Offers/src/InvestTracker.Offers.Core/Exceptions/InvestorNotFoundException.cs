@@ -2,7 +2,7 @@
 
 namespace InvestTracker.Offers.Core.Exceptions;
 
-public class InvestorNotFoundException : InvestTrackerException
+internal class InvestorNotFoundException : InvestTrackerException
 {
     public InvestorNotFoundException(Guid id) : base($"Investor with ID: {id} not found.")
     {

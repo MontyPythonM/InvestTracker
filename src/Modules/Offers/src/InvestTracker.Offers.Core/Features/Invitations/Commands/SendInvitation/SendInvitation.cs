@@ -2,4 +2,4 @@
 
 namespace InvestTracker.Offers.Core.Features.Invitations.Commands.SendInvitation;
 
-internal record SendInvitation(Guid SenderId, Guid OfferId, string message) : ICommand;
+internal record SendInvitation(Guid OfferId, string Message) : ICommand;
