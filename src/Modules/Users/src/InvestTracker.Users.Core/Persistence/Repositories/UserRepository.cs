@@ -14,14 +14,26 @@ internal class UserRepository : IUserRepository
     }
 
     public async Task<User?> GetAsync(Guid id, CancellationToken token)
-        => await _context.Users.SingleOrDefaultAsync(user => user.Id == id, token);
+        => await _context.Users
+            .Include(user => user.Role)
+            .Include(user => user.Subscription)
+            .SingleOrDefaultAsync(user => user.Id == id, token);
 
     public async Task<User?> GetAsync(string email, CancellationToken token)
-        => await _context.Users.SingleOrDefaultAsync(user => user.Email.ToLower() == email.ToLower(), token);
+        => await _context.Users
+            .Include(user => user.Role)
+            .Include(user => user.Subscription)
+            .SingleOrDefaultAsync(user => user.Email.ToLower() == email.ToLower(), token);
 
     public async Task CreateAsync(User user, CancellationToken token)
     {
         await _context.Users.AddAsync(user, token);
+        await _context.SaveChangesAsync(token);
+    }
+
+    public async Task UpdateAsync(User user, CancellationToken token)
+    {
+        _context.Users.Update(user);
         await _context.SaveChangesAsync(token);
     }
 }

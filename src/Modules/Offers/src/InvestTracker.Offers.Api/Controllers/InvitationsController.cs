@@ -17,14 +17,14 @@ internal class InvitationsController : ApiControllerBase
 {
     private readonly ICommandDispatcher _commandDispatcher;
     private readonly IQueryDispatcher _queryDispatcher;
-    private readonly IContext _context;
+    private readonly IRequestContext _requestContext;
 
     public InvitationsController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher,
-        IContext context)
+        IRequestContext requestContext)
     {
         _commandDispatcher = commandDispatcher;
         _queryDispatcher = queryDispatcher;
-        _context = context;
+        _requestContext = requestContext;
     }
 
     [HttpGet]
@@ -32,7 +32,7 @@ internal class InvitationsController : ApiControllerBase
     [SwaggerOperation("Returns current user invitations")]
     public async Task<ActionResult<IEnumerable<InvitationDto>>> GetUserInvitations(CancellationToken token)
     {
-        return OkOrNotFound(await _queryDispatcher.QueryAsync(new GetInvitations(_context.Identity.UserId), token));
+        return OkOrNotFound(await _queryDispatcher.QueryAsync(new GetInvitations(_requestContext.Identity.UserId), token));
     }
 
     [HttpPost]

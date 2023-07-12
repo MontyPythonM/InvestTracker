@@ -17,22 +17,22 @@ internal sealed class SendInvitationHandler : ICommandHandler<SendInvitation>
     private readonly ITime _time;
     private readonly IOfferRepository _offerRepository;
     private readonly IInvestorRepository _investorRepository;
-    private readonly IContext _context;
+    private readonly IRequestContext _requestContext;
 
     public SendInvitationHandler(IMessageBroker messageBroker, IInvitationRepository invitationRepository, 
-        ITime time, IOfferRepository offerRepository, IInvestorRepository investorRepository, IContext context)
+        ITime time, IOfferRepository offerRepository, IInvestorRepository investorRepository, IRequestContext requestContext)
     {
         _messageBroker = messageBroker;
         _invitationRepository = invitationRepository;
         _time = time;
         _offerRepository = offerRepository;
         _investorRepository = investorRepository;
-        _context = context;
+        _requestContext = requestContext;
     }
     
     public async Task HandleAsync(SendInvitation command, CancellationToken token)
     {
-        var currentUser = _context.Identity.UserId;
+        var currentUser = _requestContext.Identity.UserId;
         var offer = await _offerRepository.GetAsync(command.OfferId, token);
         if (offer is null)
         {

@@ -1,6 +1,6 @@
 ﻿namespace InvestTracker.Shared.Abstractions.Context;
 
-public interface IContext
+public interface IRequestContext
 {
     string RequestId { get; }
     string TraceId { get; }

@@ -12,20 +12,20 @@ internal sealed class CreateOfferHandler : ICommandHandler<CreateOffer>
     private readonly ITime _time;
     private readonly IOfferRepository _offerRepository;
     private readonly IAdvisorRepository _advisorRepository;
-    private readonly IContext _context;
+    private readonly IRequestContext _requestContext;
 
     public CreateOfferHandler(ITime time, IOfferRepository offerRepository, 
-        IAdvisorRepository advisorRepository, IContext context)
+        IAdvisorRepository advisorRepository, IRequestContext requestContext)
     {
         _time = time;
         _offerRepository = offerRepository;
         _advisorRepository = advisorRepository;
-        _context = context;
+        _requestContext = requestContext;
     }
     
     public async Task HandleAsync(CreateOffer command, CancellationToken token)
     {
-        var currentUser = _context.Identity.UserId;
+        var currentUser = _requestContext.Identity.UserId;
         var advisor = await _advisorRepository.GetAsync(currentUser, token);
         if (advisor is null)
         {

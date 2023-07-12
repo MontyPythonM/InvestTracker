@@ -16,14 +16,14 @@ internal class CollaborationsController : ApiControllerBase
 {
     private readonly ICommandDispatcher _commandDispatcher;
     private readonly IQueryDispatcher _queryDispatcher;
-    private readonly IContext _context;
+    private readonly IRequestContext _requestContext;
 
     public CollaborationsController(ICommandDispatcher commandDispatcher,
-        IQueryDispatcher queryDispatcher, IContext context)
+        IQueryDispatcher queryDispatcher, IRequestContext requestContext)
     {
         _commandDispatcher = commandDispatcher;
         _queryDispatcher = queryDispatcher;
-        _context = context;
+        _requestContext = requestContext;
     }
 
     [HttpGet]
@@ -31,7 +31,7 @@ internal class CollaborationsController : ApiControllerBase
     [SwaggerOperation("Returns current user collaborations")]
     public async Task<ActionResult<IEnumerable<CollaborationDto>>> GetUserCollaborations(CancellationToken token)
     {
-        return OkOrNotFound(await _queryDispatcher.QueryAsync(new GetCollaborations(_context.Identity.UserId), token));
+        return OkOrNotFound(await _queryDispatcher.QueryAsync(new GetCollaborations(_requestContext.Identity.UserId), token));
     }
     
     [HttpGet("details")]
@@ -48,8 +48,8 @@ internal class CollaborationsController : ApiControllerBase
     [SwaggerOperation("Cancel selected collaboration between Investor and Advisor, only if current user is one of them")]
     public async Task<ActionResult> CancelOwnCollaboration(CancelCollaboration command, CancellationToken token)
     {
-        if (_context.Identity.UserId != command.AdvisorId && 
-            _context.Identity.UserId != command.InvestorId)
+        if (_requestContext.Identity.UserId != command.AdvisorId && 
+            _requestContext.Identity.UserId != command.InvestorId)
         {
             return Forbid();
         }

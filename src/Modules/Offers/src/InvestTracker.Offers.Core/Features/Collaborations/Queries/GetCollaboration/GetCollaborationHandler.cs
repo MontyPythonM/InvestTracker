@@ -10,10 +10,10 @@ internal sealed class GetCollaborationHandler : IQueryHandler<GetCollaboration, 
     private readonly OffersDbContext _context;
     private readonly Guid _currentUserId;
 
-    public GetCollaborationHandler(OffersDbContext context, IContext currentUserContext)
+    public GetCollaborationHandler(OffersDbContext context, IRequestContext requestContext)
     {
         _context = context;
-        _currentUserId = currentUserContext.Identity.UserId;
+        _currentUserId = requestContext.Identity.UserId;
     }
 
     public async Task<CollaborationDetailsDto?> HandleAsync(GetCollaboration query, CancellationToken token = default)
@@ -32,7 +32,7 @@ internal sealed class GetCollaborationHandler : IQueryHandler<GetCollaboration, 
                 CancelledAt = collaboration.CancelledAt,
                 IsCancelled = collaboration.IsCancelled
             })
-            .SingleOrDefaultAsync(collaboration => (collaboration.AdvisorId == _currentUserId || collaboration.InvestorId == _currentUserId) &&
-                                                   collaboration.AdvisorId == query.AdvisorId && 
-                                                   collaboration.InvestorId == query.InvestorId, token);
+            .SingleOrDefaultAsync(c => c.AdvisorId == query.AdvisorId && 
+                                       c.InvestorId == query.InvestorId &&
+                                       (c.AdvisorId == _currentUserId || c.InvestorId == _currentUserId), token);
 }

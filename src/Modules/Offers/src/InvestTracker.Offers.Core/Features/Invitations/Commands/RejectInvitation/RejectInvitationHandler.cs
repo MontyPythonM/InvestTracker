@@ -11,13 +11,13 @@ internal sealed class RejectInvitationHandler : ICommandHandler<RejectInvitation
 {
     private readonly IInvitationRepository _invitationRepository;
     private readonly ITime _time;
-    private readonly IContext _context;
+    private readonly IRequestContext _requestContext;
 
-    public RejectInvitationHandler(IInvitationRepository invitationRepository, ITime time, IContext context)
+    public RejectInvitationHandler(IInvitationRepository invitationRepository, ITime time, IRequestContext requestContext)
     {
         _invitationRepository = invitationRepository;
         _time = time;
-        _context = context;
+        _requestContext = requestContext;
     }
     
     public async Task HandleAsync(RejectInvitation command, CancellationToken token)
@@ -28,7 +28,7 @@ internal sealed class RejectInvitationHandler : ICommandHandler<RejectInvitation
             throw new InvitationNotFoundException(command.Id);
         }
         
-        if (_context.Identity.UserId != invitation.Offer.AdvisorId)
+        if (_requestContext.Identity.UserId != invitation.Offer.AdvisorId)
         {
             throw new CannotConfirmNotOwnCollaborationsException();
         }

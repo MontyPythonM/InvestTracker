@@ -11,7 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\Collaborations\Queries\GetCollaboration\Dtos\" />
       <Folder Include="Features\Offers\Commands\" />
       <Folder Include="Persistence\Migrations\" />
     </ItemGroup>

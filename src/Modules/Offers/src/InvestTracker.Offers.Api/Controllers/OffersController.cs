@@ -20,14 +20,14 @@ internal class OffersController : ApiControllerBase
 {
     private readonly ICommandDispatcher _commandDispatcher;
     private readonly IQueryDispatcher _queryDispatcher;
-    private readonly IContext _context;
+    private readonly IRequestContext _requestContext;
 
     public OffersController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher,
-        IContext context)
+        IRequestContext requestContext)
     {
         _commandDispatcher = commandDispatcher;
         _queryDispatcher = queryDispatcher;
-        _context = context;
+        _requestContext = requestContext;
     }
     
     [HttpGet("{id:guid}")]
