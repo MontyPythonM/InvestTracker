@@ -14,5 +14,9 @@
       <Folder Include="Persistence\Migrations\" />
       <Folder Include="Persistence\Seeders\" />
     </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="InvestTracker.Users.UnitTests" />
+    </ItemGroup>
     
 </Project>
