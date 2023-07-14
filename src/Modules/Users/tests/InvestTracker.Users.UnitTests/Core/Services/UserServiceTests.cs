@@ -5,12 +5,14 @@ using InvestTracker.Shared.Abstractions.Time;
 using InvestTracker.Shared.Infrastructure.Types;
 using InvestTracker.Users.Core.Dtos;
 using InvestTracker.Users.Core.Entities;
+using InvestTracker.Users.Core.Events;
 using InvestTracker.Users.Core.Exceptions;
 using InvestTracker.Users.Core.Interfaces;
 using InvestTracker.Users.Core.Persistence;
 using InvestTracker.Users.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using Shouldly;
 using Xunit;
 
@@ -18,16 +20,12 @@ namespace InvestTracker.Users.UnitTests.Core.Services;
 
 public class UserServiceTests
 {
-    #region SetRoleAsync
+    #region SetRoleAsync tests
     [Fact]
-    public async Task SetRoleAsync_ThrowRoleNotFoundException_WhenRoleNotExist()
+    public async Task SetRoleAsync_ShouldThrowRoleNotFoundException_WhenRoleNotExist()
     {
         // arrange
-        var dto = new SetRoleDto
-        {
-            UserId = Guid.NewGuid(),
-            Role = "not-existing-role"
-        };
+        var dto = GetSetRoleDto(Guid.NewGuid(), "not-existing-role");
         
         // act
         var exception = await Record.ExceptionAsync(() => 
@@ -39,16 +37,15 @@ public class UserServiceTests
     }
     
     [Fact]
-    public async Task SetRoleAsync_ThrowUserNotFoundException_WhenUserNotExist()
+    public async Task SetRoleAsync_ShouldThrowUserNotFoundException_WhenUserNotExist()
     {
         // arrange
-        var dto = new SetRoleDto
-        {
-            UserId = Guid.NewGuid(),
-            Role = SystemRole.SystemAdministrator
-        };
+        var dto = GetSetRoleDto();
         
-        // _userRepository.GetAsync returns null
+        _userRepository
+            .GetAsync(Arg.Any<Guid>(), CancellationToken.None)
+            .ReturnsNull();
+        
         // act
         var exception = await Record.ExceptionAsync(() => 
             _userService.SetRoleAsync(dto, CancellationToken.None));
@@ -59,24 +56,39 @@ public class UserServiceTests
     }
     
     [Fact]
-    public async Task SetRoleAsync_PublishUserRoleGrantedEvent_WhenValidRoleChanged()
+    public async Task SetRoleAsync_ShouldPublishEventAndUpdateEntity_WhenValidRoleChanged()
     {
         // arrange
+        var user = _user;
+        user.Role = new Role
+        {
+            Value = SystemRole.BusinessAdministrator
+        };
+        
+        var dto = GetSetRoleDto(user.Id, SystemRole.SystemAdministrator);
+        
+        _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
+        _time.Current().Returns(DateTime.Now);
+        _requestContext.Identity.UserId.Returns(Guid.NewGuid());
         
         // act
+        await _userService.SetRoleAsync(dto, CancellationToken.None);
         
         // assert
+        await _messageBroker.Received(1)
+            .PublishAsync(Arg.Is<UserRoleGranted>(e => 
+                e.Id == user.Id &&
+                e.Role == user.Role.Value));
+
+        await _userRepository.Received(1)
+            .UpdateAsync(user, CancellationToken.None);
     }
     
     [Fact]
-    public async Task SetRoleAsync_SetUserRole_WhenRoleChanged()
+    public async Task SetRoleAsync_ShouldSetUserRole_WhenRoleChanged()
     {
         // arrange
-        var dto = new SetRoleDto
-        {
-            UserId = _user.Id,
-            Role = SystemRole.BusinessAdministrator
-        };
+        var dto = GetSetRoleDto(_user.Id);
         
         _userRepository.GetAsync(_user.Id, CancellationToken.None).Returns(_user);
         _time.Current().Returns(DateTime.Now);
@@ -91,35 +103,51 @@ public class UserServiceTests
     }
     #endregion
     
-    #region RemoveRoleAsync
+    #region RemoveRoleAsync tests
     [Fact]
-    public async Task RemoveRoleAsync_ThrowUserNotFoundException_WhenUserNotExist()
+    public async Task RemoveRoleAsync_ShouldThrowUserNotFoundException_WhenUserNotExist()
     {
         // arrange
+        var userId = Guid.NewGuid();
+        _userRepository.GetAsync(userId, CancellationToken.None).ReturnsNull();
         
         // act
-        
+        var exception = await Record.ExceptionAsync(() =>
+            _userService.RemoveRoleAsync(userId, CancellationToken.None));
+
         // assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<UserNotFoundException>();        
+        await _messageBroker.Received(0).PublishAsync(Arg.Any<UserRoleRemoved>());
+    }
+
+    [Fact]
+    public async Task RemoveRoleAsync_ShouldPublishUserRoleRemovedEvent_WhenRoleRemoved()
+    {
+        // arrange
+        var user = _user;
+        _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
+
+        // act
+        await _userService.RemoveRoleAsync(user.Id, CancellationToken.None);
+
+        // assert
+        await _messageBroker.Received(1).PublishAsync(Arg.Is<UserRoleRemoved>(e => e.Id == user.Id));
     }
     
     [Fact]
-    public async Task RemoveRoleAsync_PublishUserRoleRemovedEvent_WhenRoleRemoved()
+    public async Task RemoveRoleAsync_ShouldClearUserRole_WhenRoleRemoved()
     {
         // arrange
-        
+        var user = _user;
+        _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
+
         // act
-        
+        await _userService.RemoveRoleAsync(user.Id, CancellationToken.None);
+
         // assert
-    }
-    
-    [Fact]
-    public async Task RemoveRoleAsync_ClearUserRole_WhenRoleRemoved()
-    {
-        // arrange
-        
-        // act
-        
-        // assert
+        user.Role.ShouldNotBeNull();
+        user.Role.Value.ShouldBeNull();
     }
     #endregion
 
@@ -156,6 +184,13 @@ public class UserServiceTests
         CreatedAt = new DateTime(2023, 7, 13),
         IsActive = true
     };
+    
+    private SetRoleDto GetSetRoleDto(Guid userId = default, string role = SystemRole.BusinessAdministrator) 
+        => new()
+        {
+            UserId = default ? Guid.NewGuid() : userId,
+            Role = role
+        };
     
     #endregion
 }
