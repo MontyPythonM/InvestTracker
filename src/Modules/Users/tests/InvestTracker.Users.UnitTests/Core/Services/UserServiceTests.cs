@@ -56,10 +56,10 @@ public class UserServiceTests
     }
     
     [Fact]
-    public async Task SetRoleAsync_ShouldPublishEventAndUpdateEntity_WhenValidRoleChanged()
+    public async Task SetRoleAsync_ShouldPublishEventAndUpdateEntity_WhenRoleChanged()
     {
         // arrange
-        var user = _user;
+        var user = GetUser();
         user.Role = new Role
         {
             Value = SystemRole.BusinessAdministrator
@@ -85,12 +85,13 @@ public class UserServiceTests
     }
     
     [Fact]
-    public async Task SetRoleAsync_ShouldSetUserRole_WhenRoleChanged()
+    public async Task SetRoleAsync_ShouldSetUserRole_WhenRequestIsValid()
     {
         // arrange
-        var dto = GetSetRoleDto(_user.Id);
+        var user = GetUser();
+        var dto = GetSetRoleDto(user.Id);
         
-        _userRepository.GetAsync(_user.Id, CancellationToken.None).Returns(_user);
+        _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
         _time.Current().Returns(DateTime.Now);
         _requestContext.Identity.UserId.Returns(Guid.NewGuid());
         
@@ -98,8 +99,8 @@ public class UserServiceTests
         await _userService.SetRoleAsync(dto, CancellationToken.None);
         
         // assert
-        _user.Role.ShouldNotBeNull();
-        _user.Role.Value.ShouldBe(SystemRole.BusinessAdministrator);
+        user.Role.ShouldNotBeNull();
+        user.Role.Value.ShouldBe(SystemRole.BusinessAdministrator);
     }
     #endregion
     
@@ -125,7 +126,7 @@ public class UserServiceTests
     public async Task RemoveRoleAsync_ShouldPublishUserRoleRemovedEvent_WhenRoleRemoved()
     {
         // arrange
-        var user = _user;
+        var user = GetUser();
         _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
 
         // act
@@ -139,7 +140,7 @@ public class UserServiceTests
     public async Task RemoveRoleAsync_ShouldClearUserRole_WhenRoleRemoved()
     {
         // arrange
-        var user = _user;
+        var user = GetUser();
         _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
 
         // act
@@ -175,7 +176,7 @@ public class UserServiceTests
             _requestContext);
     }
     
-    private static User _user = new()
+    private static User GetUser() => new()
     {
         Id = "36FF203C-DD33-492C-9690-35698FE02188".ToGuid(),
         FullName = "Name",

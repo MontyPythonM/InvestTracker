@@ -62,12 +62,12 @@ internal sealed class AccountService : IAccountService
         if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
         {
             throw new InvalidCredentialsException();
-        };
+        }
 
         var user = await _userRepository.GetAsync(dto.Email, token);
         if (user is null)
         {
-            throw new InvalidCredentialsException();
+            throw new UserNotFoundException(dto.Email);
         }
 
         if (!user.IsActive)
@@ -79,7 +79,7 @@ internal sealed class AccountService : IAccountService
         {
             throw new InvalidCredentialsException();
         }
-        
+
         var accessToken = _authenticator.CreateToken(user.Id.ToString(), user.Role?.Value, user.Subscription?.Value);
         accessToken.Email = user.Email;
         

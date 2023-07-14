@@ -7,4 +7,8 @@ internal class UserNotFoundException : InvestTrackerException
     public UserNotFoundException(Guid id) : base($"User with ID: {id} not found.")
     {
     }
+
+    public UserNotFoundException(string email) : base($"User with email: {email} not found.")
+    {
+    }
 }
