@@ -1,9 +1,11 @@
 ﻿using InvestTracker.Shared.Abstractions.Authentication;
+using InvestTracker.Shared.Abstractions.Authorization;
 using InvestTracker.Shared.Abstractions.Messages;
 using InvestTracker.Shared.Abstractions.Time;
 using InvestTracker.Shared.Infrastructure.Types;
 using InvestTracker.Users.Core.Dtos;
 using InvestTracker.Users.Core.Entities;
+using InvestTracker.Users.Core.Events;
 using InvestTracker.Users.Core.Exceptions;
 using InvestTracker.Users.Core.Interfaces;
 using InvestTracker.Users.Core.Services;
@@ -101,19 +103,11 @@ public class AccountServiceTests
     {
         // arrange
         const string email = "email@email.com";
-        
+        var dto = GetSignUpDto(email);
         var user = GetUser();
         user.Email = email;
         
-        var dto = new SignUpDto
-        {
-            Email = email,
-            FullName = "fullname",
-            Password = "password",
-            Phone = null
-        };
-
-        _userRepository.GetAsync(email, CancellationToken.None)
+        _userRepository.GetAsync(dto.Email, CancellationToken.None)
             .Returns(new User { Id = Guid.NewGuid(), Email = email });
         
         // act
@@ -124,43 +118,64 @@ public class AccountServiceTests
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<EmailAlreadyInUseException>();
     }
-
-    // TODO: complete the SignUpAsync tests
     
     [Fact]
     public async Task SignUpAsync_ShouldAssignStandardInvestorSubscription_WhenUserRegisterAccount()
     {
         // arrange
+        var user = GetUser();
+        var dto = GetSignUpDto();
+
+        _userRepository.GetAsync(dto.Email, CancellationToken.None).ReturnsNull();
         
         // act
-        
+        await _accountService.SignUpAsync(dto, CancellationToken.None);
+
         // assert
+        await _userRepository.Received(1).CreateAsync(Arg.Is<User>(u => 
+            u.Subscription != null &&
+            u.Subscription.Value == SystemSubscription.StandardInvestor), CancellationToken.None);
     }
     
     [Fact]
     public async Task SignUpAsync_ShouldNotAssignAnyRole_WhenUserRegisterAccount()
     {
         // arrange
+        var user = GetUser();
+        var dto = GetSignUpDto();
         
+        _userRepository.GetAsync(dto.Email, CancellationToken.None).ReturnsNull();
+
         // act
-        
+        await _accountService.SignUpAsync(dto, CancellationToken.None);
+
         // assert
+        await _userRepository.Received(1).CreateAsync(Arg.Is<User>(u => 
+            u.Role == null), CancellationToken.None);
+        
+        user.Role.ShouldBeNull();
     }
     
     [Fact]
-    public async Task SignUpAsync_ShouldPublishEventAndCreateUserEntity_WhenUserRegisterAccount()
+    public async Task SignUpAsync_ShouldPublishEvent_WhenUserRegisterAccount()
     {
         // arrange
+        var dto = GetSignUpDto();
+        
+        _userRepository.GetAsync(dto.Email, CancellationToken.None).ReturnsNull();
         
         // act
-        
+        await _accountService.SignUpAsync(dto, CancellationToken.None);
+
         // assert
+        
+        await _messageBroker.Received(1).PublishAsync(Arg.Is<InvestorCreated>(e =>
+            e.FullName == dto.FullName && 
+            e.Email == dto.Email));
     }
     #endregion
 
-    
     #region Arrange
-    
     private readonly IUserRepository _userRepository;
     private readonly IAuthenticator _authenticator;
     private readonly IPasswordManager _passwordManager;
@@ -193,6 +208,15 @@ public class AccountServiceTests
         CreatedAt = new DateTime(2023, 7, 13),
         IsActive = true
     };
+
+    private static SignUpDto GetSignUpDto(string email = "default@email.com") 
+        => new()
+        {
+            Email = email,
+            FullName = "fullname",
+            Password = "password",
+            Phone = null
+        };
 
     #endregion
 }
