@@ -13,19 +13,19 @@ namespace InvestTracker.Users.Api.Controllers;
 internal class UsersController : ApiControllerBase
 {
     private readonly IUserService _userService;
-    private readonly IContext _context;
+    private readonly IRequestContext _requestContext;
 
-    public UsersController(IUserService userService, IContext context)
+    public UsersController(IUserService userService, IRequestContext requestContext)
     {
         _userService = userService;
-        _context = context;
+        _requestContext = requestContext;
     }
     
     [HttpGet]
     [Authorize]
     [SwaggerOperation("Returns current user details")]
     public async Task<ActionResult<UserDto?>> GetUser(CancellationToken token)
-        => OkOrNotFound(await _userService.GetUserAsync(_context.Identity.UserId, token));
+        => OkOrNotFound(await _userService.GetUserAsync(_requestContext.Identity.UserId, token));
     
     [HttpGet("all")]
     [HasPermission(UsersPermission.GetUsers)]
@@ -38,4 +38,22 @@ internal class UsersController : ApiControllerBase
     [SwaggerOperation("Returns selected user details")]
     public async Task<ActionResult<UserDetailsDto?>> GetUserDetails(Guid id, CancellationToken token)
         => OkOrNotFound(await _userService.GetUserDetailsAsync(id, token));
+
+    [HttpPatch("set-role")]
+    [HasPermission(UsersPermission.SetRole)]
+    [SwaggerOperation("Set selected user role")]
+    public async Task<ActionResult> SetRole([FromBody] SetRoleDto dto, CancellationToken token)
+    {
+        await _userService.SetRoleAsync(dto, token);
+        return Ok();
+    }
+    
+    [HttpPatch("{id:guid}/remove-role")]
+    [HasPermission(UsersPermission.RemoveRole)]
+    [SwaggerOperation("Remove selected user role")]
+    public async Task<ActionResult> RemoveRole(Guid id, CancellationToken token)
+    {
+        await _userService.RemoveRoleAsync(id, token);
+        return Ok();
+    }
 }

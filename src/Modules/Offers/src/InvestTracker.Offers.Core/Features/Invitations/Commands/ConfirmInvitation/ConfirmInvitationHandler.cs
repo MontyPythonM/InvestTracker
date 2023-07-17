@@ -16,16 +16,16 @@ internal sealed class ConfirmInvitationHandler : ICommandHandler<ConfirmInvitati
     private readonly IInvitationRepository _invitationRepository;
     private readonly ICollaborationRepository _collaborationRepository;
     private readonly ITime _time;
-    private readonly IContext _context;
+    private readonly IRequestContext _requestContext;
 
     public ConfirmInvitationHandler(IMessageBroker messageBroker, IInvitationRepository invitationRepository,
-        ICollaborationRepository collaborationRepository, ITime time, IContext context)
+        ICollaborationRepository collaborationRepository, ITime time, IRequestContext requestContext)
     {
         _messageBroker = messageBroker;
         _invitationRepository = invitationRepository;
         _collaborationRepository = collaborationRepository;
         _time = time;
-        _context = context;
+        _requestContext = requestContext;
     }
     
     public async Task HandleAsync(ConfirmInvitation command, CancellationToken token)
@@ -39,8 +39,7 @@ internal sealed class ConfirmInvitationHandler : ICommandHandler<ConfirmInvitati
         var investorId = invitation.SenderId;
         var advisorId = invitation.Offer.AdvisorId;
 
-        if (_context.Identity.UserId != investorId && 
-            _context.Identity.UserId != advisorId)
+        if (_requestContext.Identity.UserId != advisorId)
         {
             throw new CannotConfirmNotOwnCollaborationsException();
         }

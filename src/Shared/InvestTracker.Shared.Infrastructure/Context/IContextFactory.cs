@@ -4,5 +4,5 @@ namespace InvestTracker.Shared.Infrastructure.Context;
 
 internal interface IContextFactory
 {
-    IContext Create();
+    IRequestContext Create();
 }

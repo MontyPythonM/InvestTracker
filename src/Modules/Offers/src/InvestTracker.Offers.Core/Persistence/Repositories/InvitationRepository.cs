@@ -14,7 +14,7 @@ internal class InvitationRepository : IInvitationRepository
     }
 
     public async Task<Invitation?> GetAsync(Guid id, CancellationToken token)
-        => await _context.Invitations.SingleOrDefaultAsync(offer => offer.Id == id, token);
+        => await _context.Invitations.SingleOrDefaultAsync(invitation => invitation.Id == id, token);
 
     public async Task CreateAsync(Invitation invitation, CancellationToken token)
     {
@@ -27,4 +27,7 @@ internal class InvitationRepository : IInvitationRepository
         _context.Invitations.Update(invitation);
         await _context.SaveChangesAsync(token);
     }
+    
+    public async Task<bool> ExistsAsync(Guid id, CancellationToken token)
+        => await _context.Investors.AnyAsync(invitation => invitation.Id == id, token);
 }

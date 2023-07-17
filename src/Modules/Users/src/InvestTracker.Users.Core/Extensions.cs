@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: InternalsVisibleTo("InvestTracker.Users.Api")]
+[assembly: InternalsVisibleTo("InvestTracker.Users.UnitTests")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace InvestTracker.Users.Core;
 
 internal static class Extensions

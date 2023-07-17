@@ -6,7 +6,7 @@ namespace InvestTracker.Shared.Infrastructure.Authorization;
 
 internal static class Extensions
 {
-    public static IServiceCollection AddPermissions(this IServiceCollection services)
+    public static IServiceCollection AddPermissionAuthorization(this IServiceCollection services)
         => services
             .AddAuthorization()
             .AddScoped<PermissionInjectorMiddleware>()

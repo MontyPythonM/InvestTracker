@@ -32,7 +32,7 @@ public class PermissionAuthorizationHandler: AuthorizationHandler<PermissionRequ
             return Task.CompletedTask;
         }
 
-        var permissions = (((IEnumerable)permissionsObj))
+        var permissions = ((IEnumerable)permissionsObj)
             .Cast<Permission>()
             .Select(permission => permission.PermissionName);
 

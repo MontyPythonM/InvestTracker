@@ -12,12 +12,12 @@ namespace InvestTracker.Offers.Api.Controllers;
 internal class AdvisorsController : ApiControllerBase
 {
     private readonly ICommandDispatcher _commandDispatcher;
-    private readonly IContext _context;
+    private readonly IRequestContext _requestContext;
 
-    public AdvisorsController(ICommandDispatcher commandDispatcher, IContext context)
+    public AdvisorsController(ICommandDispatcher commandDispatcher, IRequestContext requestContext)
     {
         _commandDispatcher = commandDispatcher;
-        _context = context;
+        _requestContext = requestContext;
     }
     
     [HttpPatch]
@@ -25,7 +25,7 @@ internal class AdvisorsController : ApiControllerBase
     [SwaggerOperation("Advisor can update a few data about himself")]
     public async Task<ActionResult> UpdateAdvisorDetails([FromBody] UpdateAdvisor command, CancellationToken token)
     {
-        await _commandDispatcher.SendAsync(command with { Id = _context.Identity.UserId }, token);
+        await _commandDispatcher.SendAsync(command with { Id = _requestContext.Identity.UserId }, token);
         return Ok();
     }
 }

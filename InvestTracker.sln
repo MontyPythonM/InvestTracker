@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestTracker.Bootstrapper"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9641B3D3-0970-41F6-A91D-30D1B624BC5A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E4973C89-181D-400D-9064-6A8E062EDB12}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bootstrapper", "Bootstrapper", "{FFA43F61-B2B4-4E69-8377-868B00556316}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{350A46BF-0A07-42FE-8B2F-9DAEF545740E}"
@@ -82,6 +80,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestTracker.Users.Api", "src\Modules\Users\src\InvestTracker.Users.Api\InvestTracker.Users.Api.csproj", "{A1C65783-83F8-4BE0-A506-2E3C383084E0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestTracker.Users.Core", "src\Modules\Users\src\InvestTracker.Users.Core\InvestTracker.Users.Core.csproj", "{F57B30D1-3D95-40EE-8EC9-6C4D9CAC4D4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestTracker.Users.UnitTests", "src\Modules\Users\tests\InvestTracker.Users.UnitTests\InvestTracker.Users.UnitTests.csproj", "{E30CC742-4E48-4B29-B0C6-D4350A1EE07E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -160,6 +160,10 @@ Global
 		{F57B30D1-3D95-40EE-8EC9-6C4D9CAC4D4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F57B30D1-3D95-40EE-8EC9-6C4D9CAC4D4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F57B30D1-3D95-40EE-8EC9-6C4D9CAC4D4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E30CC742-4E48-4B29-B0C6-D4350A1EE07E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E30CC742-4E48-4B29-B0C6-D4350A1EE07E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E30CC742-4E48-4B29-B0C6-D4350A1EE07E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E30CC742-4E48-4B29-B0C6-D4350A1EE07E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FFA43F61-B2B4-4E69-8377-868B00556316} = {9641B3D3-0970-41F6-A91D-30D1B624BC5A}
@@ -200,5 +204,6 @@ Global
 		{EAF35739-0051-48CE-A154-A11E0186CB8E} = {207AE334-07BB-4B4E-BF1B-91AC4C57B4CD}
 		{A1C65783-83F8-4BE0-A506-2E3C383084E0} = {7B84327C-5E27-4CDF-8E35-723C1FDA1BD1}
 		{F57B30D1-3D95-40EE-8EC9-6C4D9CAC4D4C} = {7B84327C-5E27-4CDF-8E35-723C1FDA1BD1}
+		{E30CC742-4E48-4B29-B0C6-D4350A1EE07E} = {1A4D2D1A-5DF4-4C3A-96A6-FF46BCF05560}
 	EndGlobalSection
 EndGlobal

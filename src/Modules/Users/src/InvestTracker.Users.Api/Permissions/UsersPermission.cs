@@ -3,5 +3,7 @@
 public enum UsersPermission
 {
     GetUsers,
-    GetUserDetails
+    GetUserDetails,
+    SetRole,
+    RemoveRole
 }

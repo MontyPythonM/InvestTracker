@@ -1,5 +1,11 @@
-﻿using InvestTracker.Users.Core.Dtos;
+﻿using InvestTracker.Shared.Abstractions.Authorization;
+using InvestTracker.Shared.Abstractions.Context;
+using InvestTracker.Shared.Abstractions.Messages;
+using InvestTracker.Shared.Abstractions.Time;
+using InvestTracker.Users.Core.Dtos;
 using InvestTracker.Users.Core.Entities;
+using InvestTracker.Users.Core.Events;
+using InvestTracker.Users.Core.Exceptions;
 using InvestTracker.Users.Core.Interfaces;
 using InvestTracker.Users.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +15,19 @@ namespace InvestTracker.Users.Core.Services;
 internal sealed class UserService : IUserService
 {
     private readonly UsersDbContext _context;
+    private readonly IUserRepository _userRepository;
+    private readonly IMessageBroker _messageBroker;
+    private readonly ITime _time;
+    private readonly IRequestContext _requestContext;
 
-    public UserService(UsersDbContext context)
+    public UserService(UsersDbContext context, IUserRepository userRepository, 
+        IMessageBroker messageBroker, ITime time, IRequestContext requestContext)
     {
         _context = context;
+        _userRepository = userRepository;
+        _messageBroker = messageBroker;
+        _time = time;
+        _requestContext = requestContext;
     }
 
     public async Task<UserDto?> GetUserAsync(Guid id, CancellationToken token)
@@ -72,12 +87,55 @@ internal sealed class UserService : IUserService
                 Role = new RoleDto
                 {
                     Value = user.Role!.Value,
-                    GrantedAt = user.Subscription.GrantedAt,
-                    GrantedBy = user.Subscription.GrantedBy
+                    GrantedAt = user.Role.GrantedAt,
+                    GrantedBy = user.Role.GrantedBy
                 }
             })
             .SingleOrDefaultAsync(user => user.Id == id, token);
-    
+
+    public async Task SetRoleAsync(SetRoleDto dto, CancellationToken token)
+    {
+        if (!SystemRole.Roles.Contains(dto.Role))
+        {
+            throw new RoleNotFoundException(dto.Role);
+        }
+        
+        var user = await _userRepository.GetAsync(dto.UserId, token);
+        if (user is null)
+        {
+            throw new UserNotFoundException(dto.UserId);
+        }
+
+        user.Role = new Role
+        {
+            Value = dto.Role,
+            GrantedAt = _time.Current(),
+            GrantedBy = _requestContext.Identity.UserId
+        };
+        
+        await _userRepository.UpdateAsync(user, token);
+        await _messageBroker.PublishAsync(new UserRoleGranted(user.Id, user.Role?.Value ?? string.Empty));
+    }
+
+    public async Task RemoveRoleAsync(Guid id, CancellationToken token)
+    {
+        var user = await _userRepository.GetAsync(id, token);
+        if (user is null)
+        {
+            throw new UserNotFoundException(id);
+        }
+        
+        user.Role = new Role
+        {
+            Value = null,
+            GrantedAt = _time.Current(),
+            GrantedBy = _requestContext.Identity.UserId
+        };
+        
+        await _userRepository.UpdateAsync(user, token);
+        await _messageBroker.PublishAsync(new UserRoleRemoved(user.Id));
+    }
+
     private static string GetUserSubscription(Subscription? subscription) 
         => subscription is null ? string.Empty : subscription.Value!;
     

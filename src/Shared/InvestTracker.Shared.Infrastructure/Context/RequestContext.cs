@@ -3,19 +3,19 @@ using Microsoft.AspNetCore.Http;
 
 namespace InvestTracker.Shared.Infrastructure.Context;
 
-internal class Context : IContext
+internal class RequestContext : IRequestContext
 {
     public string RequestId { get; } = $"{Guid.NewGuid():N}";
     public string TraceId { get; } = string.Empty;
     public IIdentityContext Identity { get; }
     
-    private Context()
+    private RequestContext()
     {
     }
     
-    public static IContext Empty => new Context();
+    public static IRequestContext Empty => new RequestContext();
     
-    public Context(HttpContext context)
+    public RequestContext(HttpContext context)
     {
         TraceId = context.TraceIdentifier;
         Identity = new IdentityContext(context.User);

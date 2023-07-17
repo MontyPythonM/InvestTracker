@@ -16,17 +16,20 @@ internal sealed class OffersPermissionMatrix : IModulePermissionMatrix
         new(SystemSubscription.Advisor, OffersPermission.ConfirmCollaborationInvitation.ToString()),
         new(SystemSubscription.Advisor, OffersPermission.RejectCollaborationInvitation.ToString()),
         new(SystemSubscription.Advisor, OffersPermission.GetUserCollaborations.ToString()),
+        new(SystemSubscription.Advisor, OffersPermission.GetUserCollaboration.ToString()),
         new(SystemSubscription.Advisor, OffersPermission.CancelOwnCollaboration.ToString()),
         new(SystemSubscription.Advisor, OffersPermission.UpdateAdvisorDetails.ToString()),
         
         new(SystemSubscription.StandardInvestor, OffersPermission.GetUserInvitations.ToString()),
         new(SystemSubscription.StandardInvestor, OffersPermission.SendCollaborationInvitation.ToString()),
         new(SystemSubscription.StandardInvestor, OffersPermission.GetUserCollaborations.ToString()),
+        new(SystemSubscription.StandardInvestor, OffersPermission.GetUserCollaboration.ToString()),
         new(SystemSubscription.StandardInvestor, OffersPermission.CancelOwnCollaboration.ToString()),
 
         new(SystemSubscription.ProfessionalInvestor, OffersPermission.GetUserInvitations.ToString()),
         new(SystemSubscription.ProfessionalInvestor, OffersPermission.SendCollaborationInvitation.ToString()),
         new(SystemSubscription.ProfessionalInvestor, OffersPermission.GetUserCollaborations.ToString()),
+        new(SystemSubscription.ProfessionalInvestor, OffersPermission.GetUserCollaboration.ToString()),
         new(SystemSubscription.ProfessionalInvestor, OffersPermission.CancelOwnCollaboration.ToString()),
         
         new(SystemRole.BusinessAdministrator, OffersPermission.UpdateOffer.ToString()),
