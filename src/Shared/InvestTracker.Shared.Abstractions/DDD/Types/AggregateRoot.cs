@@ -32,7 +32,3 @@ public abstract class AggregateRoot<T>
         _versionIncremented = true;
     }
 }
-
-public abstract class AggregateRoot : AggregateRoot<AggregateId>
-{
-}

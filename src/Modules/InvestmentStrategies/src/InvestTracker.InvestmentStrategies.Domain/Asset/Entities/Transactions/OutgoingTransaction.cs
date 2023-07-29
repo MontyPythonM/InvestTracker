@@ -17,7 +17,7 @@ public class OutgoingTransaction : Transaction
     {
     }
 
-    internal OutgoingTransaction(TransactionId id, Volume volume, DateTime transactionDate, Note? note) 
+    internal OutgoingTransaction(TransactionId id, Volume volume, DateTime transactionDate, Note? note = null) 
         : base(id, volume, transactionDate, note)
     {
     }

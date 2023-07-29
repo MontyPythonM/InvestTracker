@@ -12,8 +12,8 @@ public class Portfolio
     public Note? Note { get; private set; }
     public Description? Description { get; private set; }
     public InvestmentStrategy InvestmentStrategy { get; private set; }
-    
     public IEnumerable<AssetId> Assets => _assets;
+    
     private HashSet<AssetId> _assets = new();
     
     internal Portfolio(PortfolioId id, Title title, Note? note, Description? description)

@@ -1,6 +1,6 @@
 ﻿using InvestTracker.Shared.Abstractions.Exceptions;
 
-namespace InvestTracker.Shared.Abstractions.DDD.Exceptions;
+namespace InvestTracker.Shared.Abstractions.DDD.ValueObjects.Exceptions;
 
 public sealed class InvalidTitleException : InvestTrackerException
 {

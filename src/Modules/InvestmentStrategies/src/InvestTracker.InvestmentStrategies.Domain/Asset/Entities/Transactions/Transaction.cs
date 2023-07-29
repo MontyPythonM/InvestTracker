@@ -17,7 +17,7 @@ public abstract class Transaction
     {
     }
     
-    protected Transaction(TransactionId id, Amount amount, DateTime transactionDate, Spread? spread, Note? note)
+    protected Transaction(TransactionId id, Amount amount, DateTime transactionDate, Spread? spread = null, Note? note = null)
     {
         Id = id;
         Amount = amount;
@@ -26,7 +26,7 @@ public abstract class Transaction
         Note = note;
     }
     
-    protected Transaction(TransactionId id, Volume volume, DateTime transactionDate, Note? note)
+    protected Transaction(TransactionId id, Volume volume, DateTime transactionDate, Note? note = null)
     {
         Id = id;
         Volume = volume;

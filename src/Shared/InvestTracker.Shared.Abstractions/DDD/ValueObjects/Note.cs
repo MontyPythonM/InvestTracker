@@ -1,4 +1,4 @@
-﻿using InvestTracker.Shared.Abstractions.DDD.Exceptions;
+﻿using InvestTracker.Shared.Abstractions.DDD.ValueObjects.Exceptions;
 
 namespace InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 

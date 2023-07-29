@@ -14,11 +14,10 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     public bool IsShareEnabled { get; private set; }
     public bool IsShared => Collaborators.Any();
     public StakeholderId Owner { get; private set; }
-    
     public IEnumerable<StakeholderId> Collaborators => _collaborators;
-    private HashSet<StakeholderId> _collaborators = new();
-
     public IEnumerable<Portfolio> Portfolios => _portfolios;
+    
+    private HashSet<StakeholderId> _collaborators = new();
     private HashSet<Portfolio> _portfolios = new();
 
     private InvestmentStrategy()
@@ -44,7 +43,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
 
     internal void AddCollaborator(StakeholderId collaboratorId)
     {
-        if (IsShareEnabled is false)
+        if (IsShareEnabled is false || Owner == collaboratorId)
         {
             throw new InvestmentStrategyAccessException(Id);
         }

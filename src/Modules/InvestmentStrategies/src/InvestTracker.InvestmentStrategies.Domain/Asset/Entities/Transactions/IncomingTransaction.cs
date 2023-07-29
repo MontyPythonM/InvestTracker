@@ -15,7 +15,7 @@ public class IncomingTransaction : Transaction
     {
     }
 
-    internal IncomingTransaction(TransactionId id, Volume volume, DateTime transactionDate, Note? note) 
+    internal IncomingTransaction(TransactionId id, Volume volume, DateTime transactionDate, Note? note = null) 
         : base(id, volume, transactionDate, note)
     {
     }
