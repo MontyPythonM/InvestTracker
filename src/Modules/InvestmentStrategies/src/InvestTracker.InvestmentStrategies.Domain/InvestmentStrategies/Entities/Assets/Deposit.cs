@@ -7,8 +7,8 @@ public sealed class Deposit : Asset
 {
     public Broker? Broker { get; set; }
 
-    public Deposit(AssetId id, Currency currency, AssetDataId assetDataId, PortfolioId portfolioId, Note? note = null) 
-        : base(id, currency, assetDataId, portfolioId, note)
+    public Deposit(AssetId id, Currency currency, AssetTypeId assetTypeId, PortfolioId portfolioId, Note? note = null) 
+        : base(id, currency, assetTypeId, portfolioId, note)
     {
     }
 }

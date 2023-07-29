@@ -5,8 +5,8 @@ namespace InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entitie
 
 public sealed class Cash : Asset
 {
-    public Cash(AssetId id, Currency currency, AssetDataId assetDataId, PortfolioId portfolioId, Note? note = null) 
-        : base(id, currency, assetDataId, portfolioId, note)
+    public Cash(AssetId id, Currency currency, AssetTypeId assetTypeId, PortfolioId portfolioId, Note? note = null) 
+        : base(id, currency, assetTypeId, portfolioId, note)
     {
     }
 

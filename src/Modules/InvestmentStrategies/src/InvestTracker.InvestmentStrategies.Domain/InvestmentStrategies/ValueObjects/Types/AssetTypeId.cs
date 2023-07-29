@@ -2,11 +2,11 @@
 
 namespace InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
 
-public class AssetDataId : TypeId
+public class AssetTypeId : TypeId
 {
-    public AssetDataId(Guid value) : base(value)
+    public AssetTypeId(Guid value) : base(value)
     {
     }
     
-    public static implicit operator AssetDataId(Guid id) => new(id);
+    public static implicit operator AssetTypeId(Guid id) => new(id);
 }

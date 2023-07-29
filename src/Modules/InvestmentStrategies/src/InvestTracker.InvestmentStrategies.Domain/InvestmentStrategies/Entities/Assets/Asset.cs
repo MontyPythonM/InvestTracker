@@ -10,17 +10,17 @@ public abstract class Asset
     public AssetId Id { get; private set; }
     public Note? Note { get; private set; }
     public Currency Currency { get; private set; }
-    public AssetDataId AssetDataId { get; private set; }
+    public AssetTypeId AssetTypeId { get; private set; }
     public PortfolioId PortfolioId { get; private set; }
     public IEnumerable<Transaction> Transactions => _transactions;
     
     private HashSet<Transaction> _transactions = new();
 
-    protected Asset(AssetId id, Currency currency, AssetDataId assetDataId, PortfolioId portfolioId, Note? note = null)
+    protected Asset(AssetId id, Currency currency, AssetTypeId assetTypeId, PortfolioId portfolioId, Note? note = null)
     {
         Id = id;
         Currency = currency;
-        AssetDataId = assetDataId;
+        AssetTypeId = assetTypeId;
         PortfolioId = portfolioId;
         Note = note;
     }
