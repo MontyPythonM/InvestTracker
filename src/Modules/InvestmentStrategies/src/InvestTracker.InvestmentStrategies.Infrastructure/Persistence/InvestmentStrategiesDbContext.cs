@@ -1,6 +1,6 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities.Assets;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities.Transactions;
+﻿using InvestTracker.InvestmentStrategies.Domain.Asset.Entities;
+using InvestTracker.InvestmentStrategies.Domain.Asset.Entities.Transactions;
+using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence;

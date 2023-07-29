@@ -12,12 +12,14 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     public Title Title { get; private set; }
     public Note? Note { get; private set; }
     public bool IsShareEnabled { get; private set; }
+    public bool IsShared => Collaborators.Any();
     public StakeholderId Owner { get; private set; }
-    public IEnumerable<StakeholderId> Collaborators => _collaborators;
-    public IEnumerable<Portfolio> Portfolios => _portfolios;
     
-    private HashSet<Portfolio> _portfolios = new();
+    public IEnumerable<StakeholderId> Collaborators => _collaborators;
     private HashSet<StakeholderId> _collaborators = new();
+
+    public IEnumerable<Portfolio> Portfolios => _portfolios;
+    private HashSet<Portfolio> _portfolios = new();
 
     private InvestmentStrategy()
     {
@@ -31,17 +33,20 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         Owner = owner;
     }
 
-    internal void AddPortfolio(PortfolioId portfolioId, Title title, Note? note = null, Description? description = null)
+    public void AddPortfolio(PortfolioId portfolioId, Title title, Note? note = null, Description? description = null)
     {
         var portfolio = new Portfolio(portfolioId, title, note, description);
         _portfolios.Add(portfolio);
     }
 
+    public void EnableSharing() => IsShareEnabled = true;
+    public void DisableSharing() => IsShareEnabled = false;
+
     internal void AddCollaborator(StakeholderId collaboratorId)
     {
         if (IsShareEnabled is false)
         {
-            throw new InvestmentStrategySharedException(Id);
+            throw new InvestmentStrategyAccessException(Id);
         }
 
         _collaborators.Add(collaboratorId);
