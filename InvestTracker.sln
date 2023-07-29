@@ -83,6 +83,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestTracker.Users.Core", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestTracker.Users.UnitTests", "src\Modules\Users\tests\InvestTracker.Users.UnitTests\InvestTracker.Users.UnitTests.csproj", "{E30CC742-4E48-4B29-B0C6-D4350A1EE07E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestTracker.InvestmentStrategies.UnitTests", "src\Modules\InvestmentStrategies\tests\InvestTracker.InvestmentStrategies.UnitTests\InvestTracker.InvestmentStrategies.UnitTests.csproj", "{8B808731-D152-47AE-ACB3-B673A7A6B143}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -164,6 +166,10 @@ Global
 		{E30CC742-4E48-4B29-B0C6-D4350A1EE07E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E30CC742-4E48-4B29-B0C6-D4350A1EE07E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E30CC742-4E48-4B29-B0C6-D4350A1EE07E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B808731-D152-47AE-ACB3-B673A7A6B143}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B808731-D152-47AE-ACB3-B673A7A6B143}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B808731-D152-47AE-ACB3-B673A7A6B143}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B808731-D152-47AE-ACB3-B673A7A6B143}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FFA43F61-B2B4-4E69-8377-868B00556316} = {9641B3D3-0970-41F6-A91D-30D1B624BC5A}
@@ -205,5 +211,6 @@ Global
 		{A1C65783-83F8-4BE0-A506-2E3C383084E0} = {7B84327C-5E27-4CDF-8E35-723C1FDA1BD1}
 		{F57B30D1-3D95-40EE-8EC9-6C4D9CAC4D4C} = {7B84327C-5E27-4CDF-8E35-723C1FDA1BD1}
 		{E30CC742-4E48-4B29-B0C6-D4350A1EE07E} = {1A4D2D1A-5DF4-4C3A-96A6-FF46BCF05560}
+		{8B808731-D152-47AE-ACB3-B673A7A6B143} = {832E8059-1217-44F3-A694-19ED050DBD8F}
 	EndGlobalSection
 EndGlobal

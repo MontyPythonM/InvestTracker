@@ -1,0 +1,21 @@
+﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Exceptions;
+
+namespace InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects;
+
+public record Note
+{
+    public string Value { get; }
+
+    public Note(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length > 500)
+        {
+            throw new InvalidNoteException();
+        }
+
+        Value = value;
+    }
+    
+    public static implicit operator string(Note note) => note.Value;
+    public static implicit operator Note(string note) => new(note);
+}

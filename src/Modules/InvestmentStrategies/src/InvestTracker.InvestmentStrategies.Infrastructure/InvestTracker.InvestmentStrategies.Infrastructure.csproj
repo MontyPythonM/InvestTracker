@@ -11,4 +11,10 @@
       <ProjectReference Include="..\InvestTracker.InvestmentStrategies.Application\InvestTracker.InvestmentStrategies.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Persistence\Configurations\" />
+      <Folder Include="Persistence\Migrations\" />
+      <Folder Include="Persistence\Repositories\" />
+    </ItemGroup>
+
 </Project>

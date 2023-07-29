@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using InvestTracker.InvestmentStrategies.Api.Controllers.Base;
+using Microsoft.AspNetCore.Mvc;
 
 namespace InvestTracker.InvestmentStrategies.Api.Controllers;
 
