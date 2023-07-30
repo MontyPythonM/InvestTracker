@@ -1,12 +1,7 @@
-﻿using InvestTracker.Shared.Abstractions.DDD.Types;
+﻿namespace InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
 
-namespace InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
-
-public class InvestmentStrategyId : TypeId
+public record InvestmentStrategyId(Guid Value)
 {
-    public InvestmentStrategyId(Guid value) : base(value)
-    {
-    }
-    
-    public static implicit operator InvestmentStrategyId(Guid id) => new(id);
+    public static implicit operator Guid(InvestmentStrategyId id) => id.Value;
+    public static implicit operator InvestmentStrategyId?(Guid id) => id.Equals(Guid.Empty) ? null : new InvestmentStrategyId(id);
 }

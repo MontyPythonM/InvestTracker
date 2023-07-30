@@ -9,7 +9,7 @@ public record Subscription
 
     public Subscription(string value)
     {
-        if (!IsValidSubscription(value))
+        if (!IsValid(value))
         {
             throw new SubscriptionNotExistException(value);
         }
@@ -20,6 +20,5 @@ public record Subscription
     public static implicit operator string(Subscription subscription) => subscription.Value;
     public static implicit operator Subscription(string subscription) => new(subscription);
     
-    private static bool IsValidSubscription(string value) 
-        => SystemSubscription.Subscriptions.Contains(value) || string.IsNullOrEmpty(value);
+    private static bool IsValid(string value) => SystemSubscription.Subscriptions.Contains(value);
 }
