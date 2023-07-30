@@ -1,4 +1,4 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Exceptions;
+﻿using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Exceptions;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects;
 
