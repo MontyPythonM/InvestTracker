@@ -24,5 +24,5 @@ public class Portfolio
         Description = description;
     }
     
-    public void AddAsset(AssetId id) => _assets.Add(id);
+    internal void AddAsset(AssetId id) => _assets.Add(id);
 }

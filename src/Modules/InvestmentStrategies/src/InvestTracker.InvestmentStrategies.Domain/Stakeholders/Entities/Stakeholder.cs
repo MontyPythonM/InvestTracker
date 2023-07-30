@@ -1,11 +1,11 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
+using InvestTracker.Shared.Abstractions.DDD.Types;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Stakeholders.Entities;
 
-internal abstract class Stakeholder
+internal abstract class Stakeholder : AggregateRoot<StakeholderId>
 {
-    public StakeholderId Id { get; private set; }
     public FullName FullName { get; private set; }
     public Email Email { get; private set; }
     public Role? Role { get; private set; }
