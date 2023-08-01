@@ -1,9 +1,8 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Events;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Exceptions;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies;
+using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.PortfolioLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.StrategyLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 using InvestTracker.Shared.Abstractions.DDD.Types;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
@@ -17,10 +16,10 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     public bool IsShareEnabled { get; private set; }
     public StakeholderId Owner { get; private set; }
     public IEnumerable<StakeholderId> Collaborators => _collaborators;
-    public IEnumerable<PortfolioId> Portfolios => _portfolios;
+    public IEnumerable<Portfolio> Portfolios => _portfolios;
     
-    private HashSet<PortfolioId> _portfolios = new();
     private HashSet<StakeholderId> _collaborators = new();
+    private HashSet<Portfolio> _portfolios = new();
 
     private InvestmentStrategy()
     {
@@ -55,9 +54,21 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         return investmentStrategy;
     }
 
-    internal void AddPortfolio(PortfolioId portfolioId)
+    public void AddPortfolio(Portfolio portfolio, Subscription subscription, IEnumerable<IPortfolioLimitPolicy> policies)
     {
-        _portfolios.Add(portfolioId);
+        var policy = policies.SingleOrDefault(policy => policy.CanBeApplied(subscription));
+
+        if (policy is null)
+        {
+            throw new PortfolioLimitPolicyNotFoundException(subscription);
+        }
+
+        if (!policy.CanAddPortfolio(_portfolios))
+        {
+            throw new PortfolioLimitExceedException(subscription);
+        }
+        
+        _portfolios.Add(portfolio);
     }
 
     public void AddCollaborator(StakeholderId collaboratorId)

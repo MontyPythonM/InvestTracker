@@ -6,5 +6,5 @@ namespace InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policie
 public interface IPortfolioLimitPolicy
 {
     bool CanBeApplied(Subscription subscription);
-    bool CanAddPortfolio(InvestmentStrategy investmentStrategy);
+    bool CanAddPortfolio(ISet<Portfolio> portfolios);
 }

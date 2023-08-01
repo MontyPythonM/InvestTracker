@@ -1,8 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
+using InvestTracker.InvestmentStrategies.Domain.Asset.Policies.AssetLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.PortfolioLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.StrategyLimitPolicy;
-using InvestTracker.InvestmentStrategies.Domain.Portfolios.Policies;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: InternalsVisibleTo("InvestTracker.InvestmentStrategies.Api")]
