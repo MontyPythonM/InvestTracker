@@ -10,4 +10,8 @@
       <ProjectReference Include="..\..\..\..\Shared\InvestTracker.Shared.Abstractions\InvestTracker.Shared.Abstractions.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Stakeholders\Events\Handlers\" />
+    </ItemGroup>
+
 </Project>

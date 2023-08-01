@@ -5,7 +5,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Reposit
 
 public interface IInvestmentStrategyRepository
 {
-    Task<InvestmentStrategy> GetAsync(InvestmentStrategyId id, CancellationToken token);
-    Task<InvestmentStrategy> GetAsync(PortfolioId portfolioId, CancellationToken token);
-    Task AddAsync(InvestmentStrategy strategy, CancellationToken token);
+    Task<InvestmentStrategy?> GetAsync(InvestmentStrategyId id, CancellationToken token = default);
+    Task<InvestmentStrategy?> GetAsync(PortfolioId portfolioId, CancellationToken token = default);
+    Task AddAsync(InvestmentStrategy strategy, CancellationToken token = default);
 }
