@@ -1,4 +1,4 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.FinancialAsset.Events;
+﻿using InvestTracker.InvestmentStrategies.Domain.Asset.Events;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Repositories;
 using InvestTracker.Shared.Abstractions.DDD;
@@ -22,14 +22,14 @@ internal sealed class AssetInPortfolioAddedHandler : IDomainEventHandler<AssetIn
             throw new InvestmentStrategyNotFoundException(@event.PortfolioId);
         }
 
-        var portfolio = strategy.Portfolios.First(portfolio => portfolio.PortfolioId == @event.PortfolioId);
+        var portfolio = strategy.Portfolios.First(portfolio => portfolio.Id == @event.PortfolioId);
         
-        if (portfolio.Assets.Contains(@event.FinancialAssetId))
+        if (portfolio.Assets.Contains(@event.AssetId))
         {
             return;
         }
         
-        portfolio.AddAsset(@event.FinancialAssetId);
+        portfolio.AddAsset(@event.AssetId);
         await _investmentStrategyRepository.AddAsync(strategy);
     }
 }

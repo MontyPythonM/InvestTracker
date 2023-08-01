@@ -2,4 +2,4 @@
 
 namespace InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Events;
 
-public record InvestmentStrategyCreated() : IDomainEvent;
+public record InvestmentStrategyCreated(Guid InvestmentStrategyId) : IDomainEvent;

@@ -10,4 +10,9 @@
       <ProjectReference Include="..\InvestTracker.InvestmentStrategies.Domain\InvestTracker.InvestmentStrategies.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Assets\" />
+      <Folder Include="InvestmentStrategies\" />
+    </ItemGroup>
+
 </Project>

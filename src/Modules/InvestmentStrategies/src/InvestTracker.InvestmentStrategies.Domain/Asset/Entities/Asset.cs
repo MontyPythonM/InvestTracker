@@ -4,7 +4,6 @@ using InvestTracker.InvestmentStrategies.Domain.Asset.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.Asset.Policies.AssetLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.Asset.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.Asset.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
 using InvestTracker.Shared.Abstractions.DDD.Types;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
@@ -42,11 +41,9 @@ public abstract class Asset : AggregateRoot<AssetId>
         PortfolioId = portfolioId;
         Note = note;
         
-        // zaimplementować handler dodający asset do portfolio
         AddEvent(new AssetInPortfolioAdded(id, portfolioId, assetDataId));
     }
 
-    // todo może jako virtual do zaimplementowania Add i Deduct? raz volume, raz amount
     internal IncomingTransaction AddFunds(TransactionId transactionId, Amount amount, DateTime transactionDate, 
         Spread? spread = null, Note? note = null)
     {

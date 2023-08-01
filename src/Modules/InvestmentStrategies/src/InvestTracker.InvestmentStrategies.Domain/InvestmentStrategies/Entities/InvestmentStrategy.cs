@@ -15,18 +15,19 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     public Note? Note { get; private set; }
     public bool IsShareEnabled { get; private set; }
     public StakeholderId Owner { get; private set; }
-    public IEnumerable<StakeholderId> Collaborators => _collaborators;
+    public IEnumerable<CollaboratorId> Collaborators => _collaborators;
     public IEnumerable<Portfolio> Portfolios => _portfolios;
     
-    private HashSet<StakeholderId> _collaborators = new();
+    private HashSet<CollaboratorId> _collaborators = new();
     private HashSet<Portfolio> _portfolios = new();
 
     private InvestmentStrategy()
     {
     }
 
-    internal InvestmentStrategy(Title title, StakeholderId owner, Note? note = null)
+    internal InvestmentStrategy(InvestmentStrategyId id, Title title, StakeholderId owner, Note? note = null)
     {
+        Id = id;
         Title = title;
         Note = note;
         IsShareEnabled = false;
@@ -47,10 +48,11 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         {
             throw new StrategyLimitExceededException(subscription);
         }
-        
-        var investmentStrategy = new InvestmentStrategy(title, owner, note);
 
-        investmentStrategy.AddEvent(new InvestmentStrategyCreated());
+        var strategyId = new InvestmentStrategyId(Guid.NewGuid());
+        var investmentStrategy = new InvestmentStrategy(strategyId, title, owner, note);
+
+        investmentStrategy.AddEvent(new InvestmentStrategyCreated(strategyId));
         return investmentStrategy;
     }
 
@@ -71,14 +73,14 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         _portfolios.Add(portfolio);
     }
 
-    public void AddCollaborator(StakeholderId collaboratorId)
+    public void AddCollaborator(CollaboratorId collaboratorId)
     {
         if (IsShareEnabled is false)
         {
             throw new InvestmentStrategySharedException(Id);
         }
 
-        if (Owner == collaboratorId)
+        if (Owner.Value == collaboratorId.Value)
         {
             return;
         }
@@ -86,7 +88,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         _collaborators.Add(collaboratorId);
     }
 
-    public void RemoveCollaborator(StakeholderId collaboratorId)
+    public void RemoveCollaborator(CollaboratorId collaboratorId)
     {
         _collaborators.Remove(collaboratorId);
     }

@@ -7,7 +7,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entitie
 
 public class Portfolio
 {
-    public PortfolioId PortfolioId { get; set; }
+    public PortfolioId Id { get; set; }
     public Title Title { get; private set; }
     public Note? Note { get; private set; }
     public Description? Description { get; private set; }
@@ -19,9 +19,9 @@ public class Portfolio
     {
     }
 
-    internal Portfolio(PortfolioId portfolioId, Title title, Note? note, Description? description)
+    internal Portfolio(PortfolioId id, Title title, Note? note, Description? description)
     {
-        PortfolioId = portfolioId;
+        Id = id;
         Title = title;
         Note = note;
         Description = description;
