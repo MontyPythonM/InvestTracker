@@ -16,7 +16,7 @@ internal sealed class AssetInPortfolioAddedHandler : IDomainEventHandler<AssetIn
     
     public async Task HandleAsync(AssetInPortfolioAdded @event)
     {
-        var strategy = await _investmentStrategyRepository.GetAsync(@event.PortfolioId);
+        var strategy = await _investmentStrategyRepository.GetByPortfolioAsync(@event.PortfolioId);
         if (strategy is null)
         {
             throw new InvestmentStrategyNotFoundException(@event.PortfolioId);

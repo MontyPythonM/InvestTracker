@@ -1,7 +1,9 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Events;
+﻿using InvestTracker.InvestmentStrategies.Domain.Collaborations.ValueObjects.Types;
+using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Events;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.PortfolioLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.StrategyLimitPolicy;
+using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 using InvestTracker.Shared.Abstractions.DDD.Types;
@@ -15,10 +17,10 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     public Note? Note { get; private set; }
     public bool IsShareEnabled { get; private set; }
     public StakeholderId Owner { get; private set; }
-    public IEnumerable<CollaboratorId> Collaborators => _collaborators;
+    public IEnumerable<StakeholderId> Collaborators => _collaborators;
     public IEnumerable<Portfolio> Portfolios => _portfolios;
     
-    private HashSet<CollaboratorId> _collaborators = new();
+    private HashSet<StakeholderId> _collaborators = new();
     private HashSet<Portfolio> _portfolios = new();
 
     private InvestmentStrategy()
@@ -56,7 +58,8 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         return investmentStrategy;
     }
 
-    public void AddPortfolio(Portfolio portfolio, Subscription subscription, IEnumerable<IPortfolioLimitPolicy> policies)
+    public Portfolio AddPortfolio(PortfolioId id, Title title, Note? note, Description? description, 
+        Subscription subscription, IEnumerable<IPortfolioLimitPolicy> policies)
     {
         var policy = policies.SingleOrDefault(policy => policy.CanBeApplied(subscription));
 
@@ -69,27 +72,40 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         {
             throw new PortfolioLimitExceedException(subscription);
         }
-        
+
+        var portfolio = new Portfolio(id, title, note, description);
         _portfolios.Add(portfolio);
+
+        return portfolio;
     }
 
-    public void AddCollaborator(CollaboratorId collaboratorId)
+    public void AssignCollaborator(CollaborationId collaborationId)
     {
         if (IsShareEnabled is false)
         {
             throw new InvestmentStrategySharedException(Id);
         }
 
-        if (Owner.Value == collaboratorId.Value)
+        if (Owner.Value != collaborationId.PrincipalId)
+        {
+            throw new OwnerIsNotPrincipalOfCollaborationException(Id);
+        }
+
+        if (Owner.Value == collaborationId.AdvisorId)
         {
             return;
         }
 
-        _collaborators.Add(collaboratorId);
+        _collaborators.Add(collaborationId.AdvisorId);
     }
 
-    public void RemoveCollaborator(CollaboratorId collaboratorId)
+    public void RemoveCollaborator(CollaborationId collaborationId)
     {
-        _collaborators.Remove(collaboratorId);
+        if (Owner.Value != collaborationId.PrincipalId)
+        {
+            throw new OwnerIsNotPrincipalOfCollaborationException(Id);
+        }
+        
+        _collaborators.Remove(collaborationId.AdvisorId);
     }
 }
