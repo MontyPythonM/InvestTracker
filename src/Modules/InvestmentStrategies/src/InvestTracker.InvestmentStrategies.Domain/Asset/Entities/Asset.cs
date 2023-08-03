@@ -44,7 +44,7 @@ public abstract class Asset : AggregateRoot<AssetId>
         AddEvent(new AssetInPortfolioAdded(id, portfolioId, assetDataId));
     }
 
-    internal IncomingTransaction AddFunds(TransactionId transactionId, Amount amount, DateTime transactionDate, 
+    protected IncomingTransaction AddFunds(TransactionId transactionId, Amount amount, DateTime transactionDate, 
         Spread? spread = null, Note? note = null)
     {
         var transaction = new IncomingTransaction(transactionId, amount, transactionDate, spread, note);
@@ -53,7 +53,7 @@ public abstract class Asset : AggregateRoot<AssetId>
         return transaction;
     }
 
-    internal OutgoingTransaction DeductFunds(TransactionId transactionId, Amount amount, DateTime transactionDate, 
+    protected OutgoingTransaction DeductFunds(TransactionId transactionId, Amount amount, DateTime transactionDate, 
         Spread? spread = null, Note? note = null)
     {
         var transaction = new OutgoingTransaction(transactionId, amount, transactionDate, spread, note);

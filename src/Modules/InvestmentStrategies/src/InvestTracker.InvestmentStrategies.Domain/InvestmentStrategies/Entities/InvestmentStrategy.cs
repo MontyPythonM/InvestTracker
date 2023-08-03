@@ -27,7 +27,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     {
     }
 
-    internal InvestmentStrategy(InvestmentStrategyId id, Title title, StakeholderId owner, Note? note = null)
+    private InvestmentStrategy(InvestmentStrategyId id, Title title, StakeholderId owner, Note? note = null)
     {
         Id = id;
         Title = title;

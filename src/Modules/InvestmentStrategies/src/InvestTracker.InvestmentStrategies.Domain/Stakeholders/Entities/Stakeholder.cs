@@ -16,7 +16,7 @@ public class Stakeholder : AggregateRoot<StakeholderId>
     {
     }
 
-    public Stakeholder(StakeholderId id, FullName fullName, Email email, Subscription? subscription = null, Role? role = null)
+    public Stakeholder(StakeholderId id, FullName fullName, Email email, Subscription? subscription, Role? role = null)
     {
         Id = id;
         FullName = fullName;
