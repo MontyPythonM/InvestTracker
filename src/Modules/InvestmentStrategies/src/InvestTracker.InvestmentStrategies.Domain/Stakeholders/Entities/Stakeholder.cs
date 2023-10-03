@@ -1,4 +1,5 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
+﻿using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Exceptions;
+using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 using InvestTracker.Shared.Abstractions.DDD.Types;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 
@@ -16,16 +17,26 @@ public class Stakeholder : AggregateRoot<StakeholderId>
     {
     }
 
-    public Stakeholder(StakeholderId id, FullName fullName, Email email, Subscription? subscription, Role? role = null)
+    public Stakeholder(StakeholderId id, FullName fullName, Email email, Subscription? subscription)
     {
         Id = id;
         FullName = fullName;
         Email = email;
         Subscription = subscription;
-        Role = role;
         IsActive = true;
     }
 
+    public void SetRole(Role? role)
+    {
+        if (!IsActive)
+        {
+            throw new InactiveStakeholderException(Id);
+        }
+
+        Role = role;
+    }
+    
     public void Lock() => IsActive = false;
+    
     public void Unlock() => IsActive = true;
 }

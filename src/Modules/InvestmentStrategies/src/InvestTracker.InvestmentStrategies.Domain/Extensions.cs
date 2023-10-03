@@ -15,20 +15,20 @@ internal static class Extensions
     public static IServiceCollection AddDomain(this IServiceCollection services)
     {
         services
-            .AddSingleton<IAssetLimitPolicy, AdvisorAssetLimitPolicy>()
-            .AddSingleton<IAssetLimitPolicy, StandardInvestorAssetLimitPolicy>()
-            .AddSingleton<IAssetLimitPolicy, ProfessionalInvestorAssetLimitPolicy>();
-
-        services
-            .AddSingleton<IStrategyLimitPolicy, AdvisorStrategyLimitPolicy>()
-            .AddSingleton<IStrategyLimitPolicy, StandardInvestorStrategyLimitPolicy>()
-            .AddSingleton<IStrategyLimitPolicy, ProfessionalInvestorStrategyLimitPolicy>();
-        
-        services
-            .AddSingleton<IPortfolioLimitPolicy, AdvisorPortfolioLimitPolicy>()
-            .AddSingleton<IPortfolioLimitPolicy, StandardInvestorPortfolioLimitPolicy>()
-            .AddSingleton<IPortfolioLimitPolicy, ProfessionalInvestorPortfolioLimitPolicy>();
+            .AddPolicies();
         
         return services;
     }
+
+    private static IServiceCollection AddPolicies(this IServiceCollection services)
+        => services
+            .AddSingleton<IAssetLimitPolicy, AdvisorAssetLimitPolicy>()
+            .AddSingleton<IAssetLimitPolicy, StandardInvestorAssetLimitPolicy>()
+            .AddSingleton<IAssetLimitPolicy, ProfessionalInvestorAssetLimitPolicy>()
+            .AddSingleton<IStrategyLimitPolicy, AdvisorStrategyLimitPolicy>()
+            .AddSingleton<IStrategyLimitPolicy, StandardInvestorStrategyLimitPolicy>()
+            .AddSingleton<IStrategyLimitPolicy, ProfessionalInvestorStrategyLimitPolicy>()
+            .AddSingleton<IPortfolioLimitPolicy, AdvisorPortfolioLimitPolicy>()
+            .AddSingleton<IPortfolioLimitPolicy, StandardInvestorPortfolioLimitPolicy>()
+            .AddSingleton<IPortfolioLimitPolicy, ProfessionalInvestorPortfolioLimitPolicy>();
 }

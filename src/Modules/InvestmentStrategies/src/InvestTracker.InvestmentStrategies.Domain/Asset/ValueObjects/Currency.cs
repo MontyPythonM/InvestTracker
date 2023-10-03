@@ -6,7 +6,7 @@ public record Currency
 {
     private static readonly HashSet<string> AvailableCurrencies = new()
     {
-        "PLN", "USD", "EUR", "GBP", "JPY", "CHF", "NOK"
+        "PLN", "USD", "EUR", "GBP", "JPY", "CHF", "NOK", "SEK", "CNY", "KRW", "RUB", "BRL", "PHP", "LVL", "LTL", "BGN", "DKK", "CZK", "HUF"
     };
 
     public string Value { get;}
