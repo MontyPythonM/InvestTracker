@@ -1,25 +1,21 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Asset.Exceptions;
+﻿using InvestTracker.InvestmentStrategies.Domain.Asset.Consts;
+using InvestTracker.InvestmentStrategies.Domain.Asset.Exceptions;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Asset.ValueObjects;
 
 public record Currency
 {
-    private static readonly HashSet<string> AvailableCurrencies = new()
-    {
-        "PLN", "USD", "EUR", "GBP", "JPY", "CHF", "NOK", "SEK", "CNY", "KRW", "RUB", "BRL", "PHP", "LVL", "LTL", "BGN", "DKK", "CZK", "HUF"
-    };
-
     public string Value { get;}
 
     public Currency(string value)
     {
-        if (HasValidFormat(value))
+        if (!HasValidFormat(value))
         {
             throw new InvalidCurrencyFormatException(value);
         }
-
+        
         value = value.ToUpper();
-        if (!AvailableCurrencies.Contains(value))
+        if (!Constants.AvailableCurrencies.Contains(value))
         {
             throw new UnsupportedCurrencyException(value);
         }
@@ -31,5 +27,5 @@ public record Currency
     public static implicit operator string(Currency value) => value.Value;
     
     
-    private static bool HasValidFormat(string value) => !string.IsNullOrWhiteSpace(value) || value.Length == 3;
+    private static bool HasValidFormat(string value) => !string.IsNullOrWhiteSpace(value) && value.Length == 3;
 }

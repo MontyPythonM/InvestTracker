@@ -1,4 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
+using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors;
+using InvestTracker.InvestmentStrategies.Infrastructure.FileManagers;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Repositories;
 using InvestTracker.Shared.Infrastructure.Postgres;
@@ -14,7 +16,9 @@ internal static class Extensions
     {
         return services
             .AddPostgres<InvestmentStrategiesDbContext>()
-            .AddRepositories();
+            .AddRepositories()
+            .AddFileManagers()
+            .AddDataCollectors();
     }
     
     public static T GetOptions<T>(this IServiceCollection services, string sectionName)
