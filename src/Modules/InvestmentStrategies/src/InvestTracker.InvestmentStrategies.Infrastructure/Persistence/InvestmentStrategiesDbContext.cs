@@ -1,5 +1,6 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Asset.Entities;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
+using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
@@ -10,7 +11,7 @@ internal class InvestmentStrategiesDbContext : DbContext
     public DbSet<Portfolio> Portfolios { get; set; }
     public DbSet<Asset> Assets { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
-
+    public DbSet<ExchangeRate> ExchangeRates { get; set; }
     public InvestmentStrategiesDbContext(DbContextOptions<InvestmentStrategiesDbContext> options) : base(options)
     {
     }

@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Reflection;
+using System.Text.RegularExpressions;
 using InvestTracker.InvestmentStrategies.Domain.Asset.Consts;
 using InvestTracker.InvestmentStrategies.Infrastructure.FileManagers.Csv;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
@@ -27,11 +28,11 @@ internal sealed class NbpExchangeRateSeeder : IExchangeRateSeeder
 
     public async Task SeedAsync(CancellationToken token = default)
     {
-        var currentDirectory = @"C:\Users\Mateusz\Desktop\Projects\InvestTracker\src\Modules\InvestmentStrategies\src\InvestTracker.InvestmentStrategies.Infrastructure\DataCollectors\ExchangeRates\NbpTableA";
+        var fullPath = GetNbpCsvPath();
+        var filesPath = Directory
+            .GetFiles(fullPath)
+            .Where(path => path.EndsWith(".csv"));
         
-        var fullPath = Path.Combine(currentDirectory, "NbpData");
-        var filesPath = Directory.GetFiles(fullPath);
-
         var exchangeRates = new List<ExchangeRate>();
         foreach (var path in filesPath)
         {
@@ -108,4 +109,21 @@ internal sealed class NbpExchangeRateSeeder : IExchangeRateSeeder
 
     private static bool IsDateFormat(string input)
         => Regex.Match(input, DateRegex).Success;
+
+    private string GetNbpCsvPath()
+    {
+        const string partlyPath = @"Modules\InvestmentStrategies\src\InvestTracker.InvestmentStrategies.Infrastructure\DataCollectors\ExchangeRates\NbpTableA\NbpData";
+        var basePath = GoUpDirectory(Environment.CurrentDirectory, 2);
+        return Path.Combine(basePath, partlyPath);
+    }
+
+    private string GoUpDirectory(string path, int goUpNumber)
+    {
+        for (var i = 0; i < goUpNumber; i++)
+        {
+            path = Directory.GetParent(path)?.FullName!;
+        }
+
+        return path;
+    }
 }
