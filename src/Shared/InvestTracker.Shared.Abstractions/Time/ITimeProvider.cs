@@ -1,6 +1,6 @@
 ﻿namespace InvestTracker.Shared.Abstractions.Time;
 
-public interface ITime
+public interface ITimeProvider
 {
     public DateTime Current();
 }

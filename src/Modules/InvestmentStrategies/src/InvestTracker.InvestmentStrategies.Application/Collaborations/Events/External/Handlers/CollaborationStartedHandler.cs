@@ -12,14 +12,14 @@ internal sealed class CollaborationStartedHandler : IEventHandler<CollaborationS
 {
     private readonly IStakeholderRepository _stakeholderRepository;
     private readonly ICollaborationRepository _collaborationRepository;
-    private readonly ITime _time;
+    private readonly ITimeProvider _timeProvider;
 
     public CollaborationStartedHandler(IStakeholderRepository stakeholderRepository, 
-        ICollaborationRepository collaborationRepository, ITime time)
+        ICollaborationRepository collaborationRepository, ITimeProvider timeProvider)
     {
         _stakeholderRepository = stakeholderRepository;
         _collaborationRepository = collaborationRepository;
-        _time = time;
+        _timeProvider = timeProvider;
     }
     
     public async Task HandleAsync(CollaborationStarted @event)
@@ -44,7 +44,7 @@ internal sealed class CollaborationStartedHandler : IEventHandler<CollaborationS
             throw new StakeholderNotFoundException(@event.AdvisorId);
         }
         
-        var collaboration = Collaboration.Create(advisor, investor.Id, _time.Current());
+        var collaboration = Collaboration.Create(advisor, investor.Id, _timeProvider.Current());
         await _collaborationRepository.AddAsync(collaboration);
     }
 }

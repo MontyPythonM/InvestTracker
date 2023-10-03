@@ -9,15 +9,15 @@ namespace InvestTracker.Offers.Core.Features.Offers.Commands.CreateOffer;
 
 internal sealed class CreateOfferHandler : ICommandHandler<CreateOffer>
 {
-    private readonly ITime _time;
+    private readonly ITimeProvider _timeProvider;
     private readonly IOfferRepository _offerRepository;
     private readonly IAdvisorRepository _advisorRepository;
     private readonly IRequestContext _requestContext;
 
-    public CreateOfferHandler(ITime time, IOfferRepository offerRepository, 
+    public CreateOfferHandler(ITimeProvider timeProvider, IOfferRepository offerRepository, 
         IAdvisorRepository advisorRepository, IRequestContext requestContext)
     {
-        _time = time;
+        _timeProvider = timeProvider;
         _offerRepository = offerRepository;
         _advisorRepository = advisorRepository;
         _requestContext = requestContext;
@@ -33,7 +33,7 @@ internal sealed class CreateOfferHandler : ICommandHandler<CreateOffer>
         }
         
         var offer = new Offer(Guid.NewGuid(), command.Title, command.Description, 
-            command.Price, _time.Current(), advisor, command.Tags);
+            command.Price, _timeProvider.Current(), advisor, command.Tags);
 
         await _offerRepository.CreateAsync(offer, token);
     }

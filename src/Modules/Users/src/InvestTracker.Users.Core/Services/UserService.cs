@@ -17,16 +17,16 @@ internal sealed class UserService : IUserService
     private readonly UsersDbContext _context;
     private readonly IUserRepository _userRepository;
     private readonly IMessageBroker _messageBroker;
-    private readonly ITime _time;
+    private readonly ITimeProvider _timeProvider;
     private readonly IRequestContext _requestContext;
 
     public UserService(UsersDbContext context, IUserRepository userRepository, 
-        IMessageBroker messageBroker, ITime time, IRequestContext requestContext)
+        IMessageBroker messageBroker, ITimeProvider timeProvider, IRequestContext requestContext)
     {
         _context = context;
         _userRepository = userRepository;
         _messageBroker = messageBroker;
-        _time = time;
+        _timeProvider = timeProvider;
         _requestContext = requestContext;
     }
 
@@ -109,7 +109,7 @@ internal sealed class UserService : IUserService
         user.Role = new Role
         {
             Value = dto.Role,
-            GrantedAt = _time.Current(),
+            GrantedAt = _timeProvider.Current(),
             GrantedBy = _requestContext.Identity.UserId
         };
         
@@ -128,7 +128,7 @@ internal sealed class UserService : IUserService
         user.Role = new Role
         {
             Value = null,
-            GrantedAt = _time.Current(),
+            GrantedAt = _timeProvider.Current(),
             GrantedBy = _requestContext.Identity.UserId
         };
         

@@ -11,14 +11,14 @@ internal sealed class CancelCollaborationHandler : ICommandHandler<CancelCollabo
 {
     private readonly IMessageBroker _messageBroker;
     private readonly ICollaborationRepository _collaborationRepository;
-    private readonly ITime _time;
+    private readonly ITimeProvider _timeProvider;
 
     public CancelCollaborationHandler(IMessageBroker messageBroker,
-        ICollaborationRepository collaborationRepository, ITime time)
+        ICollaborationRepository collaborationRepository, ITimeProvider timeProvider)
     {
         _messageBroker = messageBroker;
         _collaborationRepository = collaborationRepository;
-        _time = time;
+        _timeProvider = timeProvider;
     }
     
     public async Task HandleAsync(CancelCollaboration command, CancellationToken token)
@@ -31,7 +31,7 @@ internal sealed class CancelCollaborationHandler : ICommandHandler<CancelCollabo
         }
 
         collaboration.IsCancelled = true;
-        collaboration.CancelledAt = _time.Current();
+        collaboration.CancelledAt = _timeProvider.Current();
         
         await _collaborationRepository.UpdateAsync(collaboration, token);
         await _messageBroker.PublishAsync(new CollaborationCancelled(collaboration.AdvisorId, collaboration.InvestorId));

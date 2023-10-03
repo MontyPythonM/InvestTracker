@@ -7,13 +7,13 @@ namespace InvestTracker.Offers.Core.Features.Offers.Commands.UpdateOffer;
 
 internal sealed class UpdateOfferHandler : ICommandHandler<UpdateOffer>
 {
-    private readonly ITime _time;
+    private readonly ITimeProvider _timeProvider;
     private readonly IOfferRepository _offerRepository;
     private readonly IAdvisorRepository _advisorRepository;
 
-    public UpdateOfferHandler(ITime time, IOfferRepository offerRepository, IAdvisorRepository advisorRepository)
+    public UpdateOfferHandler(ITimeProvider timeProvider, IOfferRepository offerRepository, IAdvisorRepository advisorRepository)
     {
-        _time = time;
+        _timeProvider = timeProvider;
         _offerRepository = offerRepository;
         _advisorRepository = advisorRepository;
     }
@@ -26,7 +26,7 @@ internal sealed class UpdateOfferHandler : ICommandHandler<UpdateOffer>
             throw new OfferNotFoundException(command.Id);
         }
 
-        offer.Update(command.Title, command.Description, command.Price, _time.Current(), command.Tags);
+        offer.Update(command.Title, command.Description, command.Price, _timeProvider.Current(), command.Tags);
         await _offerRepository.UpdateAsync(offer, token);
     }
 }

@@ -34,7 +34,7 @@ internal static class Extensions
             .AddCommands(assemblies)
             .AddAsyncMessages()
             .AddIntegrationEvents(assemblies)
-            .AddSingleton<ITime, UtcTime>()
+            .AddSingleton<ITimeProvider, TimeProvider>()
             .AddAppAuthentication()
             .AddPermissionAuthorization();
             

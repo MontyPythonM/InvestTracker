@@ -179,7 +179,7 @@ public class AccountServiceTests
     private readonly IUserRepository _userRepository;
     private readonly IAuthenticator _authenticator;
     private readonly IPasswordManager _passwordManager;
-    private readonly ITime _time;
+    private readonly ITimeProvider _timeProvider;
     private readonly IMessageBroker _messageBroker;
     private readonly IAccountService _accountService;
     
@@ -188,14 +188,14 @@ public class AccountServiceTests
         _userRepository = Substitute.For<IUserRepository>();
         _authenticator = Substitute.For<IAuthenticator>();
         _passwordManager = Substitute.For<IPasswordManager>();
-        _time = Substitute.For<ITime>();
+        _timeProvider = Substitute.For<ITimeProvider>();
         _messageBroker = Substitute.For<IMessageBroker>();
         
         _accountService = new AccountService(
             _userRepository,
             _authenticator,
             _passwordManager,
-            _time,
+            _timeProvider,
             _messageBroker);
     }
     
