@@ -21,9 +21,9 @@ using Microsoft.Extensions.DependencyInjection;
 [assembly: InternalsVisibleTo("InvestTracker.Bootstrapper")]
 namespace InvestTracker.Shared.Infrastructure;
 
-internal static class Extensions
+public static class Extensions
 {
-    public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IList<Assembly> assemblies)
+    internal static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IList<Assembly> assemblies)
     {
         services
             .AddContext()
@@ -48,7 +48,7 @@ internal static class Extensions
         return services;
     }
 
-    public static IApplicationBuilder UseSharedInfrastructure(this IApplicationBuilder app)
+    internal static IApplicationBuilder UseSharedInfrastructure(this IApplicationBuilder app)
     {
         app.UseExceptionHandling();
         app.UseOpenApiDocumentation();

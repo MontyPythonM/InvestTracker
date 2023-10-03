@@ -9,7 +9,7 @@ namespace InvestTracker.Shared.Infrastructure.Modules;
 
 public static class Extensions
 {
-    internal static IHostBuilder ConfigureModules(this IHostBuilder builder)
+    internal static IHostBuilder ConfigureModuleAppSettings(this IHostBuilder builder)
         => builder.ConfigureAppConfiguration((context, configuration) =>
         {
             foreach (var settings in GetSettings("*"))

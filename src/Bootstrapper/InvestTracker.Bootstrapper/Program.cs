@@ -11,7 +11,8 @@ using InvestTracker.Users.Api;
 var builder = WebApplication.CreateBuilder(args);
 var assemblies = ModuleLoader.LoadAssemblies();
 
-builder.Host.ConfigureModules();
+builder.Host.ConfigureModuleAppSettings();
+
 builder.Services
     .AddSharedInfrastructure(assemblies)
     .AddOffersModule()

@@ -13,11 +13,11 @@
     <ItemGroup>
       <None Remove="module.offers.json" />
       <Content Include="module.offers.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <None Remove="module.offers.development.json" />
       <Content Include="module.offers.development.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
 

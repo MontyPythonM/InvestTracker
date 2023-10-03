@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using InvestTracker.InvestmentStrategies.Domain.Asset.Consts;
 using InvestTracker.InvestmentStrategies.Infrastructure.FileManagers.Csv;
+using InvestTracker.InvestmentStrategies.Infrastructure.Options;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using InvestTracker.Shared.Abstractions.Time;
 
@@ -18,12 +18,15 @@ internal sealed class NbpExchangeRateSeeder : IExchangeRateSeeder
     private readonly ICsvReader _csvReader;
     private readonly ITimeProvider _timeProvider;
     private readonly InvestmentStrategiesDbContext _investmentStrategiesDbContext;
+    private readonly ExchangeRateOptions _exchangeRateOptions;
 
-    public NbpExchangeRateSeeder(ICsvReader csvReader, ITimeProvider timeProvider, InvestmentStrategiesDbContext investmentStrategiesDbContext)
+    public NbpExchangeRateSeeder(ICsvReader csvReader, ITimeProvider timeProvider, 
+        InvestmentStrategiesDbContext investmentStrategiesDbContext, ExchangeRateOptions exchangeRateOptions)
     {
         _csvReader = csvReader;
         _timeProvider = timeProvider;
         _investmentStrategiesDbContext = investmentStrategiesDbContext;
+        _exchangeRateOptions = exchangeRateOptions;
     }
 
     public async Task SeedAsync(CancellationToken token = default)
@@ -112,9 +115,8 @@ internal sealed class NbpExchangeRateSeeder : IExchangeRateSeeder
 
     private string GetNbpCsvPath()
     {
-        const string partlyPath = @"Modules\InvestmentStrategies\src\InvestTracker.InvestmentStrategies.Infrastructure\DataCollectors\ExchangeRates\NbpTableA\NbpData";
         var basePath = GoUpDirectory(Environment.CurrentDirectory, 2);
-        return Path.Combine(basePath, partlyPath);
+        return Path.Combine(basePath, _exchangeRateOptions.PathToNbpCsv);
     }
 
     private string GoUpDirectory(string path, int goUpNumber)
