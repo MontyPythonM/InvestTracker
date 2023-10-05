@@ -42,8 +42,8 @@ internal sealed class UserService : IUserService
                 Email = user.Email,
                 Phone = user.Phone ?? string.Empty,
                 CreatedAt = user.CreatedAt,
-                Subscription = GetUserSubscription(user.Subscription),
-                Role = GetUserRole(user.Role)
+                Subscription = user.Subscription.Value,
+                Role = user.Role.Value
             })
             .SingleOrDefaultAsync(user => user.Id == id, token);
 
@@ -59,8 +59,8 @@ internal sealed class UserService : IUserService
                 Email = user.Email,
                 Phone = user.Phone ?? string.Empty,
                 CreatedAt = user.CreatedAt,
-                Subscription = GetUserSubscription(user.Subscription),
-                Role = GetUserRole(user.Role)
+                Subscription = user.Subscription.Value,
+                Role = user.Role.Value
             })
             .ToListAsync(token);
 
@@ -114,7 +114,7 @@ internal sealed class UserService : IUserService
         };
         
         await _userRepository.UpdateAsync(user, token);
-        await _messageBroker.PublishAsync(new UserRoleGranted(user.Id, user.Role?.Value ?? string.Empty));
+        await _messageBroker.PublishAsync(new UserRoleGranted(user.Id, user.Role.Value));
     }
 
     public async Task RemoveRoleAsync(Guid id, CancellationToken token)
@@ -127,7 +127,7 @@ internal sealed class UserService : IUserService
         
         user.Role = new Role
         {
-            Value = null,
+            Value = SystemRole.None,
             GrantedAt = _timeProvider.Current(),
             GrantedBy = _requestContext.Identity.UserId
         };
@@ -135,10 +135,4 @@ internal sealed class UserService : IUserService
         await _userRepository.UpdateAsync(user, token);
         await _messageBroker.PublishAsync(new UserRoleRemoved(user.Id));
     }
-
-    private static string GetUserSubscription(Subscription? subscription) 
-        => subscription is null ? string.Empty : subscription.Value!;
-    
-    private static string GetUserRole(Role? role) 
-        => role is null ? string.Empty : role.Value!;
 }

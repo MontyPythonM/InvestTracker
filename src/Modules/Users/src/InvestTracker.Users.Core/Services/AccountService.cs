@@ -45,7 +45,7 @@ internal sealed class AccountService : IAccountService
             Password = _passwordManager.Secure(dto.Password),
             CreatedAt = _timeProvider.Current(),
             IsActive = true,
-            Role = null,
+            Role = new Role(),
             Subscription = new Subscription
             {
                 Value = SystemSubscription.StandardInvestor,
@@ -80,7 +80,7 @@ internal sealed class AccountService : IAccountService
             throw new InvalidCredentialsException();
         }
 
-        var accessToken = _authenticator.CreateToken(user.Id.ToString(), user.Role?.Value, user.Subscription?.Value);
+        var accessToken = _authenticator.CreateToken(user.Id.ToString(), user.Role.Value, user.Subscription?.Value);
         accessToken.Email = user.Email;
         
         return accessToken;

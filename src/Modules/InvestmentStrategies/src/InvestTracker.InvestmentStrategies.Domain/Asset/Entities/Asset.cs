@@ -12,7 +12,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.Asset.Entities;
 
 public abstract class Asset : AggregateRoot<AssetId>
 {
-    public Note? Note { get; private set; }
+    public Note Note { get; private set; }
     public Currency Currency { get; private set; }
     public AssetDataId AssetDataId { get; private set; }
     public PortfolioId PortfolioId { get; private set; }
@@ -20,8 +20,12 @@ public abstract class Asset : AggregateRoot<AssetId>
     
     private HashSet<Transaction> _transactions = new();
     
+    protected Asset()
+    {
+    }
+    
     protected Asset(ISet<AssetId> existingPortfolioAssets, Subscription subscription, IEnumerable<IAssetLimitPolicy> policies, 
-        AssetId id, Currency currency, AssetDataId assetDataId, PortfolioId portfolioId, Note? note = null)
+        AssetId id, Currency currency, AssetDataId assetDataId, PortfolioId portfolioId, Note note)
     {
         var policy = policies.SingleOrDefault(policy => policy.CanBeApplied(subscription));
 
@@ -45,18 +49,18 @@ public abstract class Asset : AggregateRoot<AssetId>
     }
 
     protected IncomingTransaction AddFunds(TransactionId transactionId, Amount amount, DateTime transactionDate, 
-        Spread? spread = null, Note? note = null)
+        Note? note = null)
     {
-        var transaction = new IncomingTransaction(transactionId, amount, transactionDate, spread, note);
+        var transaction = new IncomingTransaction(transactionId, amount, transactionDate, note);
         _transactions.Add(transaction);
 
         return transaction;
     }
 
     protected OutgoingTransaction DeductFunds(TransactionId transactionId, Amount amount, DateTime transactionDate, 
-        Spread? spread = null, Note? note = null)
+        Note? note = null)
     {
-        var transaction = new OutgoingTransaction(transactionId, amount, transactionDate, spread, note);
+        var transaction = new OutgoingTransaction(transactionId, amount, transactionDate, note);
         _transactions.Add(transaction);
 
         return transaction;

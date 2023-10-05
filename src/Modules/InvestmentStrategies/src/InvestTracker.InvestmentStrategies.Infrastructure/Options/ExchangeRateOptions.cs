@@ -2,5 +2,5 @@
 
 public class ExchangeRateOptions
 {
-    public string PathToNbpCsv { get; set; } = string.Empty;
+    public string NbpCsvPath { get; set; } = string.Empty;
 }

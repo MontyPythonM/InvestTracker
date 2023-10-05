@@ -22,12 +22,15 @@ internal static class Extensions
 
     private static IServiceCollection AddPolicies(this IServiceCollection services)
         => services
+            .AddSingleton<IAssetLimitPolicy, NoneAssetLimitPolicy>()
             .AddSingleton<IAssetLimitPolicy, AdvisorAssetLimitPolicy>()
             .AddSingleton<IAssetLimitPolicy, StandardInvestorAssetLimitPolicy>()
             .AddSingleton<IAssetLimitPolicy, ProfessionalInvestorAssetLimitPolicy>()
+            .AddSingleton<IStrategyLimitPolicy, NoneStrategyLimitPolicy>()
             .AddSingleton<IStrategyLimitPolicy, AdvisorStrategyLimitPolicy>()
             .AddSingleton<IStrategyLimitPolicy, StandardInvestorStrategyLimitPolicy>()
             .AddSingleton<IStrategyLimitPolicy, ProfessionalInvestorStrategyLimitPolicy>()
+            .AddSingleton<IPortfolioLimitPolicy, NonePortfolioLimitPolicy>()
             .AddSingleton<IPortfolioLimitPolicy, AdvisorPortfolioLimitPolicy>()
             .AddSingleton<IPortfolioLimitPolicy, StandardInvestorPortfolioLimitPolicy>()
             .AddSingleton<IPortfolioLimitPolicy, ProfessionalInvestorPortfolioLimitPolicy>();

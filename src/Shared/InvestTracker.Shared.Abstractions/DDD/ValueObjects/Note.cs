@@ -8,7 +8,7 @@ public record Note
 
     public Note(string value)
     {
-        if (string.IsNullOrWhiteSpace(value) || value.Length > 500)
+        if (value.Length > 500)
         {
             throw new InvalidNoteException();
         }

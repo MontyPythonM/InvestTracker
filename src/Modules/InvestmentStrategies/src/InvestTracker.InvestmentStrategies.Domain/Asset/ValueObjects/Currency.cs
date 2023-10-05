@@ -15,7 +15,7 @@ public record Currency
         }
         
         value = value.ToUpper();
-        if (!Constants.AvailableCurrencies.Contains(value))
+        if (!ModuleConstants.AvailableCurrencies.Contains(value))
         {
             throw new UnsupportedCurrencyException(value);
         }
@@ -25,7 +25,6 @@ public record Currency
 
     public static implicit operator Currency(string value) => new(value);
     public static implicit operator string(Currency value) => value.Value;
-    
     
     private static bool HasValidFormat(string value) => !string.IsNullOrWhiteSpace(value) && value.Length == 3;
 }

@@ -90,7 +90,7 @@ internal sealed class NbpExchangeRateSeeder : IExchangeRateSeeder
     }
     
     private static bool IsCurrencySupported(string header)
-        => Constants.AvailableCurrencies.Contains(GetCurrencyCode(header));
+        => ModuleConstants.AvailableCurrencies.Contains(GetCurrencyCode(header));
     
     private static string GetCurrencyCode(string input)
     {
@@ -116,7 +116,7 @@ internal sealed class NbpExchangeRateSeeder : IExchangeRateSeeder
     private string GetNbpCsvPath()
     {
         var basePath = GoUpDirectory(Environment.CurrentDirectory, 2);
-        return Path.Combine(basePath, _exchangeRateOptions.PathToNbpCsv);
+        return Path.Combine(basePath, _exchangeRateOptions.NbpCsvPath);
     }
 
     private string GoUpDirectory(string path, int goUpNumber)

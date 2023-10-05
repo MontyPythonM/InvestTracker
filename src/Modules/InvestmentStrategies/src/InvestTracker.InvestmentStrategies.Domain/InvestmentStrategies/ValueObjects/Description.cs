@@ -8,7 +8,7 @@ public record Description
     
     public Description(string value)
     {
-        if (string.IsNullOrWhiteSpace(value) || value.Length > 2000)
+        if (value.Length > 2000)
         {
             throw new InvalidDescriptionException();
         }

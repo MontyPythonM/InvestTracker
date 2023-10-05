@@ -123,7 +123,6 @@ public class AccountServiceTests
     public async Task SignUpAsync_ShouldAssignStandardInvestorSubscription_WhenUserRegisterAccount()
     {
         // arrange
-        var user = GetUser();
         var dto = GetSignUpDto();
 
         _userRepository.GetAsync(dto.Email, CancellationToken.None).ReturnsNull();
@@ -138,7 +137,7 @@ public class AccountServiceTests
     }
     
     [Fact]
-    public async Task SignUpAsync_ShouldNotAssignAnyRole_WhenUserRegisterAccount()
+    public async Task SignUpAsync_ShouldAssignNoneRole_WhenUserRegisterAccount()
     {
         // arrange
         var user = GetUser();
@@ -151,7 +150,7 @@ public class AccountServiceTests
 
         // assert
         await _userRepository.Received(1).CreateAsync(Arg.Is<User>(u => 
-            u.Role == null), CancellationToken.None);
+            u.Role.Value == SystemRole.None), CancellationToken.None);
         
         user.Role.ShouldBeNull();
     }

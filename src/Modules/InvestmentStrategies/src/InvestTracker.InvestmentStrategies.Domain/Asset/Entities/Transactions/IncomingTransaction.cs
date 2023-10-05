@@ -10,8 +10,8 @@ public class IncomingTransaction : Transaction
     {
     }
 
-    public IncomingTransaction(TransactionId id, Amount amount, DateTime transactionDate, Spread? spread = null, Note? note = null) 
-        : base(id, amount, transactionDate, spread, note)
+    public IncomingTransaction(TransactionId id, Amount amount, DateTime transactionDate, Note note) 
+        : base(id, amount, transactionDate, note)
     {
     }
 }

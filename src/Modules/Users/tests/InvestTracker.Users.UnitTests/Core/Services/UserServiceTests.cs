@@ -148,7 +148,7 @@ public class UserServiceTests
 
         // assert
         user.Role.ShouldNotBeNull();
-        user.Role.Value.ShouldBeNull();
+        user.Role.Value.ShouldBe(SystemRole.None);
     }
     #endregion
 
