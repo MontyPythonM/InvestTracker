@@ -1,17 +1,17 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Collaborations.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Collaborations.Repositories;
-using InvestTracker.InvestmentStrategies.Domain.Collaborations.ValueObjects.Types;
+using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Repositories;
 
 internal sealed class CollaborationRepository : ICollaborationRepository
 {
-    public Task<Collaboration> GetAsync(CollaborationId id, CancellationToken token = default)
+    public Task<Collaboration> GetAsync(StakeholderId advisorId, StakeholderId principalId, CancellationToken token = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<bool> ExistsAsync(CollaborationId id, CancellationToken token = default)
+    public Task<bool> ExistsAsync(StakeholderId advisorId, StakeholderId principalId, CancellationToken token = default)
     {
         throw new NotImplementedException();
     }

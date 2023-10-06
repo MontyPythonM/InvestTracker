@@ -1,4 +1,5 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Asset.Entities.Transactions;
+﻿using System.ComponentModel.DataAnnotations;
+using InvestTracker.InvestmentStrategies.Domain.Asset.Entities.Transactions;
 using InvestTracker.InvestmentStrategies.Domain.Asset.Events;
 using InvestTracker.InvestmentStrategies.Domain.Asset.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.Asset.Policies.AssetLimitPolicy;

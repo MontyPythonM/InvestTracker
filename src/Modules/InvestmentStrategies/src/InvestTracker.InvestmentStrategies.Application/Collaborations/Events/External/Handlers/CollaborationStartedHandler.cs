@@ -1,7 +1,6 @@
 ﻿using InvestTracker.InvestmentStrategies.Application.Stakeholders.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.Collaborations.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Collaborations.Repositories;
-using InvestTracker.InvestmentStrategies.Domain.Collaborations.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Repositories;
 using InvestTracker.Shared.Abstractions.IntegrationEvents;
 using InvestTracker.Shared.Abstractions.Time;
@@ -24,9 +23,7 @@ internal sealed class CollaborationStartedHandler : IEventHandler<CollaborationS
     
     public async Task HandleAsync(CollaborationStarted @event)
     {
-        var collaborationId = new CollaborationId(@event.AdvisorId, @event.InvestorId);
-        
-        var collaborationExists = await _collaborationRepository.ExistsAsync(collaborationId);
+        var collaborationExists = await _collaborationRepository.ExistsAsync(@event.AdvisorId, @event.InvestorId);
         if (collaborationExists)
         {
             return;
@@ -44,7 +41,7 @@ internal sealed class CollaborationStartedHandler : IEventHandler<CollaborationS
             throw new StakeholderNotFoundException(@event.AdvisorId);
         }
         
-        var collaboration = Collaboration.Create(advisor, investor.Id, _timeProvider.Current());
+        var collaboration = Collaboration.Create(advisor, investor, _timeProvider.Current());
         await _collaborationRepository.AddAsync(collaboration);
     }
 }

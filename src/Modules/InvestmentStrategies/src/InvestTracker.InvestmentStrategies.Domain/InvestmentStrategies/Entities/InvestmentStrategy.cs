@@ -1,5 +1,4 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Collaborations.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Events;
+﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Events;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.PortfolioLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.StrategyLimitPolicy;
@@ -79,33 +78,33 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         return portfolio;
     }
 
-    public void AssignCollaborator(CollaborationId collaborationId)
+    public void AssignCollaborator(StakeholderId advisorId, StakeholderId principalId)
     {
         if (IsShareEnabled is false)
         {
             throw new InvestmentStrategySharedException(Id);
         }
 
-        if (Owner.Value != collaborationId.PrincipalId)
+        if (Owner.Value != principalId.Value)
         {
             throw new OwnerIsNotPrincipalOfCollaborationException(Id);
         }
 
-        if (Owner.Value == collaborationId.AdvisorId)
+        if (Owner.Value == advisorId.Value)
         {
             return;
         }
 
-        _collaborators.Add(collaborationId.AdvisorId);
+        _collaborators.Add(advisorId);
     }
 
-    public void RemoveCollaborator(CollaborationId collaborationId)
+    public void RemoveCollaborator(StakeholderId advisorId, StakeholderId principalId)
     {
-        if (Owner.Value != collaborationId.PrincipalId)
+        if (Owner.Value != principalId.Value)
         {
             throw new OwnerIsNotPrincipalOfCollaborationException(Id);
         }
         
-        _collaborators.Remove(collaborationId.AdvisorId);
+        _collaborators.Remove(advisorId);
     }
 }

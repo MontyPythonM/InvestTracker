@@ -1,8 +1,7 @@
 ﻿namespace InvestTracker.Shared.Abstractions.DDD.Types;
 
-public abstract class AggregateRoot<T>
+public abstract class AggregateRoot
 {
-    public T Id { get; protected set; }
     public int Version { get; private set; }
     public IEnumerable<IDomainEvent> Events => _events;
     
@@ -31,4 +30,9 @@ public abstract class AggregateRoot<T>
         Version++;
         _versionIncremented = true;
     }
+}
+
+public abstract class AggregateRoot<T> : AggregateRoot
+{
+    public T Id { get; protected set; }
 }
