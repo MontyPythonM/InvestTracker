@@ -1,13 +1,16 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Asset.Entities;
+using InvestTracker.InvestmentStrategies.Domain.Asset.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Collaborations.Entities;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Entities;
+using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates;
+using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Converters;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 
-// dotnet ef database update -s ..\..\..\..\Bootstrapper\InvestTracker.Bootstrapper
+// dotnet ef database update -s ..\..\..\..\Bootstrapper\InvestTracker.Bootstrapper --context InvestmentStrategiesDbContext
 // dotnet ef migrations add <name> -s ..\..\..\..\Bootstrapper\InvestTracker.Bootstrapper --context InvestmentStrategiesDbContext
 internal class InvestmentStrategiesDbContext : DbContext
 {
@@ -21,6 +24,17 @@ internal class InvestmentStrategiesDbContext : DbContext
     
     public InvestmentStrategiesDbContext(DbContextOptions<InvestmentStrategiesDbContext> options) : base(options)
     {
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder
+            .Properties<AssetId>()
+            .HaveConversion<AssetIdConverter>();
+        
+        configurationBuilder
+            .Properties<StakeholderId>()
+            .HaveConversion<StakeholderIdConverter>();
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)

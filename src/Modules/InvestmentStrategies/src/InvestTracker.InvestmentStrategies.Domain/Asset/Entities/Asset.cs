@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using InvestTracker.InvestmentStrategies.Domain.Asset.Entities.Transactions;
+﻿using InvestTracker.InvestmentStrategies.Domain.Asset.Entities.Transactions;
 using InvestTracker.InvestmentStrategies.Domain.Asset.Events;
 using InvestTracker.InvestmentStrategies.Domain.Asset.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.Asset.Policies.AssetLimitPolicy;
@@ -50,7 +49,7 @@ public abstract class Asset : AggregateRoot<AssetId>
     }
 
     protected IncomingTransaction AddFunds(TransactionId transactionId, Amount amount, DateTime transactionDate, 
-        Note? note = null)
+        Note note)
     {
         var transaction = new IncomingTransaction(transactionId, amount, transactionDate, note);
         _transactions.Add(transaction);
@@ -59,7 +58,7 @@ public abstract class Asset : AggregateRoot<AssetId>
     }
 
     protected OutgoingTransaction DeductFunds(TransactionId transactionId, Amount amount, DateTime transactionDate, 
-        Note? note = null)
+        Note note)
     {
         var transaction = new OutgoingTransaction(transactionId, amount, transactionDate, note);
         _transactions.Add(transaction);
