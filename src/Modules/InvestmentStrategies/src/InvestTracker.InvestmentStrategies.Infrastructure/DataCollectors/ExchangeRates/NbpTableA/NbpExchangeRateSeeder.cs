@@ -1,9 +1,11 @@
 ﻿using System.Text.RegularExpressions;
 using InvestTracker.InvestmentStrategies.Domain.Asset.Consts;
+using InvestTracker.InvestmentStrategies.Infrastructure.Exceptions;
 using InvestTracker.InvestmentStrategies.Infrastructure.FileManagers.Csv;
 using InvestTracker.InvestmentStrategies.Infrastructure.Options;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using InvestTracker.Shared.Abstractions.Time;
+using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.NbpTableA;
 
@@ -29,11 +31,16 @@ internal sealed class NbpExchangeRateSeeder : IExchangeRateSeeder
         _exchangeRateOptions = exchangeRateOptions;
     }
 
-    public async Task SeedAsync(bool seedIfTableIsEmpty = true, CancellationToken token = default)
+    public async Task SeedAsync(bool forceSeed = false, CancellationToken token = default)
     {
-        if (seedIfTableIsEmpty || !await _investmentStrategiesDbContext.Database.CanConnectAsync(token))
+        if (!await _investmentStrategiesDbContext.Database.CanConnectAsync(token))
         {
-            return;
+            throw new CannotConnectToDatabaseException();
+        }
+
+        if (!forceSeed && await IsAnyExchangeRateExists(token))
+        {
+            throw new ExchangeRateAlreadySeededException();
         }
 
         var fullPath = GetNbpCsvPath();
@@ -93,7 +100,10 @@ internal sealed class NbpExchangeRateSeeder : IExchangeRateSeeder
         
         return exchangeRates;
     }
-    
+
+    private async Task<bool> IsAnyExchangeRateExists(CancellationToken token) 
+        => await _investmentStrategiesDbContext.ExchangeRates.AnyAsync(token);
+
     private static bool IsCurrencySupported(string header)
         => ModuleConstants.AvailableCurrencies.Contains(GetCurrencyCode(header));
     
