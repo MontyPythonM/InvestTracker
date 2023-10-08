@@ -29,8 +29,13 @@ internal sealed class NbpExchangeRateSeeder : IExchangeRateSeeder
         _exchangeRateOptions = exchangeRateOptions;
     }
 
-    public async Task SeedAsync(CancellationToken token = default)
+    public async Task SeedAsync(bool seedIfTableIsEmpty = true, CancellationToken token = default)
     {
+        if (seedIfTableIsEmpty || !await _investmentStrategiesDbContext.Database.CanConnectAsync(token))
+        {
+            return;
+        }
+
         var fullPath = GetNbpCsvPath();
         var filesPath = Directory
             .GetFiles(fullPath)
@@ -43,7 +48,7 @@ internal sealed class NbpExchangeRateSeeder : IExchangeRateSeeder
             exchangeRates.AddRange(rates);
         }
 
-        await _investmentStrategiesDbContext.AddRangeAsync(exchangeRates, token);
+        await _investmentStrategiesDbContext.ExchangeRates.AddRangeAsync(exchangeRates, token);
         await _investmentStrategiesDbContext.SaveChangesAsync(token);
     }
 

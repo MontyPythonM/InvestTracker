@@ -2,5 +2,5 @@
 
 public interface IExchangeRateSeeder
 {
-    Task SeedAsync(CancellationToken token = default);
+    Task SeedAsync(bool seedIfTableIsEmpty = true, CancellationToken token = default);
 }
