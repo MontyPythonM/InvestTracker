@@ -7,8 +7,10 @@ public record Role
 {
     public string Value { get; }
 
-    public Role(string value)
+    public Role(string? value)
     {
+        value ??= SystemRole.None;
+
         if (!IsValidRole(value))
         {
             throw new RoleNotExistException(value);

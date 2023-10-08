@@ -9,5 +9,16 @@
     <ItemGroup>
         <ProjectReference Include="..\InvestTracker.Calculators.Core\InvestTracker.Calculators.Core.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="module.calculators.json" />
+      <Content Include="module.calculators.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="module.calculators.development.json" />
+      <Content Include="module.calculators.development.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
     
 </Project>

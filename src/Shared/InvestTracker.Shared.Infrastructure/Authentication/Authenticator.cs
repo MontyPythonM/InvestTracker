@@ -9,13 +9,13 @@ namespace InvestTracker.Shared.Infrastructure.Authentication;
 
 internal sealed class Authenticator : IAuthenticator
 {
-    private readonly ITime _time;
+    private readonly ITimeProvider _timeProvider;
     private readonly AuthOptions _authOptions;
     private readonly SigningCredentials _signingKey;
     
-    public Authenticator(ITime time, AuthOptions authOptions)
+    public Authenticator(ITimeProvider timeProvider, AuthOptions authOptions)
     {
-        _time = time;
+        _timeProvider = timeProvider;
         _authOptions = authOptions;
         _signingKey = new SigningCredentials(new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_authOptions.IssuerSigningKey)), SecurityAlgorithms.HmacSha256);
@@ -28,7 +28,7 @@ internal sealed class Authenticator : IAuthenticator
             throw new ArgumentException("User ID claim (subject) cannot be empty.", nameof(userId));
         }
 
-        var now = _time.Current();
+        var now = _timeProvider.Current();
         var expires = now.AddMinutes(_authOptions.ExpiryMinutes);
 
         var jwtClaims = new List<Claim>

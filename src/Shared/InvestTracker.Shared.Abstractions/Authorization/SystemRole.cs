@@ -2,12 +2,13 @@
 
 public static class SystemRole
 {
+    public const string None = "None";
     public const string SystemAdministrator = "SystemAdministrator";
     public const string BusinessAdministrator = "BusinessAdministrator";
 
     public static readonly IReadOnlySet<string> Roles = new HashSet<string>()
     {
-        SystemAdministrator, BusinessAdministrator
+        None, SystemAdministrator, BusinessAdministrator
     };
 }
 

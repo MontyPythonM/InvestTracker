@@ -68,7 +68,7 @@ public class UserServiceTests
         var dto = GetSetRoleDto(user.Id, SystemRole.SystemAdministrator);
         
         _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
-        _time.Current().Returns(DateTime.Now);
+        _timeProvider.Current().Returns(DateTime.Now);
         _requestContext.Identity.UserId.Returns(Guid.NewGuid());
         
         // act
@@ -92,7 +92,7 @@ public class UserServiceTests
         var dto = GetSetRoleDto(user.Id);
         
         _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
-        _time.Current().Returns(DateTime.Now);
+        _timeProvider.Current().Returns(DateTime.Now);
         _requestContext.Identity.UserId.Returns(Guid.NewGuid());
         
         // act
@@ -148,7 +148,7 @@ public class UserServiceTests
 
         // assert
         user.Role.ShouldNotBeNull();
-        user.Role.Value.ShouldBeNull();
+        user.Role.Value.ShouldBe(SystemRole.None);
     }
     #endregion
 
@@ -158,7 +158,7 @@ public class UserServiceTests
     private readonly IMessageBroker _messageBroker;
     private readonly IRequestContext _requestContext;
     private readonly UsersDbContext _usersDbContext;
-    private readonly ITime _time;
+    private readonly ITimeProvider _timeProvider;
 
     public UserServiceTests()
     {
@@ -166,13 +166,13 @@ public class UserServiceTests
         _messageBroker = Substitute.For<IMessageBroker>();
         _requestContext = Substitute.For<IRequestContext>();
         _usersDbContext = new UsersDbContext(new DbContextOptionsBuilder<UsersDbContext>().Options);
-        _time = Substitute.For<ITime>();
+        _timeProvider = Substitute.For<ITimeProvider>();
         
         _userService = new UserService(
             _usersDbContext, 
             _userRepository,
             _messageBroker,
-            _time,
+            _timeProvider,
             _requestContext);
     }
     

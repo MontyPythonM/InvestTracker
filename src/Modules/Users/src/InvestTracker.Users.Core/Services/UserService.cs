@@ -17,16 +17,16 @@ internal sealed class UserService : IUserService
     private readonly UsersDbContext _context;
     private readonly IUserRepository _userRepository;
     private readonly IMessageBroker _messageBroker;
-    private readonly ITime _time;
+    private readonly ITimeProvider _timeProvider;
     private readonly IRequestContext _requestContext;
 
     public UserService(UsersDbContext context, IUserRepository userRepository, 
-        IMessageBroker messageBroker, ITime time, IRequestContext requestContext)
+        IMessageBroker messageBroker, ITimeProvider timeProvider, IRequestContext requestContext)
     {
         _context = context;
         _userRepository = userRepository;
         _messageBroker = messageBroker;
-        _time = time;
+        _timeProvider = timeProvider;
         _requestContext = requestContext;
     }
 
@@ -42,8 +42,8 @@ internal sealed class UserService : IUserService
                 Email = user.Email,
                 Phone = user.Phone ?? string.Empty,
                 CreatedAt = user.CreatedAt,
-                Subscription = GetUserSubscription(user.Subscription),
-                Role = GetUserRole(user.Role)
+                Subscription = user.Subscription.Value,
+                Role = user.Role.Value
             })
             .SingleOrDefaultAsync(user => user.Id == id, token);
 
@@ -59,8 +59,8 @@ internal sealed class UserService : IUserService
                 Email = user.Email,
                 Phone = user.Phone ?? string.Empty,
                 CreatedAt = user.CreatedAt,
-                Subscription = GetUserSubscription(user.Subscription),
-                Role = GetUserRole(user.Role)
+                Subscription = user.Subscription.Value,
+                Role = user.Role.Value
             })
             .ToListAsync(token);
 
@@ -109,12 +109,12 @@ internal sealed class UserService : IUserService
         user.Role = new Role
         {
             Value = dto.Role,
-            GrantedAt = _time.Current(),
+            GrantedAt = _timeProvider.Current(),
             GrantedBy = _requestContext.Identity.UserId
         };
         
         await _userRepository.UpdateAsync(user, token);
-        await _messageBroker.PublishAsync(new UserRoleGranted(user.Id, user.Role?.Value ?? string.Empty));
+        await _messageBroker.PublishAsync(new UserRoleGranted(user.Id, user.Role.Value));
     }
 
     public async Task RemoveRoleAsync(Guid id, CancellationToken token)
@@ -127,18 +127,12 @@ internal sealed class UserService : IUserService
         
         user.Role = new Role
         {
-            Value = null,
-            GrantedAt = _time.Current(),
+            Value = SystemRole.None,
+            GrantedAt = _timeProvider.Current(),
             GrantedBy = _requestContext.Identity.UserId
         };
         
         await _userRepository.UpdateAsync(user, token);
         await _messageBroker.PublishAsync(new UserRoleRemoved(user.Id));
     }
-
-    private static string GetUserSubscription(Subscription? subscription) 
-        => subscription is null ? string.Empty : subscription.Value!;
-    
-    private static string GetUserRole(Role? role) 
-        => role is null ? string.Empty : role.Value!;
 }

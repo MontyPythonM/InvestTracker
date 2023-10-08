@@ -15,16 +15,16 @@ internal sealed class AccountService : IAccountService
     private readonly IUserRepository _userRepository;
     private readonly IAuthenticator _authenticator;
     private readonly IPasswordManager _passwordManager;
-    private readonly ITime _time;
+    private readonly ITimeProvider _timeProvider;
     private readonly IMessageBroker _messageBroker;
 
     public AccountService(IUserRepository userRepository, IAuthenticator authenticator, 
-        IPasswordManager passwordManager, ITime time, IMessageBroker messageBroker)
+        IPasswordManager passwordManager, ITimeProvider timeProvider, IMessageBroker messageBroker)
     {
         _userRepository = userRepository;
         _authenticator = authenticator;
         _passwordManager = passwordManager;
-        _time = time;
+        _timeProvider = timeProvider;
         _messageBroker = messageBroker;
     }
     
@@ -43,13 +43,13 @@ internal sealed class AccountService : IAccountService
             Email = dto.Email.ToLowerInvariant(),
             Phone = dto.Phone,
             Password = _passwordManager.Secure(dto.Password),
-            CreatedAt = _time.Current(),
+            CreatedAt = _timeProvider.Current(),
             IsActive = true,
-            Role = null,
+            Role = new Role(),
             Subscription = new Subscription
             {
                 Value = SystemSubscription.StandardInvestor,
-                GrantedAt = _time.Current()
+                GrantedAt = _timeProvider.Current()
             }
         };
 
@@ -80,7 +80,7 @@ internal sealed class AccountService : IAccountService
             throw new InvalidCredentialsException();
         }
 
-        var accessToken = _authenticator.CreateToken(user.Id.ToString(), user.Role?.Value, user.Subscription?.Value);
+        var accessToken = _authenticator.CreateToken(user.Id.ToString(), user.Role.Value, user.Subscription?.Value);
         accessToken.Email = user.Email;
         
         return accessToken;

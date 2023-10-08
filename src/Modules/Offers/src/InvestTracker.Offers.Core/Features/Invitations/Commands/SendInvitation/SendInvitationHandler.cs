@@ -14,17 +14,17 @@ internal sealed class SendInvitationHandler : ICommandHandler<SendInvitation>
 {
     private readonly IMessageBroker _messageBroker;
     private readonly IInvitationRepository _invitationRepository;
-    private readonly ITime _time;
+    private readonly ITimeProvider _timeProvider;
     private readonly IOfferRepository _offerRepository;
     private readonly IInvestorRepository _investorRepository;
     private readonly IRequestContext _requestContext;
 
     public SendInvitationHandler(IMessageBroker messageBroker, IInvitationRepository invitationRepository, 
-        ITime time, IOfferRepository offerRepository, IInvestorRepository investorRepository, IRequestContext requestContext)
+        ITimeProvider timeProvider, IOfferRepository offerRepository, IInvestorRepository investorRepository, IRequestContext requestContext)
     {
         _messageBroker = messageBroker;
         _invitationRepository = invitationRepository;
-        _time = time;
+        _timeProvider = timeProvider;
         _offerRepository = offerRepository;
         _investorRepository = investorRepository;
         _requestContext = requestContext;
@@ -57,7 +57,7 @@ internal sealed class SendInvitationHandler : ICommandHandler<SendInvitation>
             SenderId = investor.Id,
             OfferId = offer.Id,
             Message = command.Message,
-            SentAt = _time.Current()
+            SentAt = _timeProvider.Current()
         };
         
         await _invitationRepository.CreateAsync(invitation, token);

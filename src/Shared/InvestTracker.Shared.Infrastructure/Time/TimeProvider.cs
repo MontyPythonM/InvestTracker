@@ -2,7 +2,7 @@
 
 namespace InvestTracker.Shared.Infrastructure.Time;
 
-internal class UtcTime : ITime
+internal class TimeProvider : ITimeProvider
 {
-    public DateTime Current() => DateTime.UtcNow;
+    public DateTime Current() => DateTime.Now;
 }

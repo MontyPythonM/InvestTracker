@@ -1,2 +1,7 @@
 {
+  "InvestmentStrategies": {
+    "ExchangeRate": {
+      "NbpCsvPath": "Modules\\InvestmentStrategies\\src\\InvestTracker.InvestmentStrategies.Infrastructure\\DataCollectors\\ExchangeRates\\NbpTableA\\NbpData"
+    }
+  }
 }

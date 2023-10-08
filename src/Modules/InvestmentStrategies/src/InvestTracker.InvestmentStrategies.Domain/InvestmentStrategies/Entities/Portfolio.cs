@@ -9,8 +9,8 @@ public class Portfolio
 {
     public PortfolioId Id { get; set; }
     public Title Title { get; private set; }
-    public Note? Note { get; private set; }
-    public Description? Description { get; private set; }
+    public Note Note { get; private set; }
+    public Description Description { get; private set; }
     public IEnumerable<AssetId> Assets => _assets;
 
     private HashSet<AssetId> _assets = new();
@@ -19,7 +19,7 @@ public class Portfolio
     {
     }
 
-    internal Portfolio(PortfolioId id, Title title, Note? note, Description? description)
+    internal Portfolio(PortfolioId id, Title title, Note note, Description description)
     {
         Id = id;
         Title = title;

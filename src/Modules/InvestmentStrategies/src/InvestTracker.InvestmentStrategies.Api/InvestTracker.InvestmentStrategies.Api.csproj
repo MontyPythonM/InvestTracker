@@ -4,10 +4,22 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <UserSecretsId>1a0509c7-cec8-4764-a916-714c4b2f773f</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\InvestTracker.InvestmentStrategies.Infrastructure\InvestTracker.InvestmentStrategies.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="module.investmentstrategies.json" />
+      <Content Include="module.strategies.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="module.investmentstrategies.development.json" />
+      <Content Include="module.strategies.development.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

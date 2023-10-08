@@ -9,5 +9,16 @@
     <ItemGroup>
         <ProjectReference Include="..\InvestTracker.Exports.Core\InvestTracker.Exports.Core.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="module.exports.development.json" />
+      <Content Include="module.exports.development.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="module.exports.json" />
+      <Content Include="module.exports.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
     
 </Project>

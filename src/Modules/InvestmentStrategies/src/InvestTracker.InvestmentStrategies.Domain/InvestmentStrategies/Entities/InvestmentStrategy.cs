@@ -1,5 +1,4 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Collaborations.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Events;
+﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Events;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.PortfolioLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.StrategyLimitPolicy;
@@ -14,7 +13,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entitie
 public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
 {
     public Title Title { get; private set; }
-    public Note? Note { get; private set; }
+    public Note Note { get; private set; }
     public bool IsShareEnabled { get; private set; }
     public StakeholderId Owner { get; private set; }
     public IEnumerable<StakeholderId> Collaborators => _collaborators;
@@ -27,7 +26,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     {
     }
 
-    private InvestmentStrategy(InvestmentStrategyId id, Title title, StakeholderId owner, Note? note = null)
+    private InvestmentStrategy(InvestmentStrategyId id, Title title, StakeholderId owner, Note note)
     {
         Id = id;
         Title = title;
@@ -36,7 +35,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         Owner = owner;
     }
 
-    public static InvestmentStrategy Create(Title title, StakeholderId owner, Note? note, Subscription subscription, 
+    public static InvestmentStrategy Create(Title title, StakeholderId owner, Note note, Subscription subscription, 
         IEnumerable<IStrategyLimitPolicy> policies, IEnumerable<InvestmentStrategy> existingOwnerStrategies)
     {
         var policy = policies.SingleOrDefault(policy => policy.CanBeApplied(subscription));
@@ -58,7 +57,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         return investmentStrategy;
     }
 
-    public Portfolio AddPortfolio(PortfolioId id, Title title, Note? note, Description? description, 
+    public Portfolio AddPortfolio(PortfolioId id, Title title, Note note, Description description, 
         Subscription subscription, IEnumerable<IPortfolioLimitPolicy> policies)
     {
         var policy = policies.SingleOrDefault(policy => policy.CanBeApplied(subscription));
@@ -79,33 +78,33 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         return portfolio;
     }
 
-    public void AssignCollaborator(CollaborationId collaborationId)
+    public void AssignCollaborator(StakeholderId advisorId, StakeholderId principalId)
     {
         if (IsShareEnabled is false)
         {
             throw new InvestmentStrategySharedException(Id);
         }
 
-        if (Owner.Value != collaborationId.PrincipalId)
+        if (Owner.Value != principalId.Value)
         {
             throw new OwnerIsNotPrincipalOfCollaborationException(Id);
         }
 
-        if (Owner.Value == collaborationId.AdvisorId)
+        if (Owner.Value == advisorId.Value)
         {
             return;
         }
 
-        _collaborators.Add(collaborationId.AdvisorId);
+        _collaborators.Add(advisorId);
     }
 
-    public void RemoveCollaborator(CollaborationId collaborationId)
+    public void RemoveCollaborator(StakeholderId advisorId, StakeholderId principalId)
     {
-        if (Owner.Value != collaborationId.PrincipalId)
+        if (Owner.Value != principalId.Value)
         {
             throw new OwnerIsNotPrincipalOfCollaborationException(Id);
         }
         
-        _collaborators.Remove(collaborationId.AdvisorId);
+        _collaborators.Remove(advisorId);
     }
 }

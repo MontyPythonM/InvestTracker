@@ -1,7 +1,6 @@
 ﻿using InvestTracker.InvestmentStrategies.Application.Stakeholders.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.Collaborations.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Collaborations.Repositories;
-using InvestTracker.InvestmentStrategies.Domain.Collaborations.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Repositories;
 using InvestTracker.Shared.Abstractions.IntegrationEvents;
 using InvestTracker.Shared.Abstractions.Time;
@@ -12,21 +11,19 @@ internal sealed class CollaborationStartedHandler : IEventHandler<CollaborationS
 {
     private readonly IStakeholderRepository _stakeholderRepository;
     private readonly ICollaborationRepository _collaborationRepository;
-    private readonly ITime _time;
+    private readonly ITimeProvider _timeProvider;
 
     public CollaborationStartedHandler(IStakeholderRepository stakeholderRepository, 
-        ICollaborationRepository collaborationRepository, ITime time)
+        ICollaborationRepository collaborationRepository, ITimeProvider timeProvider)
     {
         _stakeholderRepository = stakeholderRepository;
         _collaborationRepository = collaborationRepository;
-        _time = time;
+        _timeProvider = timeProvider;
     }
     
     public async Task HandleAsync(CollaborationStarted @event)
     {
-        var collaborationId = new CollaborationId(@event.AdvisorId, @event.InvestorId);
-        
-        var collaborationExists = await _collaborationRepository.ExistsAsync(collaborationId);
+        var collaborationExists = await _collaborationRepository.ExistsAsync(@event.AdvisorId, @event.InvestorId);
         if (collaborationExists)
         {
             return;
@@ -44,7 +41,7 @@ internal sealed class CollaborationStartedHandler : IEventHandler<CollaborationS
             throw new StakeholderNotFoundException(@event.AdvisorId);
         }
         
-        var collaboration = Collaboration.Create(advisor, investor.Id, _time.Current());
+        var collaboration = Collaboration.Create(advisor, investor, _timeProvider.Current());
         await _collaborationRepository.AddAsync(collaboration);
     }
 }

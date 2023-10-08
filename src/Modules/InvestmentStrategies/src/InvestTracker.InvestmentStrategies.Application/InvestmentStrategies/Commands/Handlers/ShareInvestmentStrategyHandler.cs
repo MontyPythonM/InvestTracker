@@ -1,6 +1,5 @@
 ﻿using InvestTracker.InvestmentStrategies.Application.InvestmentStrategies.Exceptions;
 using InvestTracker.InvestmentStrategies.Application.Stakeholders.Exceptions;
-using InvestTracker.InvestmentStrategies.Domain.Collaborations.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Repositories;
 using InvestTracker.Shared.Abstractions.Commands;
@@ -37,8 +36,8 @@ internal sealed class ShareInvestmentStrategyHandler : ICommandHandler<ShareInve
         {
             throw new StakeholderNotFoundException(command.ShareWith);
         }
-        
-        strategy.AssignCollaborator(new CollaborationId(advisor.Id, currentUser));
+
+        strategy.AssignCollaborator(advisor.Id, currentUser);
         await _investmentStrategyRepository.UpdateAsync(strategy, token);
     }
 }

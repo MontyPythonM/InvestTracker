@@ -28,6 +28,8 @@ public static class Extensions
             }
         );
         
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        
         return services;
     }
     

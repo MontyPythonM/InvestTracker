@@ -10,13 +10,13 @@ namespace InvestTracker.Offers.Core.Features.Invitations.Commands.RejectInvitati
 internal sealed class RejectInvitationHandler : ICommandHandler<RejectInvitation>
 {
     private readonly IInvitationRepository _invitationRepository;
-    private readonly ITime _time;
+    private readonly ITimeProvider _timeProvider;
     private readonly IRequestContext _requestContext;
 
-    public RejectInvitationHandler(IInvitationRepository invitationRepository, ITime time, IRequestContext requestContext)
+    public RejectInvitationHandler(IInvitationRepository invitationRepository, ITimeProvider timeProvider, IRequestContext requestContext)
     {
         _invitationRepository = invitationRepository;
-        _time = time;
+        _timeProvider = timeProvider;
         _requestContext = requestContext;
     }
     
@@ -34,7 +34,7 @@ internal sealed class RejectInvitationHandler : ICommandHandler<RejectInvitation
         }
         
         invitation.Status = InvitationStatus.Rejected;
-        invitation.StatusChangedAt = _time.Current();
+        invitation.StatusChangedAt = _timeProvider.Current();
 
         await _invitationRepository.UpdateAsync(invitation, token);
     }

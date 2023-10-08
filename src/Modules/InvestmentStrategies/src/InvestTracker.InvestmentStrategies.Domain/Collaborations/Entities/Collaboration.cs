@@ -1,5 +1,4 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Collaborations.Exceptions;
-using InvestTracker.InvestmentStrategies.Domain.Collaborations.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
@@ -8,22 +7,30 @@ using InvestTracker.Shared.Abstractions.DDD.Types;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Collaborations.Entities;
 
-public class Collaboration : AggregateRoot<CollaborationId>
+public class Collaboration : AggregateRoot
 {
+    public StakeholderId AdvisorId { get; }
+    public StakeholderId PrincipalId { get; }   
     public DateTime CreatedAt { get; set; }
 
     private Collaboration()
     {
     }
-
-    private Collaboration(CollaborationId collaborationId, DateTime now)
+    
+    private Collaboration(StakeholderId advisorId, StakeholderId principalId, DateTime now)
     {
-        Id = collaborationId;
+        AdvisorId = advisorId;
+        PrincipalId = principalId;
         CreatedAt = now;
     }
 
-    public static Collaboration Create(Stakeholder advisor, StakeholderId principalId, DateTime now)
+    public static Collaboration Create(Stakeholder advisor, Stakeholder principal, DateTime now)
     {
+        if (advisor.Id.Value == principal.Id.Value)
+        {
+            throw new InvalidCollaborationException(advisor.Id);
+        }
+        
         if (advisor.Subscription != SystemSubscription.Advisor)
         {
             throw new CollaboratorIsNotAdvisorException(advisor.Id);
@@ -34,7 +41,6 @@ public class Collaboration : AggregateRoot<CollaborationId>
             throw new InactiveStakeholderException(advisor.Id);
         }
 
-        var collaborationId = new CollaborationId(advisor.Id.Value, principalId.Value);
-        return new Collaboration(collaborationId, now);
+        return new Collaboration(advisor.Id.Value, principal.Id.Value, now);
     }
 }

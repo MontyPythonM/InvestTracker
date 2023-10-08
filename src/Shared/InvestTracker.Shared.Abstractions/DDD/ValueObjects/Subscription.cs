@@ -7,8 +7,10 @@ public record Subscription
 {
     public string Value { get; }
 
-    public Subscription(string value)
+    public Subscription(string? value)
     {
+        value ??= SystemSubscription.None;
+        
         if (!IsValid(value))
         {
             throw new SubscriptionNotExistException(value);
