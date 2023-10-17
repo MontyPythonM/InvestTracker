@@ -7,7 +7,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Reposit
 
 public interface IInvestmentStrategyRepository
 {
-    Task<IEnumerable<InvestmentStrategy>> BrowseAsync(StakeholderId ownerId, CancellationToken token = default);
+    Task<IEnumerable<InvestmentStrategy>> GetOwnerStrategies(StakeholderId ownerId, CancellationToken token = default);
     Task<InvestmentStrategy?> GetAsync(InvestmentStrategyId id, CancellationToken token = default);
     Task<InvestmentStrategy?> GetByPortfolioAsync(PortfolioId portfolioId, CancellationToken token = default);
     Task<IEnumerable<AssetId>> GetOwnerAssets(StakeholderId owner, CancellationToken token = default);

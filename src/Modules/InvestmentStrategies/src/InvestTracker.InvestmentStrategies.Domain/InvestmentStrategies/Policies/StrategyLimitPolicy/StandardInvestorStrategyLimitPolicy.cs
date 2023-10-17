@@ -13,5 +13,5 @@ internal class StandardInvestorStrategyLimitPolicy : IStrategyLimitPolicy
         => subscription == SystemSubscription.StandardInvestor;
 
     public bool CanAddInvestmentStrategy(StakeholderId ownerId, IEnumerable<InvestmentStrategy> strategies)
-        => strategies.Count(x => x.Owner == ownerId) >= StandardInvestorLimit;
+        => strategies.Count(x => x.Owner == ownerId) < StandardInvestorLimit;
 }

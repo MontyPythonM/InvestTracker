@@ -9,8 +9,15 @@ public class InvestmentStrategiesPermissionMatrix : IModulePermissionMatrix
 
     public ISet<Permission> Permissions { get; } = new HashSet<Permission>
     {
-        new(SystemRole.BusinessAdministrator, InvestmentStrategiesPermission.SaveSeedExchangeRate.ToString()),
-        new(SystemRole.SystemAdministrator, InvestmentStrategiesPermission.SaveSeedExchangeRate.ToString()),
+        new(SystemSubscription.Advisor, InvestmentStrategiesPermission.CreateInvestmentStrategy.ToString()),
+
+        new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.CreateInvestmentStrategy.ToString()),
+
+        new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.CreateInvestmentStrategy.ToString()),
+        
+        new(SystemRole.BusinessAdministrator, InvestmentStrategiesPermission.SafeSeedExchangeRate.ToString()),
+        
+        new(SystemRole.SystemAdministrator, InvestmentStrategiesPermission.SafeSeedExchangeRate.ToString()),
         new(SystemRole.SystemAdministrator, InvestmentStrategiesPermission.ForceSeedExchangeRate.ToString()),
     };
 }

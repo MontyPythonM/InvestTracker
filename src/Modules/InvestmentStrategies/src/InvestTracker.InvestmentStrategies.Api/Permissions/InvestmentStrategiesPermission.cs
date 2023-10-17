@@ -2,6 +2,7 @@
 
 public enum InvestmentStrategiesPermission
 {
-    SaveSeedExchangeRate,
-    ForceSeedExchangeRate
+    SafeSeedExchangeRate,
+    ForceSeedExchangeRate,
+    CreateInvestmentStrategy
 }
