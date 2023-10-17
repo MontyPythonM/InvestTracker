@@ -5,7 +5,8 @@ namespace InvestTracker.InvestmentStrategies.Domain.Collaborations.Repositories;
 
 public interface ICollaborationRepository
 {
-    Task<Collaboration> GetAsync(StakeholderId advisorId, StakeholderId principalId, CancellationToken token = default);
+    Task<Collaboration?> GetAsync(StakeholderId advisorId, StakeholderId principalId, CancellationToken token = default);
     Task<bool> ExistsAsync(StakeholderId advisorId, StakeholderId principalId, CancellationToken token = default);
     Task AddAsync(Collaboration collaboration, CancellationToken token = default);
+    Task DeleteAsync(Collaboration collaboration, CancellationToken token = default);
 }
