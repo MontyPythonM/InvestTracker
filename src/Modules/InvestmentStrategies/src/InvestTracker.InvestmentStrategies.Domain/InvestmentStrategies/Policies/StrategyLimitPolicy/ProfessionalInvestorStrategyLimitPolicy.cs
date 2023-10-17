@@ -13,5 +13,5 @@ internal class ProfessionalInvestorStrategyLimitPolicy : IStrategyLimitPolicy
         => subscription == SystemSubscription.ProfessionalInvestor;
 
     public bool CanAddInvestmentStrategy(StakeholderId ownerId, IEnumerable<InvestmentStrategy> strategies)
-        => strategies.Count(x => x.Owner == ownerId) >= ProfessionalInvestorLimit;
+        => strategies.Count(x => x.Owner == ownerId) < ProfessionalInvestorLimit;
 }

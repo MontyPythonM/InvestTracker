@@ -105,7 +105,7 @@ internal sealed class NbpExchangeRateSeeder : IExchangeRateSeeder
         => await _investmentStrategiesDbContext.ExchangeRates.AnyAsync(token);
 
     private static bool IsCurrencySupported(string header)
-        => ModuleConstants.AvailableCurrencies.Contains(GetCurrencyCode(header));
+        => AssetConstants.AvailableCurrencies.Contains(GetCurrencyCode(header));
     
     private static string GetCurrencyCode(string input)
     {

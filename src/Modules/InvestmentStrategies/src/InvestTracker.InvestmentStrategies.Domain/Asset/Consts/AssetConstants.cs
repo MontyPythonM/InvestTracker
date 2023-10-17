@@ -1,6 +1,6 @@
 ﻿namespace InvestTracker.InvestmentStrategies.Domain.Asset.Consts;
 
-public static class ModuleConstants
+public static class AssetConstants
 {
     public static readonly List<string> AvailableCurrencies = new()
     {

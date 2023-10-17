@@ -12,5 +12,5 @@ internal class StandardInvestorAssetLimitPolicy : IAssetLimitPolicy
         => subscription == SystemSubscription.StandardInvestor;
 
     public bool CanAddAsset(ISet<AssetId> assets) 
-        => assets.Count >= StandardInvestorAssetLimit;
+        => assets.Count < StandardInvestorAssetLimit;
 }

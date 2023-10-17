@@ -15,7 +15,7 @@ public record Currency
         }
         
         value = value.ToUpper();
-        if (!ModuleConstants.AvailableCurrencies.Contains(value))
+        if (!AssetConstants.AvailableCurrencies.Contains(value))
         {
             throw new UnsupportedCurrencyException(value);
         }

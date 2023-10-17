@@ -12,5 +12,5 @@ internal class StandardInvestorPortfolioLimitPolicy : IPortfolioLimitPolicy
         => subscription == SystemSubscription.StandardInvestor;
 
     public bool CanAddPortfolio(ISet<Portfolio> portfolios)
-        => portfolios.Count >= StandardInvestorPortfolioLimit;
+        => portfolios.Count < StandardInvestorPortfolioLimit;
 }

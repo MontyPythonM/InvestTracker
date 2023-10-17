@@ -12,5 +12,5 @@ internal class AdvisorPortfolioLimitPolicy : IPortfolioLimitPolicy
         => subscription == SystemSubscription.Advisor;
 
     public bool CanAddPortfolio(ISet<Portfolio> portfolios)
-        => portfolios.Count >= AdvisorPortfolioLimit;
+        => portfolios.Count < AdvisorPortfolioLimit;
 }
