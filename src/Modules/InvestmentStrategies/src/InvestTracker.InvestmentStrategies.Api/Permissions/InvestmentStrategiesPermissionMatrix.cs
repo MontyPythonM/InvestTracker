@@ -10,10 +10,13 @@ public class InvestmentStrategiesPermissionMatrix : IModulePermissionMatrix
     public ISet<Permission> Permissions { get; } = new HashSet<Permission>
     {
         new(SystemSubscription.Advisor, InvestmentStrategiesPermission.CreateInvestmentStrategy.ToString()),
+        new(SystemSubscription.Advisor, InvestmentStrategiesPermission.AddPortfolio.ToString()),
 
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.CreateInvestmentStrategy.ToString()),
+        new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.AddPortfolio.ToString()),
 
         new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.CreateInvestmentStrategy.ToString()),
+        new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.AddPortfolio.ToString()),
         
         new(SystemRole.BusinessAdministrator, InvestmentStrategiesPermission.SafeSeedExchangeRate.ToString()),
         

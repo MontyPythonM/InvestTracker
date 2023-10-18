@@ -48,8 +48,7 @@ internal class CollaborationsController : ApiControllerBase
     [SwaggerOperation("Cancel selected collaboration between Investor and Advisor, only if current user is one of them")]
     public async Task<ActionResult> CancelOwnCollaboration(CancelCollaboration command, CancellationToken token)
     {
-        if (_requestContext.Identity.UserId != command.AdvisorId && 
-            _requestContext.Identity.UserId != command.InvestorId)
+        if (IsCollaborator(command.AdvisorId, command.InvestorId))
         {
             return Forbid();
         }
@@ -66,4 +65,7 @@ internal class CollaborationsController : ApiControllerBase
         await _commandDispatcher.SendAsync(command, token);
         return Ok();
     }
+    
+    private bool IsCollaborator(Guid advisorId, Guid principalId)
+        => _requestContext.Identity.UserId != advisorId && _requestContext.Identity.UserId != principalId;
 }

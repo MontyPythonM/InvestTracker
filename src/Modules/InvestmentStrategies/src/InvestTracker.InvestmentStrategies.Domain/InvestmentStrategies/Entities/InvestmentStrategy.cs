@@ -57,7 +57,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         return investmentStrategy;
     }
 
-    public Portfolio AddPortfolio(PortfolioId id, Title title, Note note, Description description, 
+    public void AddPortfolio(PortfolioId id, Title title, Note note, Description description, 
         Subscription subscription, IEnumerable<IPortfolioLimitPolicy> policies)
     {
         var policy = policies.SingleOrDefault(policy => policy.CanBeApplied(subscription));
@@ -74,8 +74,6 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
 
         var portfolio = new Portfolio(id, title, note, description);
         _portfolios.Add(portfolio);
-
-        return portfolio;
     }
 
     public void AssignCollaborator(StakeholderId advisorId, StakeholderId principalId)
@@ -107,4 +105,6 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         
         _collaborators.Remove(advisorId);
     }
+
+    public bool IsOwner(Guid userId) => Owner.Value == userId;
 }

@@ -15,10 +15,10 @@ internal sealed class UpdateAdvisorHandler : ICommandHandler<UpdateAdvisor>
     
     public async Task HandleAsync(UpdateAdvisor command, CancellationToken token)
     {
-        var advisor = await _advisorRepository.GetAsync(command.Id, token);
+        var advisor = await _advisorRepository.GetAsync(command.AdvisorId, token);
         if (advisor is null)
         {
-            throw new AdvisorNotFoundException(command.Id);
+            throw new AdvisorNotFoundException(command.AdvisorId);
         }
 
         advisor.PhoneNumber = command.PhoneNumber;
