@@ -36,6 +36,14 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
                 .Contains(portfolioId), token);
     }
 
+    public async Task<IEnumerable<InvestmentStrategy>> GetByCollaborationAsync(StakeholderId advisorId, 
+        StakeholderId principalId, CancellationToken token = default)
+    {
+        return await _context.InvestmentStrategies
+            .Where(strategy => strategy.Owner == principalId && strategy.Collaborators.Contains(advisorId))
+            .ToListAsync(token);
+    }
+
     public async Task<IEnumerable<AssetId>> GetOwnerAssets(StakeholderId owner, CancellationToken token = default)
     {
         return await _context.InvestmentStrategies
@@ -57,6 +65,12 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
         await _context.SaveChangesAsync(token);
     }
 
+    public async Task UpdateRangeAsync(IEnumerable<InvestmentStrategy> strategies, CancellationToken token = default)
+    {
+        _context.InvestmentStrategies.UpdateRange(strategies);
+        await _context.SaveChangesAsync(token);
+    }
+    
     public async Task<bool> HasAsset(StakeholderId owner, AssetId assetId, CancellationToken token = default)
     {
         return await _context.InvestmentStrategies
