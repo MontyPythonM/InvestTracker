@@ -4,6 +4,7 @@ namespace InvestTracker.Offers.Core.Features.Collaborations.Queries.GetCollabora
 
 internal class CollaborationDetailsDto
 {
+    public Guid Id { get; set; }
     public Guid AdvisorId { get; set; }
     public Guid InvestorId { get; set; }
     public string AdvisorFullName { get; set; } = string.Empty;

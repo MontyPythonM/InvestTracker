@@ -74,6 +74,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
 
         var portfolio = new Portfolio(id, title, note, description);
         _portfolios.Add(portfolio);
+        IncrementVersion();
     }
 
     public void AssignCollaborator(StakeholderId advisorId, StakeholderId principalId)
@@ -94,6 +95,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         }
 
         _collaborators.Add(advisorId);
+        IncrementVersion();
     }
 
     public void RemoveCollaborator(StakeholderId advisorId, StakeholderId principalId)
@@ -104,6 +106,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         }
         
         _collaborators.Remove(advisorId);
+        IncrementVersion();
     }
 
     public bool IsOwner(Guid userId) => Owner.Value == userId;

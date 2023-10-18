@@ -13,13 +13,13 @@ internal sealed class GetCollaborationsHandler : IQueryHandler<GetCollaborations
         _context = context;
     }
     
-    public async Task<IEnumerable<CollaborationDto>> HandleAsync(GetCollaborations query,
-        CancellationToken token = default)
+    public async Task<IEnumerable<CollaborationDto>> HandleAsync(GetCollaborations query, CancellationToken token = default)
         => await _context.Collaborations
             .AsNoTracking()
             .Where(collaboration => collaboration.InvestorId == query.UserId || collaboration.AdvisorId == query.UserId)
             .Select(collaboration => new CollaborationDto
             {
+                Id = collaboration.Id,
                 AdvisorId = collaboration.AdvisorId,
                 InvestorId = collaboration.InvestorId,
                 AdvisorFullName = collaboration.Advisor.FullName,

@@ -13,18 +13,19 @@ internal class CollaborationRepository : ICollaborationRepository
         _context = context;
     }
     
-    public async Task<Collaboration?> GetAsync(Guid advisorId, Guid investorId, CancellationToken token)
+    public async Task<Collaboration?> GetAsync(Guid advisorId, Guid investorId, bool isCancelled = false, CancellationToken token = default)
         => await _context.Collaborations.SingleOrDefaultAsync(collaboration => 
             collaboration.AdvisorId == advisorId && 
-            collaboration.InvestorId == investorId, token);
+            collaboration.InvestorId == investorId &&
+            collaboration.IsCancelled == isCancelled, token);
 
-    public async Task CreateAsync(Collaboration collaboration, CancellationToken token)
+    public async Task CreateAsync(Collaboration collaboration, CancellationToken token = default)
     {
         await _context.Collaborations.AddAsync(collaboration, token);
         await _context.SaveChangesAsync(token);
     }
 
-    public async Task UpdateAsync(Collaboration collaboration, CancellationToken token)
+    public async Task UpdateAsync(Collaboration collaboration, CancellationToken token = default)
     {
         _context.Collaborations.Update(collaboration);
         await _context.SaveChangesAsync(token);

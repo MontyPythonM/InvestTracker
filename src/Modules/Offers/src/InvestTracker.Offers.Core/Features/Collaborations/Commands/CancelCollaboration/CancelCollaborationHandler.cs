@@ -23,7 +23,7 @@ internal sealed class CancelCollaborationHandler : ICommandHandler<CancelCollabo
     
     public async Task HandleAsync(CancelCollaboration command, CancellationToken token)
     {
-        var collaboration = await _collaborationRepository.GetAsync(command.AdvisorId, command.InvestorId, token);
+        var collaboration = await _collaborationRepository.GetAsync(command.AdvisorId, command.InvestorId, token: token);
 
         if (collaboration is null)
         {

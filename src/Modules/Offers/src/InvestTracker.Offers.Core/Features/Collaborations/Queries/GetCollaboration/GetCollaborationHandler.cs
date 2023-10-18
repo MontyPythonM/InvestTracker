@@ -21,6 +21,7 @@ internal sealed class GetCollaborationHandler : IQueryHandler<GetCollaboration, 
             .AsNoTracking()
             .Select(collaboration => new CollaborationDetailsDto
             {
+                Id = collaboration.Id,
                 AdvisorId = collaboration.AdvisorId,
                 InvestorId = collaboration.InvestorId,
                 AdvisorFullName = collaboration.Advisor.FullName,
