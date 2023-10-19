@@ -2,6 +2,7 @@
 
 internal class CollaborationDto
 {
+    public Guid Id { get; set; }
     public Guid AdvisorId { get; set; }
     public Guid InvestorId { get; set; }
     public string AdvisorFullName { get; set; } = string.Empty;

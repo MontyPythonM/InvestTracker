@@ -1,6 +1,7 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
+using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Converters;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -29,5 +30,8 @@ internal class InvestmentStrategyConfiguration : IEntityTypeConfiguration<Invest
         builder
             .HasMany(strategy => strategy.Portfolios)
             .WithOne();
+        
+        builder.Property(portfolio => portfolio.Collaborators)
+            .HasConversion(new IndirectRelationConverter<StakeholderId>());
     }
 }

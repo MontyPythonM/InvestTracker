@@ -1,4 +1,5 @@
 ﻿using InvestTracker.Offers.Api.Controllers.Base;
+using InvestTracker.Offers.Api.Dtos;
 using InvestTracker.Offers.Api.Permissions;
 using InvestTracker.Offers.Core.Features.Advisors.UpdateAdvisor;
 using InvestTracker.Shared.Abstractions.Commands;
@@ -23,9 +24,12 @@ internal class AdvisorsController : ApiControllerBase
     [HttpPatch]
     [HasPermission(OffersPermission.UpdateAdvisorDetails)]
     [SwaggerOperation("Advisor can update a few data about himself")]
-    public async Task<ActionResult> UpdateAdvisorDetails([FromBody] UpdateAdvisor command, CancellationToken token)
+    public async Task<ActionResult> UpdateAdvisorDetails([FromBody] UpdateAdvisorDto dto, CancellationToken token)
     {
-        await _commandDispatcher.SendAsync(command with { Id = _requestContext.Identity.UserId }, token);
+        var command = new UpdateAdvisor(_requestContext.Identity.UserId, dto.PhoneNumber, dto.Bio, 
+            dto.CompanyName, dto.AvatarUrl);
+        
+        await _commandDispatcher.SendAsync(command, token);
         return Ok();
     }
 }

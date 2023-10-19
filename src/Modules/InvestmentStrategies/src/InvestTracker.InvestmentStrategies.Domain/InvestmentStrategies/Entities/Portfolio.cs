@@ -11,7 +11,7 @@ public class Portfolio
     public Title Title { get; private set; }
     public Note Note { get; private set; }
     public Description Description { get; private set; }
-    public IEnumerable<AssetId> Assets => _assets;
+    public ISet<AssetId> Assets => _assets;
 
     private HashSet<AssetId> _assets = new();
 

@@ -2,6 +2,7 @@
 
 public class Collaboration
 {
+    public Guid Id { get; set; }
     public Guid AdvisorId { get; set; }
     public Guid InvestorId { get; set; }
     public virtual Advisor Advisor { get; set; }

@@ -14,7 +14,7 @@ internal class OfferRepository : IOfferRepository
     }
 
     public async Task<Offer?> GetAsync(Guid offerId, CancellationToken token)
-        => await _context.Offers.SingleOrDefaultAsync(offer => offer!.Id == offerId, token);
+        => await _context.Offers.SingleOrDefaultAsync(offer => offer.Id == offerId, token);
 
     public async Task CreateAsync(Offer offer, CancellationToken token)
     {

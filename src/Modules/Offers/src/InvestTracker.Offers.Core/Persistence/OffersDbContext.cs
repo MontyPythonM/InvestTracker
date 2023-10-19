@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.Offers.Core.Persistence;
 
-// dotnet ef database update -s ..\..\..\..\Bootstrapper\InvestTracker.Bootstrapper
+// dotnet ef database update -s ..\..\..\..\Bootstrapper\InvestTracker.Bootstrapper --context OffersDbContext
 // dotnet ef migrations add <name> -s ..\..\..\..\Bootstrapper\InvestTracker.Bootstrapper --context OffersDbContext
 internal class OffersDbContext : DbContext
 {
