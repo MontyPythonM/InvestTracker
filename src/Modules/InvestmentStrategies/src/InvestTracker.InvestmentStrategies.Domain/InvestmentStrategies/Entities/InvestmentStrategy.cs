@@ -16,14 +16,16 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     public Note Note { get; private set; }
     public bool IsShareEnabled { get; private set; }
     public StakeholderId Owner { get; private set; }
-    public IEnumerable<StakeholderId> Collaborators => _collaborators;
-    public IEnumerable<Portfolio> Portfolios => _portfolios;
+    public ISet<StakeholderId> Collaborators => _collaborators;
+    public ISet<Portfolio> Portfolios => _portfolios;
     
-    private HashSet<StakeholderId> _collaborators = new();
-    private HashSet<Portfolio> _portfolios = new();
+    private HashSet<StakeholderId> _collaborators;
+    private HashSet<Portfolio> _portfolios;
 
     private InvestmentStrategy()
     {
+        _collaborators = new HashSet<StakeholderId>();
+        _portfolios = new HashSet<Portfolio>();
     }
 
     private InvestmentStrategy(InvestmentStrategyId id, Title title, StakeholderId owner, Note note)
@@ -33,6 +35,8 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         Note = note;
         IsShareEnabled = false;
         Owner = owner;
+        _collaborators = new HashSet<StakeholderId>();
+        _portfolios = new HashSet<Portfolio>();
     }
 
     public static InvestmentStrategy Create(Title title, StakeholderId owner, Note note, Subscription subscription, 

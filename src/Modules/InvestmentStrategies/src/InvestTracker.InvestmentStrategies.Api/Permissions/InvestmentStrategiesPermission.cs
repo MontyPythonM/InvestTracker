@@ -5,5 +5,6 @@ public enum InvestmentStrategiesPermission
     SafeSeedExchangeRate,
     ForceSeedExchangeRate,
     CreateInvestmentStrategy,
-    AddPortfolio
+    AddPortfolio,
+    ShareInvestmentStrategy
 }

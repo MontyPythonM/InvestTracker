@@ -35,4 +35,13 @@ internal class InvestmentStrategiesController : ApiControllerBase
         await _commandDispatcher.SendAsync(new AddPortfolio(id, dto.Title, dto.Description, dto.Note), token);
         return Ok();
     }
+    
+    [HttpPost("{id:guid}/share")]
+    [HasPermission(InvestmentStrategiesPermission.ShareInvestmentStrategy)]
+    [SwaggerOperation("Share investment strategy with assigned collaborator")]
+    public async Task<ActionResult> ShareInvestmentStrategy(ShareInvestmentStrategyDto dto, Guid id, CancellationToken token)
+    {
+        await _commandDispatcher.SendAsync(new ShareInvestmentStrategy(id, dto.ShareWith), token);
+        return Ok();
+    }
 }
