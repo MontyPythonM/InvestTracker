@@ -1,6 +1,7 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Asset.Entities;
-using InvestTracker.InvestmentStrategies.Domain.Asset.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Domain.Collaborations.Entities;
+﻿using InvestTracker.InvestmentStrategies.Domain.Collaborations.Entities;
+using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Entities;
+using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Entities.Transactions;
+using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
@@ -16,8 +17,9 @@ internal class InvestmentStrategiesDbContext : DbContext
 {
     public DbSet<InvestmentStrategy> InvestmentStrategies { get; set; }
     public DbSet<Portfolio> Portfolios { get; set; }
-    public DbSet<Asset> Assets { get; set; }
-    public DbSet<Transaction> Transactions { get; set; }
+    public DbSet<FinancialAsset> FinancialAssets { get; set; }
+    public DbSet<AmountTransaction> AmountTransactions { get; set; }
+    public DbSet<VolumeTransaction> VolumeTransactions { get; set; }
     public DbSet<Collaboration> Collaborations { get; set; }
     public DbSet<Stakeholder> Stakeholders { get; set; }
     public DbSet<ExchangeRate> ExchangeRates { get; set; }
@@ -29,8 +31,8 @@ internal class InvestmentStrategiesDbContext : DbContext
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder
-            .Properties<AssetId>()
-            .HaveConversion<AssetIdConverter>();
+            .Properties<FinancialAssetId>()
+            .HaveConversion<FinancialAssetIdConverter>();
         
         configurationBuilder
             .Properties<StakeholderId>()
@@ -41,5 +43,7 @@ internal class InvestmentStrategiesDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("investment-strategies");
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+        
+        modelBuilder.Entity<FinancialAsset>().UseTpcMappingStrategy();
     }
 }

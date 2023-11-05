@@ -1,8 +1,6 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Asset.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
+﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Converters;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -26,8 +24,5 @@ internal class PortfolioConfiguration : IEntityTypeConfiguration<Portfolio>
         
         builder.Property(portfolio => portfolio.Description)
             .HasConversion(p => p.Value, p => new Description(p));
-
-        builder.Property(portfolio => portfolio.Assets)
-            .HasConversion(new IndirectRelationConverter<AssetId>());
     }
 }
