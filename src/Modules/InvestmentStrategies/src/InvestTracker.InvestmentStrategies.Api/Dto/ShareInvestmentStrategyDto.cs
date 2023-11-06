@@ -1,3 +1,3 @@
-﻿namespace InvestTracker.InvestmentStrategies.Api.Dtos;
+﻿namespace InvestTracker.InvestmentStrategies.Api.Dto;
 
 public record ShareInvestmentStrategyDto(Guid ShareWith);

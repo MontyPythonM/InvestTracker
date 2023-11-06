@@ -13,5 +13,5 @@ internal static class Extensions
             .AddScoped<IInvestmentStrategyRepository, InvestmentStrategyRepository>()
             .AddScoped<IStakeholderRepository, StakeholderRepository>()
             .AddScoped<ICollaborationRepository, CollaborationRepository>()
-            .AddScoped(typeof(IFinancialAssetRepository<>), typeof(FinancialAssetRepository<>));
+            .AddScoped<IFinancialAssetRepository, FinancialAssetRepository>();
 }

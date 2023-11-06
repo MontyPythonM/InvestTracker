@@ -1,4 +1,5 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Dto;
+using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Events;
 using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.ValueObjects.Types;
@@ -36,5 +37,9 @@ public abstract class FinancialAsset : AggregateRoot<FinancialAssetId>
         Currency = currency;
         PortfolioId = portfolioId;
         Note = note;
+        
+        AddEvent(new FinancialAssetAdded(id, portfolioId));
     }
+    
+    public abstract string GetAssetName();
 }

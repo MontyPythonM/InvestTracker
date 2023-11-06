@@ -28,7 +28,6 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
         var query = _context.InvestmentStrategies
             .Where(strategy => strategy.Owner == ownerId)
             .SelectMany(strategy => strategy.Portfolios)
-            .Select(portfolio => portfolio.Id)
             .AsQueryable();
         
         if (asNoTracking)
@@ -36,7 +35,9 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
             query.AsNoTracking();
         }
 
-        return await query.ToListAsync(token);
+        return await query
+            .Select(portfolio => portfolio.Id)
+            .ToListAsync(token);
     }
 
     public async Task<IEnumerable<PortfolioId>> GetStrategyPortfolios(InvestmentStrategyId id, bool asNoTracking = false, 
@@ -45,7 +46,6 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
         var query = _context.InvestmentStrategies
             .Where(strategy => strategy.Id == id)
             .SelectMany(strategy => strategy.Portfolios)
-            .Select(portfolio => portfolio.Id)
             .AsQueryable();
         
         if (asNoTracking)
@@ -53,7 +53,9 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
             query.AsNoTracking();
         }
 
-        return await query.ToListAsync(token);
+        return await query
+            .Select(portfolio => portfolio.Id)
+            .ToListAsync(token);
     }
 
     public async Task<InvestmentStrategy?> GetAsync(InvestmentStrategyId id, CancellationToken token = default)

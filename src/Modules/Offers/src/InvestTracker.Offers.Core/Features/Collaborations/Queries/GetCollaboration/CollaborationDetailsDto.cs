@@ -1,6 +1,4 @@
-﻿using InvestTracker.Offers.Core.Features.Offers.Queries.GetOfferDetails.Dtos;
-
-namespace InvestTracker.Offers.Core.Features.Collaborations.Queries.GetCollaboration;
+﻿namespace InvestTracker.Offers.Core.Features.Collaborations.Queries.GetCollaboration;
 
 internal class CollaborationDetailsDto
 {

@@ -6,5 +6,8 @@ public enum InvestmentStrategiesPermission
     ForceSeedExchangeRate,
     CreateInvestmentStrategy,
     AddPortfolio,
-    ShareInvestmentStrategy
+    ShareInvestmentStrategy,
+    CreateCashAsset,
+    CreateEdoAsset,
+    GetPortfolioFinancialAssets
 }

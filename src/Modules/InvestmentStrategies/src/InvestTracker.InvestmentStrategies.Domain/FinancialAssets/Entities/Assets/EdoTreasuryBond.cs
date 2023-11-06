@@ -99,6 +99,8 @@ public sealed class EdoTreasuryBond : FinancialAsset
     public Volume GetCurrentVolume() 
         => GetNominalVolume() - _transactions.OfType<OutgoingVolumeTransaction>().Sum(t => t.Volume);
 
+    public override string GetAssetName() => $"{Symbol} Treasury Bond ({Currency.Value})";
+
     private InterestRate CalculateInterestRate(ChronologicalInflationRates chronologicalInflationRates, DateOnly calculationDate)
     {
         var calculatedYearCompletion = GetInvestmentYearCompletion(calculationDate, RedemptionDate);

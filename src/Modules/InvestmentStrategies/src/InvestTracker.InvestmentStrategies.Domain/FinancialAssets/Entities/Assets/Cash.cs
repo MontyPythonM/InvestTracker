@@ -49,4 +49,6 @@ public sealed class Cash : FinancialAsset
     
     public Amount GetCurrentAmount() => _transactions.OfType<IncomingAmountTransaction>().Sum(x => x.Amount) - 
                                      _transactions.OfType<OutgoingAmountTransaction>().Sum(x => x.Amount);
+    
+    public override string GetAssetName() => $"Cash ({Currency.Value})";
 }
