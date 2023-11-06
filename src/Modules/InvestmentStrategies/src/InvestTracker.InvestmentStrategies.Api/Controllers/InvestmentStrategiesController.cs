@@ -1,5 +1,5 @@
 ﻿using InvestTracker.InvestmentStrategies.Api.Controllers.Base;
-using InvestTracker.InvestmentStrategies.Api.Dtos;
+using InvestTracker.InvestmentStrategies.Api.Dto;
 using InvestTracker.InvestmentStrategies.Api.Permissions;
 using InvestTracker.InvestmentStrategies.Application.InvestmentStrategies.Commands;
 using InvestTracker.Shared.Abstractions.Commands;

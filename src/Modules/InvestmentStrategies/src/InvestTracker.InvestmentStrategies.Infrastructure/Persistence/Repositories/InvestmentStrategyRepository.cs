@@ -1,5 +1,4 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Asset.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
+﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
@@ -20,6 +19,42 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
     {
         return await _context.InvestmentStrategies
             .Where(strategy => strategy.Owner == ownerId)
+            .ToListAsync(token);
+    }
+
+    public async Task<IEnumerable<PortfolioId>> GetOwnerPortfolios(StakeholderId ownerId, bool asNoTracking = false, 
+        CancellationToken token = default)
+    {
+        var query = _context.InvestmentStrategies
+            .Where(strategy => strategy.Owner == ownerId)
+            .SelectMany(strategy => strategy.Portfolios)
+            .AsQueryable();
+        
+        if (asNoTracking)
+        {
+            query.AsNoTracking();
+        }
+
+        return await query
+            .Select(portfolio => portfolio.Id)
+            .ToListAsync(token);
+    }
+
+    public async Task<IEnumerable<PortfolioId>> GetStrategyPortfolios(InvestmentStrategyId id, bool asNoTracking = false, 
+        CancellationToken token = default)
+    {
+        var query = _context.InvestmentStrategies
+            .Where(strategy => strategy.Id == id)
+            .SelectMany(strategy => strategy.Portfolios)
+            .AsQueryable();
+        
+        if (asNoTracking)
+        {
+            query.AsNoTracking();
+        }
+
+        return await query
+            .Select(portfolio => portfolio.Id)
             .ToListAsync(token);
     }
 
@@ -44,15 +79,6 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
             .ToListAsync(token);
     }
 
-    public async Task<IEnumerable<AssetId>> GetOwnerAssets(StakeholderId owner, CancellationToken token = default)
-    {
-        return await _context.InvestmentStrategies
-            .Where(strategy => strategy.Owner == owner)
-            .SelectMany(strategy => strategy.Portfolios)
-            .SelectMany(portfolio => portfolio.Assets)
-            .ToListAsync(token);
-    }
-
     public async Task AddAsync(InvestmentStrategy strategy, CancellationToken token = default)
     {
         await _context.InvestmentStrategies.AddAsync(strategy, token);
@@ -69,13 +95,5 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
     {
         _context.InvestmentStrategies.UpdateRange(strategies);
         await _context.SaveChangesAsync(token);
-    }
-    
-    public async Task<bool> HasAsset(StakeholderId owner, AssetId assetId, CancellationToken token = default)
-    {
-        return await _context.InvestmentStrategies
-            .Where(strategy => strategy.Owner == owner)
-            .SelectMany(strategy => strategy.Portfolios)
-            .AnyAsync(portfolio => portfolio.Assets.Contains(assetId), token);
     }
 }

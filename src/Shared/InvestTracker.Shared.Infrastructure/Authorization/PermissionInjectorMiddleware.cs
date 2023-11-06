@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using InvestTracker.Shared.Abstractions.Authorization;
-using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;

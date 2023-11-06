@@ -1,4 +1,4 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Asset.ValueObjects.Types;
+﻿using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
@@ -11,10 +11,14 @@ public class Portfolio
     public Title Title { get; private set; }
     public Note Note { get; private set; }
     public Description Description { get; private set; }
-    public ISet<AssetId> Assets => _assets;
-
-    private HashSet<AssetId> _assets = new();
-
+    public IEnumerable<FinancialAssetId> FinancialAssets
+    {
+        get => _financialAssets;
+        set => _financialAssets = new HashSet<FinancialAssetId>(value);
+    }
+    
+    private HashSet<FinancialAssetId> _financialAssets = new();
+    
     private Portfolio()
     {
     }
@@ -27,6 +31,6 @@ public class Portfolio
         Description = description;
     }
 
-    internal void AddAsset(AssetId assetId) => _assets.Add(assetId);
-    internal void RemoveAsset(AssetId assetId) => _assets.Remove(assetId);
+    internal void AddFinancialAsset(FinancialAssetId assetId) => _financialAssets.Add(assetId);
+    internal void RemoveFinancialAsset(FinancialAssetId assetId) => _financialAssets.Remove(assetId);
 }

@@ -1,4 +1,4 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Asset.ValueObjects;
+﻿using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.ValueObjects;
 using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates;
 using InvestTracker.InvestmentStrategies.Infrastructure.ValueObjects;
 using Microsoft.EntityFrameworkCore;

@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace InvestTracker.Shared.Abstractions.Authorization;
+﻿namespace InvestTracker.Shared.Abstractions.Authorization;
 
 public interface IModulePermissionMatrix
 {

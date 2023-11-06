@@ -25,10 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Domain\" />
-    </ItemGroup>
-
-    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Shared\InvestTracker.Shared.Infrastructure\InvestTracker.Shared.Infrastructure.csproj" />
         <ProjectReference Include="..\..\src\InvestTracker.InvestmentStrategies.Domain\InvestTracker.InvestmentStrategies.Domain.csproj" />
     </ItemGroup>
     

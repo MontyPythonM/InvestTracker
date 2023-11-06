@@ -16,7 +16,7 @@ internal class DataCollectorsController : ApiControllerBase
         _exchangeRateSeeder = exchangeRateSeeder;
     }
 
-    [HttpPost("SafeSeedExchangeRate")]
+    [HttpPost("safe-seed-exchange-rate")]
     [HasPermission(InvestmentStrategiesPermission.SafeSeedExchangeRate)]
     [SwaggerOperation("Seed exchange rate if there are no records in database")]
     public async Task<ActionResult> SaveSeedExchangeRate()
@@ -25,7 +25,7 @@ internal class DataCollectorsController : ApiControllerBase
         return Ok();
     }
     
-    [HttpPost("ForceSeedExchangeRate")]
+    [HttpPost("force-seed-exchange-rate")]
     [HasPermission(InvestmentStrategiesPermission.ForceSeedExchangeRate)]
     [SwaggerOperation("Force seed exchange rate even if there are records in database")]
     public async Task<ActionResult> ForceSeedExchangeRate(CancellationToken token)

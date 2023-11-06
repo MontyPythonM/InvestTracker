@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using InvestTracker.InvestmentStrategies.Domain.Asset.Policies.AssetLimitPolicy;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies;
+using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Policies.AssetLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.PortfolioLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.StrategyLimitPolicy;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,10 +21,10 @@ internal static class Extensions
 
     private static IServiceCollection AddPolicies(this IServiceCollection services)
         => services
-            .AddSingleton<IAssetLimitPolicy, NoneAssetLimitPolicy>()
-            .AddSingleton<IAssetLimitPolicy, AdvisorAssetLimitPolicy>()
-            .AddSingleton<IAssetLimitPolicy, StandardInvestorAssetLimitPolicy>()
-            .AddSingleton<IAssetLimitPolicy, ProfessionalInvestorAssetLimitPolicy>()
+            .AddSingleton<IAssetTypeLimitPolicy, NoneAssetTypeLimitPolicy>()
+            .AddSingleton<IAssetTypeLimitPolicy, AdvisorAssetTypeLimitPolicy>()
+            .AddSingleton<IAssetTypeLimitPolicy, StandardInvestorAssetTypeLimitPolicy>()
+            .AddSingleton<IAssetTypeLimitPolicy, ProfessionalInvestorAssetTypeLimitPolicy>()
             .AddSingleton<IStrategyLimitPolicy, NoneStrategyLimitPolicy>()
             .AddSingleton<IStrategyLimitPolicy, AdvisorStrategyLimitPolicy>()
             .AddSingleton<IStrategyLimitPolicy, StandardInvestorStrategyLimitPolicy>()

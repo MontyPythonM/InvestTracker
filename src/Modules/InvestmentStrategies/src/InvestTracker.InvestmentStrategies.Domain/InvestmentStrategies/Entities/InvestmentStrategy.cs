@@ -1,4 +1,5 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Events;
+﻿using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.ValueObjects.Types;
+using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Events;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.PortfolioLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.StrategyLimitPolicy;
@@ -16,8 +17,16 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     public Note Note { get; private set; }
     public bool IsShareEnabled { get; private set; }
     public StakeholderId Owner { get; private set; }
-    public ISet<StakeholderId> Collaborators => _collaborators;
-    public ISet<Portfolio> Portfolios => _portfolios;
+    public IEnumerable<StakeholderId> Collaborators
+    {
+        get => _collaborators;
+        set => _collaborators = new HashSet<StakeholderId>(value);
+    }
+    public IEnumerable<Portfolio> Portfolios
+    {
+        get => _portfolios;
+        set => _portfolios = new HashSet<Portfolio>(value);
+    }
     
     private HashSet<StakeholderId> _collaborators;
     private HashSet<Portfolio> _portfolios;
@@ -114,4 +123,28 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     }
 
     public bool IsOwner(Guid userId) => Owner.Value == userId;
+    
+    internal void AddFinancialAsset(PortfolioId portfolioId, FinancialAssetId assetId)
+    {
+        var portfolio = Portfolios.FirstOrDefault(portfolio => portfolio.Id == portfolioId);
+        if (portfolio is null)
+        {
+            throw new PortfolioNotFoundException(Id, portfolioId);
+        }
+
+        portfolio.AddFinancialAsset(assetId);
+        IncrementVersion();
+    }
+
+    internal void RemoveFinancialAsset(PortfolioId portfolioId, FinancialAssetId assetId)
+    {
+        var portfolio = Portfolios.FirstOrDefault(portfolio => portfolio.Id == portfolioId);
+        if (portfolio is null)
+        {
+            throw new PortfolioNotFoundException(Id, portfolioId);
+        }
+        
+        portfolio.RemoveFinancialAsset(assetId);
+        IncrementVersion();
+    }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using InvestTracker.InvestmentStrategies.Domain.Asset.Consts;
+using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Consts;
 using InvestTracker.InvestmentStrategies.Infrastructure.Exceptions;
 using InvestTracker.InvestmentStrategies.Infrastructure.FileManagers.Csv;
 using InvestTracker.InvestmentStrategies.Infrastructure.Options;
@@ -105,7 +105,7 @@ internal sealed class NbpExchangeRateSeeder : IExchangeRateSeeder
         => await _investmentStrategiesDbContext.ExchangeRates.AnyAsync(token);
 
     private static bool IsCurrencySupported(string header)
-        => AssetConstants.AvailableCurrencies.Contains(GetCurrencyCode(header));
+        => Currencies.AvailableCurrencies.Contains(GetCurrencyCode(header));
     
     private static string GetCurrencyCode(string input)
     {
