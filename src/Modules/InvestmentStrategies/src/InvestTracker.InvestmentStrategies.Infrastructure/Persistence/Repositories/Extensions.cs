@@ -1,6 +1,6 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Collaborations.Repositories;
-using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Repositories;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,5 +13,5 @@ internal static class Extensions
             .AddScoped<IInvestmentStrategyRepository, InvestmentStrategyRepository>()
             .AddScoped<IStakeholderRepository, StakeholderRepository>()
             .AddScoped<ICollaborationRepository, CollaborationRepository>()
-            .AddScoped<IFinancialAssetRepository, FinancialAssetRepository>();
+            .AddScoped<IPortfolioRepository, PortfolioRepository>();
 }

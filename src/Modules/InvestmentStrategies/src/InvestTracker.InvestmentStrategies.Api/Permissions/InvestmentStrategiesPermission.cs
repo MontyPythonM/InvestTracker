@@ -9,5 +9,9 @@ public enum InvestmentStrategiesPermission
     ShareInvestmentStrategy,
     CreateCashAsset,
     CreateEdoAsset,
-    GetPortfolioFinancialAssets
+    GetPortfolioFinancialAssets,
+    GetPortfolios,
+    GetPortfolioDetails,
+    GetInvestmentStrategies,
+    GetInvestmentStrategyDetails
 }

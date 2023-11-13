@@ -1,5 +1,6 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Converters;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
@@ -26,12 +27,13 @@ internal class InvestmentStrategyConfiguration : IEntityTypeConfiguration<Invest
         builder.Property(strategy => strategy.Owner)
             .IsRequired()
             .HasConversion(s => s.Value, s => new StakeholderId(s));
-
-        builder
-            .HasMany(strategy => strategy.Portfolios)
-            .WithOne();
         
-        builder.Property(portfolio => portfolio.Collaborators)
-            .HasConversion(new IndirectRelationConverter<StakeholderId>());
+        builder.Property(strategy => strategy.Portfolios)
+            .HasConversion(new IndirectRelationValueConverter<PortfolioId>())
+            .Metadata.SetValueComparer(new IndirectRelationValueComparer<PortfolioId>());
+
+        builder.Property(strategy => strategy.Collaborators)
+            .HasConversion(new IndirectRelationValueConverter<StakeholderId>())
+            .Metadata.SetValueComparer(new IndirectRelationValueComparer<StakeholderId>());
     }
 }

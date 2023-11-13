@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Consts;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Consts;
 using InvestTracker.InvestmentStrategies.Infrastructure.Exceptions;
 using InvestTracker.InvestmentStrategies.Infrastructure.FileManagers.Csv;
 using InvestTracker.InvestmentStrategies.Infrastructure.Options;

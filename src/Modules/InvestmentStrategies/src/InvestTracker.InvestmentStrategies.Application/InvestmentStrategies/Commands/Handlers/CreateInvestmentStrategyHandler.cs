@@ -23,7 +23,7 @@ internal sealed class CreateInvestmentStrategyHandler : ICommandHandler<CreateIn
     public async Task HandleAsync(CreateInvestmentStrategy command, CancellationToken token)
     {
         var currentUserId = _requestContext.Identity.UserId;
-        var existingUserStrategies = await _investmentStrategyRepository.GetOwnerStrategies(currentUserId, token);
+        var existingUserStrategies = await _investmentStrategyRepository.GetOwnerStrategiesAsync(currentUserId, token);
         
         var strategy = InvestmentStrategy.Create(command.Title, currentUserId, command.Note, 
             _requestContext.Identity.Subscription, _policies, existingUserStrategies);

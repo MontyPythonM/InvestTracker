@@ -33,19 +33,13 @@
 
         public override int GetHashCode() => Value.GetHashCode();
 
-        public static bool operator ==(TypeId a, TypeId b)
+        public static bool operator ==(TypeId left, TypeId right)
         {
-            if (ReferenceEquals(a, b))
+            if (ReferenceEquals(left, null) ^ ReferenceEquals(right, null))
             {
-                return true;
+                return false;
             }
-
-            if (a is not null && b is not null)
-            {
-                return a.Value.Equals(b.Value);
-            }
-
-            return false;
+            return ReferenceEquals(left, right) || left.Equals(right);
         }
 
         public static bool operator !=(TypeId a, TypeId b) => !(a == b);

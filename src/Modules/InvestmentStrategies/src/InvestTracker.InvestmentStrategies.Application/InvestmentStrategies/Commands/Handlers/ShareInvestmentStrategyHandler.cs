@@ -1,6 +1,5 @@
-﻿using InvestTracker.InvestmentStrategies.Application.InvestmentStrategies.Exceptions;
-using InvestTracker.InvestmentStrategies.Application.Stakeholders.Exceptions;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Repositories;
+﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Repositories;
+using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Repositories;
 using InvestTracker.Shared.Abstractions.Commands;
 using InvestTracker.Shared.Abstractions.Context;

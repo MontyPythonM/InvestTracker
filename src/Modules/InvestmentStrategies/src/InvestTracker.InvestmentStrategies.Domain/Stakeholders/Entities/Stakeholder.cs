@@ -35,9 +35,18 @@ public class Stakeholder : AggregateRoot<StakeholderId>
         }
 
         Role = role;
+        IncrementVersion();
     }
-    
-    public void Lock() => IsActive = false;
-    
-    public void Unlock() => IsActive = true;
+
+    public void Lock()
+    {
+        IsActive = false;
+        IncrementVersion();
+    }
+
+    public void Unlock()
+    {
+        IsActive = true;
+        IncrementVersion();
+    }
 }

@@ -1,4 +1,4 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.ValueObjects.Types;
+﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Converters;
