@@ -29,11 +29,11 @@ internal class InvestmentStrategyConfiguration : IEntityTypeConfiguration<Invest
             .HasConversion(s => s.Value, s => new StakeholderId(s));
         
         builder.Property(strategy => strategy.Portfolios)
-            .HasConversion(new IndirectRelationValueConverter<PortfolioId>())
-            .Metadata.SetValueComparer(new IndirectRelationValueComparer<PortfolioId>());
+            .HasConversion(new GuidCollectionValueConverter())
+            .Metadata.SetValueComparer(new GuidCollectionValueComparer());
 
         builder.Property(strategy => strategy.Collaborators)
-            .HasConversion(new IndirectRelationValueConverter<StakeholderId>())
-            .Metadata.SetValueComparer(new IndirectRelationValueComparer<StakeholderId>());
+            .HasConversion(new GuidCollectionValueConverter())
+            .Metadata.SetValueComparer(new GuidCollectionValueComparer());
     }
 }

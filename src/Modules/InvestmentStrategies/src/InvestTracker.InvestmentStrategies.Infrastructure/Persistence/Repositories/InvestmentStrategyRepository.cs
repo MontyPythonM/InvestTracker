@@ -27,23 +27,26 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
             .Where(strategy => strategy.Owner.Equals(ownerId))
             .ToListAsync(token);
     }
-
-    // TODO nie działa bo ma problem:
-    // The property 'InvestmentStrategy.Portfolios' is a collection or enumeration type with a value converter but with no value comparer.
-    // Set a value comparer to ensure the collection/enumeration elements are compared correctly.
-    public async Task<IEnumerable<PortfolioId>> GetOwnerPortfoliosAsync(StakeholderId ownerId, bool asNoTracking = false, CancellationToken token = default)
+    
+    public async Task<IEnumerable<PortfolioId>> GetOwnerPortfoliosAsync(StakeholderId ownerId, bool asNoTracking = false, 
+        CancellationToken token = default)
     {
-        return await _context.InvestmentStrategies
-            .AsNoTracking()
+        var strategies = await _context.InvestmentStrategies
+            .ApplyAsNoTracking(asNoTracking)
             .Where(strategy => strategy.Owner.Equals(ownerId))
-            .SelectMany(strategy => strategy.Portfolios)
             .ToListAsync(token);
+
+        var portfolios = strategies
+            .SelectMany(strategy => strategy.Portfolios)
+            .Select(portfolio => new PortfolioId(portfolio));
+
+        return portfolios;
     }
     
     public async Task<InvestmentStrategy?> GetByPortfolioAsync(PortfolioId portfolioId, CancellationToken token = default)
     {
         return await _context.InvestmentStrategies
-            .SingleOrDefaultAsync(strategy => strategy.Portfolios.Contains(portfolioId), token);
+            .SingleOrDefaultAsync(strategy => strategy.Portfolios.Contains(portfolioId.Value), token);
     }
 
     public async Task<IEnumerable<InvestmentStrategy>> GetByCollaborationAsync(StakeholderId advisorId, 

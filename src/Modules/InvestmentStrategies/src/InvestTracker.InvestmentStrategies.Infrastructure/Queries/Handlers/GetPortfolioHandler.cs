@@ -4,6 +4,7 @@ using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
+using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Repositories;
 using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.Queries;
 using InvestTracker.Shared.Abstractions.Time;
@@ -24,12 +25,12 @@ internal sealed class GetPortfolioHandler : IQueryHandler<GetPortfolio, Portfoli
         _timeProvider = timeProvider;
     }
     
+    // TODO: Add GetFinancialAssets implementation after added inflation rates data collector
     public async Task<PortfolioDetailsDto> HandleAsync(GetPortfolio query, CancellationToken token = default)
     {
         var portfolio = await _context.Portfolios
             .AsNoTracking()
-            .Include(portfolio => portfolio.Cash)
-            .Include(portfolio => portfolio.EdoTreasuryBonds)
+            .IncludeAssetsAndTransactions()
             .SingleOrDefaultAsync(portfolio => portfolio.Id == query.PortfolioId, token);
 
         if (portfolio is null)

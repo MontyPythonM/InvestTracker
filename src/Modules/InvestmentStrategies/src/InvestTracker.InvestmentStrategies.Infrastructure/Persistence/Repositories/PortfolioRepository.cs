@@ -18,25 +18,32 @@ internal sealed class PortfolioRepository : IPortfolioRepository
 
     public async Task<Portfolio?> GetAsync(PortfolioId id, CancellationToken token = default)
     {
-        return await _context.Portfolios.SingleOrDefaultAsync(portfolio => portfolio!.Id == id, token);
+        return await _context.Portfolios
+            .IncludeAssetsAndTransactions()
+            .SingleOrDefaultAsync(portfolio => portfolio!.Id == id, token);
     }
 
-    public async Task<IEnumerable<Portfolio>> GetByInvestmentStrategyAsync(InvestmentStrategyId investmentStrategyId,
-        CancellationToken token = default)
+    public async Task<IEnumerable<Portfolio>> GetByInvestmentStrategyAsync(InvestmentStrategyId investmentStrategyId, 
+        bool asNoTracking = false, CancellationToken token = default)
     {
         return await _context.Portfolios
+            .ApplyAsNoTracking(asNoTracking)
+            .IncludeAssetsAndTransactions()
             .Where(portfolio => portfolio.InvestmentStrategyId == investmentStrategyId)
             .ToListAsync(token);
     }
 
-    public async Task<IEnumerable<Portfolio>> GetOwnerPortfoliosAsync(StakeholderId ownerId, bool asNoTracking = false, CancellationToken token = default)
+    public async Task<IEnumerable<Portfolio>> GetOwnerPortfoliosAsync(StakeholderId ownerId, bool asNoTracking = false, 
+        CancellationToken token = default)
     {
         var ownerPortfolios = await _context.InvestmentStrategies
+            .ApplyAsNoTracking(asNoTracking)
             .Where(strategy => strategy.Owner == ownerId)
             .SelectMany(strategy => strategy.Portfolios)
             .ToListAsync(token);
 
         return await _context.Portfolios
+            .ApplyAsNoTracking(asNoTracking)
             .Where(portfolio => ownerPortfolios.Contains(portfolio.Id))
             .ToListAsync(token);
     }

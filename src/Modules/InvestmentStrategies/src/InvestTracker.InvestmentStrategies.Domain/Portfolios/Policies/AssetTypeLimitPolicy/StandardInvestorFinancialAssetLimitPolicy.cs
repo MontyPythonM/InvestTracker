@@ -15,8 +15,8 @@ internal class StandardInvestorFinancialAssetLimitPolicy : IFinancialAssetLimitP
     public bool CanAddAsset(IFinancialAsset asset, IEnumerable<IFinancialAsset> existingAssets)
     {
         var assets = existingAssets.ToList();
-        
-        return !IsAssetTypesNumberExceed(assets) && !IsTryAddAnotherConcreteCurrencyCash(asset, assets);    }
+        return !IsAssetTypesNumberExceed(assets) && !IsTryAddAnotherConcreteCurrencyCash(asset, assets);    
+    }
 
     private static bool IsAssetTypesNumberExceed(IEnumerable<IFinancialAsset> existingAssets)
     {
@@ -24,7 +24,7 @@ internal class StandardInvestorFinancialAssetLimitPolicy : IFinancialAssetLimitP
             .Select(asset => asset.GetType())
             .Distinct();
         
-        return existingAssetTypes.Count() < StandardInvestorAssetLimit;
+        return existingAssetTypes.Count() > StandardInvestorAssetLimit;
     }
 
     private static bool IsTryAddAnotherConcreteCurrencyCash(IFinancialAsset asset, 

@@ -43,7 +43,7 @@ internal sealed class AddPortfolioHandler : ICommandHandler<AddPortfolio>
             throw new IncorrectInvestmentStrategyOwnerException(currentUser);
         }
 
-        var existingPortfolios = await _portfolioRepository.GetByInvestmentStrategyAsync(strategyId, token);
+        var existingPortfolios = await _portfolioRepository.GetByInvestmentStrategyAsync(strategyId, true, token);
         var portfolioPolicyLimitDto = new PortfolioPolicyLimitDto(existingPortfolios.ToHashSet(), 
             _requestContext.Identity.Subscription, _policies);
 

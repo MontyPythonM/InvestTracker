@@ -15,24 +15,24 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     public Note Note { get; private set; }
     public bool IsShareEnabled { get; private set; }
     public StakeholderId Owner { get; private set; }
-    public ICollection<StakeholderId> Collaborators
+    public ICollection<Guid> Collaborators
     {
         get => _collaborators;
-        set => _collaborators = new HashSet<StakeholderId>(value);
+        set => _collaborators = new List<Guid>(value);
     }
-    public ICollection<PortfolioId> Portfolios
+    public ICollection<Guid> Portfolios
     {
         get => _portfolios;
-        set => _portfolios = new HashSet<PortfolioId>(value);
+        set => _portfolios = new List<Guid>(value);
     }
     
-    private HashSet<StakeholderId> _collaborators;
-    private HashSet<PortfolioId> _portfolios;
+    private List<Guid> _collaborators;
+    private List<Guid> _portfolios;
 
     private InvestmentStrategy()
     {
-        _collaborators = new HashSet<StakeholderId>();
-        _portfolios = new HashSet<PortfolioId>();
+        _collaborators = new List<Guid>();
+        _portfolios = new List<Guid>();
     }
 
     private InvestmentStrategy(InvestmentStrategyId id, Title title, StakeholderId owner, Note note)
@@ -42,8 +42,8 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         Note = note;
         IsShareEnabled = false;
         Owner = owner;
-        _collaborators = new HashSet<StakeholderId>();
-        _portfolios = new HashSet<PortfolioId>();
+        _collaborators = new List<Guid>();
+        _portfolios = new List<Guid>();
     }
 
     public static InvestmentStrategy Create(Title title, StakeholderId owner, Note note, Subscription subscription, 
