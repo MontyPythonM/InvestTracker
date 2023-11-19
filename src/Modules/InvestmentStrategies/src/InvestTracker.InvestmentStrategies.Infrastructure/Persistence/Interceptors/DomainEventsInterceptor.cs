@@ -27,9 +27,9 @@ internal sealed class DomainEventsInterceptor : SaveChangesInterceptor
             .Select(entry => entry.Entity)
             .SelectMany(root =>
             {
-                var @events = root.Events.ToList();
+                var events = root.Events.ToList();
                 root.ClearEvents();
-                return @events;
+                return events;
             })
             .ToArray();
 

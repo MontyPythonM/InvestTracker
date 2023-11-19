@@ -29,8 +29,8 @@ internal class InvestmentStrategiesDbContext : DbContext
     public DbSet<Stakeholder> Stakeholders { get; set; }
     public DbSet<ExchangeRate> ExchangeRates { get; set; }
     
-    public InvestmentStrategiesDbContext(DbContextOptions<InvestmentStrategiesDbContext> options, DomainEventsInterceptor domainEventsInterceptor) 
-        : base(options)
+    public InvestmentStrategiesDbContext(DbContextOptions<InvestmentStrategiesDbContext> options, 
+        DomainEventsInterceptor domainEventsInterceptor) : base(options)
     {
         _domainEventsInterceptor = domainEventsInterceptor;
     }

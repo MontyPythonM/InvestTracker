@@ -1,8 +1,14 @@
-﻿namespace InvestTracker.Shared.Abstractions.DDD.Types;
+﻿using InvestTracker.Shared.Abstractions.Auditable;
 
-public abstract class AggregateRoot
+namespace InvestTracker.Shared.Abstractions.DDD.Types;
+
+public abstract class AggregateRoot : IAuditable
 {
     public int Version { get; private set; }
+    public DateTime CreatedAt { get; set; }
+    public Guid CreatedBy { get; set; }
+    public DateTime? ModifiedAt { get; set; }
+    public Guid? ModifiedBy { get; set; }
     public IEnumerable<IDomainEvent> Events => _events;
     
     private List<IDomainEvent> _events = new();

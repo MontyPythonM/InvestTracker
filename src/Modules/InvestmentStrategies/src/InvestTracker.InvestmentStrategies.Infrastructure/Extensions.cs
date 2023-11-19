@@ -21,7 +21,7 @@ internal static class Extensions
         services.AddSingleton<DomainEventsInterceptor>();
         
         return services
-            .AddPostgres<InvestmentStrategiesDbContext>()
+            .AddPostgres<InvestmentStrategiesDbContext>(useAuditableEntities: true)
             .AddRepositories()
             .AddFileManagers()
             .AddDataCollectors();

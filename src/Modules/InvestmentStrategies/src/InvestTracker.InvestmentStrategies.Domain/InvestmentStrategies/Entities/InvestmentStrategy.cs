@@ -18,24 +18,8 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     public ICollection<RelatedCollaborators> Collaborators { get; set; } = new List<RelatedCollaborators>();
     public ICollection<RelatedPortfolios> Portfolios { get; set; } = new List<RelatedPortfolios>();
     
-    // public ICollection<RelatedCollaborators> Collaborators
-    // {
-    //     get => _collaborators;
-    //     set => _collaborators = new List<RelatedCollaborators>(value);
-    // }
-    // public ICollection<Guid> Portfolios
-    // {
-    //     get => _portfolios;
-    //     set => _portfolios = new List<Guid>(value);
-    // }
-    
-    //private List<Guid> _collaborators;
-    //private List<Guid> _portfolios;
-
     private InvestmentStrategy()
     {
-        //_collaborators = new List<RelatedCollaborators>();
-        //_portfolios = new List<Guid>();
     }
 
     private InvestmentStrategy(InvestmentStrategyId id, Title title, StakeholderId owner, Note note)
@@ -45,8 +29,6 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         Note = note;
         IsShareEnabled = false;
         Owner = owner;
-        // Collaborators = new List<Guid>();
-        // Portfolios = new List<Guid>();
     }
 
     public static InvestmentStrategy Create(Title title, StakeholderId owner, Note note, Subscription subscription, 
