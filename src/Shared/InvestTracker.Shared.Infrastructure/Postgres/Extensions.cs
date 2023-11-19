@@ -1,44 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using InvestTracker.Shared.Infrastructure.Postgres.Interceptors;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InvestTracker.Shared.Infrastructure.Postgres;
 
 public static class Extensions
 {
-    public static IServiceCollection AddPostgres<T>(this IServiceCollection services, bool useLazyLoading = false)
-        where T : DbContext
+    public static IServiceCollection AddPostgres<T>(this IServiceCollection services, bool useLazyLoading = false, 
+        bool useAuditableEntities = false) where T : DbContext
     {
-        var options = services.GetOptions<PostgresOptions>(PostgresOptions.SectionName);
+        if (useAuditableEntities)
+            services.AddSingleton<AuditableEntitiesInterceptor>();
+        
         services.AddDbContext<T>(option =>
             {
+                using var serviceProvider = services.BuildServiceProvider();
+                var options = services.GetOptions<PostgresOptions>(PostgresOptions.SectionName);
+                
                 option.UseNpgsql(options.ConnectionString);
 
                 if (useLazyLoading)
-                {
                     option.UseLazyLoadingProxies();
+                
+                if (useAuditableEntities)
+                {
+                    var auditableInterceptor = serviceProvider.GetRequiredService<AuditableEntitiesInterceptor>();
+                    option.AddInterceptors(auditableInterceptor);
                 }
             }
         );
         
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        
-        return services;
-    }
-    
-    public static IServiceCollection AddPostgres<T>(this IServiceCollection services, string connectionString, 
-        bool useLazyLoading = false) where T : DbContext
-    {
-        services.AddDbContext<T>(option =>
-            {
-                option.UseNpgsql(connectionString);
-
-                if (useLazyLoading)
-                {
-                    option.UseLazyLoadingProxies();
-                }
-            }
-        );
-        
         return services;
     }
 }

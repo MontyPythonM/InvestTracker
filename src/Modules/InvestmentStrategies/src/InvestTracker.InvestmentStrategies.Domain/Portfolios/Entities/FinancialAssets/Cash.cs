@@ -3,15 +3,20 @@ using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Amount;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
+using InvestTracker.Shared.Abstractions.Auditable;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 
-public class Cash : IFinancialAsset
+public class Cash : IFinancialAsset, IAuditable
 {
     public FinancialAssetId Id { get; private set; }
     public Currency Currency { get; private set; }
     public Note Note { get; private set; }
+    public DateTime CreatedAt { get; set; }
+    public Guid CreatedBy { get; set; }
+    public DateTime? ModifiedAt { get; set; }
+    public Guid? ModifiedBy { get; set; }
     public IEnumerable<AmountTransaction> Transactions
     {
         get => _transactions;

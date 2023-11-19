@@ -5,11 +5,12 @@ using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
+using InvestTracker.Shared.Abstractions.Auditable;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 
-public class EdoTreasuryBond : IFinancialAsset
+public class EdoTreasuryBond : IFinancialAsset, IAuditable
 {
     private const int NominalUnitValue = 100;
     private const int InvestmentDurationYears = 10;
@@ -22,6 +23,10 @@ public class EdoTreasuryBond : IFinancialAsset
     public Currency Currency { get; private set; }
     public Note Note { get; private set; }
     public bool IsActive { get; private set; } = true;
+    public DateTime CreatedAt { get; set; }
+    public Guid CreatedBy { get; set; }
+    public DateTime? ModifiedAt { get; set; }
+    public Guid? ModifiedBy { get; set; }
     public IEnumerable<VolumeTransaction> Transactions
     {
         get => _transactions;
