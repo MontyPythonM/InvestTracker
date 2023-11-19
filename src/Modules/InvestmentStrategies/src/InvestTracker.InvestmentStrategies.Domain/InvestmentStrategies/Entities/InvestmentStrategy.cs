@@ -1,10 +1,8 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Events;
+﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Events;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Exceptions;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.PortfolioLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.StrategyLimitPolicy;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 using InvestTracker.Shared.Abstractions.DDD.Types;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
@@ -17,24 +15,27 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     public Note Note { get; private set; }
     public bool IsShareEnabled { get; private set; }
     public StakeholderId Owner { get; private set; }
-    public IEnumerable<StakeholderId> Collaborators
-    {
-        get => _collaborators;
-        set => _collaborators = new HashSet<StakeholderId>(value);
-    }
-    public IEnumerable<Portfolio> Portfolios
-    {
-        get => _portfolios;
-        set => _portfolios = new HashSet<Portfolio>(value);
-    }
+    public ICollection<RelatedCollaborators> Collaborators { get; set; } = new List<RelatedCollaborators>();
+    public ICollection<RelatedPortfolios> Portfolios { get; set; } = new List<RelatedPortfolios>();
     
-    private HashSet<StakeholderId> _collaborators;
-    private HashSet<Portfolio> _portfolios;
+    // public ICollection<RelatedCollaborators> Collaborators
+    // {
+    //     get => _collaborators;
+    //     set => _collaborators = new List<RelatedCollaborators>(value);
+    // }
+    // public ICollection<Guid> Portfolios
+    // {
+    //     get => _portfolios;
+    //     set => _portfolios = new List<Guid>(value);
+    // }
+    
+    //private List<Guid> _collaborators;
+    //private List<Guid> _portfolios;
 
     private InvestmentStrategy()
     {
-        _collaborators = new HashSet<StakeholderId>();
-        _portfolios = new HashSet<Portfolio>();
+        //_collaborators = new List<RelatedCollaborators>();
+        //_portfolios = new List<Guid>();
     }
 
     private InvestmentStrategy(InvestmentStrategyId id, Title title, StakeholderId owner, Note note)
@@ -44,8 +45,8 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         Note = note;
         IsShareEnabled = false;
         Owner = owner;
-        _collaborators = new HashSet<StakeholderId>();
-        _portfolios = new HashSet<Portfolio>();
+        // Collaborators = new List<Guid>();
+        // Portfolios = new List<Guid>();
     }
 
     public static InvestmentStrategy Create(Title title, StakeholderId owner, Note note, Subscription subscription, 
@@ -70,26 +71,6 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         return investmentStrategy;
     }
 
-    public void AddPortfolio(PortfolioId id, Title title, Note note, Description description, 
-        Subscription subscription, IEnumerable<IPortfolioLimitPolicy> policies)
-    {
-        var policy = policies.SingleOrDefault(policy => policy.CanBeApplied(subscription));
-
-        if (policy is null)
-        {
-            throw new PortfolioLimitPolicyNotFoundException(subscription);
-        }
-
-        if (!policy.CanAddPortfolio(_portfolios))
-        {
-            throw new PortfolioLimitExceedException(subscription);
-        }
-
-        var portfolio = new Portfolio(id, title, note, description);
-        _portfolios.Add(portfolio);
-        IncrementVersion();
-    }
-
     public void AssignCollaborator(StakeholderId advisorId, StakeholderId principalId)
     {
         if (IsShareEnabled is false)
@@ -107,7 +88,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
             return;
         }
 
-        _collaborators.Add(advisorId);
+        Collaborators.Add(new RelatedCollaborators(advisorId));
         IncrementVersion();
     }
 
@@ -118,33 +99,27 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
             throw new OwnerIsNotPrincipalOfCollaborationException(Id);
         }
         
-        _collaborators.Remove(advisorId);
+        Collaborators.Remove(new RelatedCollaborators(advisorId));
         IncrementVersion();
     }
 
-    public bool IsOwner(Guid userId) => Owner.Value == userId;
+    public bool IsOwner(StakeholderId stakeholderId) => Owner == stakeholderId;
+
+    public bool IsCollaborator(StakeholderId stakeholderId)
+        => Collaborators.Select(c => c.CollaboratorId).Contains(stakeholderId.Value);
     
-    internal void AddFinancialAsset(PortfolioId portfolioId, FinancialAssetId assetId)
+    public bool IsStakeholderHaveAccess(StakeholderId stakeholderId)
+        => IsOwner(stakeholderId) || (IsCollaborator(stakeholderId) && IsShareEnabled);
+    
+    internal void AddPortfolio(PortfolioId portfolioId)
     {
-        var portfolio = Portfolios.FirstOrDefault(portfolio => portfolio.Id == portfolioId);
-        if (portfolio is null)
-        {
-            throw new PortfolioNotFoundException(Id, portfolioId);
-        }
-
-        portfolio.AddFinancialAsset(assetId);
+        Portfolios.Add(new RelatedPortfolios(portfolioId));
         IncrementVersion();
     }
-
-    internal void RemoveFinancialAsset(PortfolioId portfolioId, FinancialAssetId assetId)
+    
+    internal void RemovePortfolio(PortfolioId portfolioId)
     {
-        var portfolio = Portfolios.FirstOrDefault(portfolio => portfolio.Id == portfolioId);
-        if (portfolio is null)
-        {
-            throw new PortfolioNotFoundException(Id, portfolioId);
-        }
-        
-        portfolio.RemoveFinancialAsset(assetId);
+        Portfolios.Remove(new RelatedPortfolios(portfolioId));
         IncrementVersion();
     }
 }

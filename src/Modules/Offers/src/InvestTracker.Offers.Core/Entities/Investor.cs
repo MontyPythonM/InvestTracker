@@ -7,4 +7,15 @@ public class Investor
     public string Email { get; set; } = string.Empty;
     public virtual ICollection<Collaboration> Collaborations { get; set; } = new List<Collaboration>();
     public virtual ICollection<Invitation> Invitations { get; set; } = new List<Invitation>();
+
+    public Investor()
+    {
+    }
+
+    public Investor(Guid id, string fullName, string email)
+    {
+        Id = id;
+        FullName = fullName;
+        Email = email;
+    }
 }

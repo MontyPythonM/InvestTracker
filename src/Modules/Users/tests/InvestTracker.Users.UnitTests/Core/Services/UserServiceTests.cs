@@ -25,11 +25,11 @@ public class UserServiceTests
     public async Task SetRoleAsync_ShouldThrowRoleNotFoundException_WhenRoleNotExist()
     {
         // arrange
-        var dto = GetSetRoleDto(Guid.NewGuid(), "not-existing-role");
+        var dto = GetSetRoleDto("not-existing-role");
         
         // act
         var exception = await Record.ExceptionAsync(() => 
-            _userService.SetRoleAsync(dto, CancellationToken.None));
+            _userService.SetRoleAsync(Guid.NewGuid(), dto, CancellationToken.None));
 
         // assert
         exception.ShouldNotBeNull();
@@ -48,7 +48,7 @@ public class UserServiceTests
         
         // act
         var exception = await Record.ExceptionAsync(() => 
-            _userService.SetRoleAsync(dto, CancellationToken.None));
+            _userService.SetRoleAsync(Guid.NewGuid(), dto, CancellationToken.None));
 
         // assert
         exception.ShouldNotBeNull();
@@ -65,14 +65,14 @@ public class UserServiceTests
             Value = SystemRole.BusinessAdministrator
         };
         
-        var dto = GetSetRoleDto(user.Id, SystemRole.SystemAdministrator);
+        var dto = GetSetRoleDto(SystemRole.SystemAdministrator);
         
         _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
         _timeProvider.Current().Returns(DateTime.Now);
         _requestContext.Identity.UserId.Returns(Guid.NewGuid());
         
         // act
-        await _userService.SetRoleAsync(dto, CancellationToken.None);
+        await _userService.SetRoleAsync(user.Id, dto, CancellationToken.None);
         
         // assert
         await _messageBroker.Received(1)
@@ -89,14 +89,14 @@ public class UserServiceTests
     {
         // arrange
         var user = GetUser();
-        var dto = GetSetRoleDto(user.Id);
+        var dto = GetSetRoleDto();
         
         _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
         _timeProvider.Current().Returns(DateTime.Now);
         _requestContext.Identity.UserId.Returns(Guid.NewGuid());
         
         // act
-        await _userService.SetRoleAsync(dto, CancellationToken.None);
+        await _userService.SetRoleAsync(user.Id, dto, CancellationToken.None);
         
         // assert
         user.Role.ShouldNotBeNull();
@@ -186,12 +186,8 @@ public class UserServiceTests
         IsActive = true
     };
     
-    private SetRoleDto GetSetRoleDto(Guid userId = default, string role = SystemRole.BusinessAdministrator) 
-        => new()
-        {
-            UserId = default ? Guid.NewGuid() : userId,
-            Role = role
-        };
+    private static SetRoleDto GetSetRoleDto(string role = SystemRole.BusinessAdministrator) 
+        => new() { Role = role };
     
     #endregion
 }

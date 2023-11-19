@@ -1,10 +1,6 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Consts;
-using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Dto;
-using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Entities;
-using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Entities.Assets;
-using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Policies.AssetLimitPolicy;
-using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.ValueObjects;
-using InvestTracker.Shared.Abstractions.Authorization;
+﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.Consts;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using InvestTracker.Shared.Infrastructure.Types;
 using Shouldly;
@@ -135,23 +131,11 @@ public class EdoTreasuryBondTests
     private static EdoTreasuryBond CreateEdoTreasuryBond(Volume volume, InterestRate firstYearInterestRate, Margin margin, DateTime purchaseDate)
         => new(
             "035B2CFD-B842-483B-ACFB-F5BFC45EE13A".ToGuid(),
-            "59AF8F84-53F4-4152-A1C2-5078A988850E".ToGuid(),
             volume,
             purchaseDate,
             firstYearInterestRate,
             margin,
-            new Note("Some short note about tested EDO bond"),
-            new AssetTypeLimitDto(
-                new HashSet<FinancialAsset>(),
-                SystemSubscription.StandardInvestor,
-                new List<IAssetTypeLimitPolicy>
-                {
-                    new NoneAssetTypeLimitPolicy(),
-                    new StandardInvestorAssetTypeLimitPolicy(),
-                    new ProfessionalInvestorAssetTypeLimitPolicy(),
-                    new AdvisorAssetTypeLimitPolicy()
-                }
-            )
+            new Note("Some short note about tested EDO bond")
         );
     
     private static decimal GetInvestmentYearCompletion(DateTime calculationDate, DateTime purchaseDate)

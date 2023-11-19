@@ -1,6 +1,6 @@
-﻿using InvestTracker.InvestmentStrategies.Application.Stakeholders.Exceptions;
-using InvestTracker.InvestmentStrategies.Domain.Collaborations.Entities;
+﻿using InvestTracker.InvestmentStrategies.Domain.Collaborations.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Collaborations.Repositories;
+using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Repositories;
 using InvestTracker.Shared.Abstractions.IntegrationEvents;
 using InvestTracker.Shared.Abstractions.Time;

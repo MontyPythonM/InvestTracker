@@ -1,6 +1,8 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Entities;
+﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
+using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
+using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Repositories;
@@ -24,6 +26,30 @@ internal sealed class StakeholderRepository : IStakeholderRepository
         return await _context.Stakeholders.AnyAsync(stakeholder => stakeholder.Id == id, token);
     }
 
+    public async Task<Subscription?> GetSubscriptionAsync(StakeholderId id, CancellationToken token = default)
+    {
+        return await _context.Stakeholders
+            .AsNoTracking()
+            .Where(s => s.Id.Equals(id))
+            .Select(stakeholder => stakeholder.Subscription)
+            .SingleOrDefaultAsync(token);
+    }
+    
+    public async Task<Subscription?> GetOwnerSubscription(PortfolioId portfolioId, CancellationToken token = default)
+    {
+        var ownerId = await _context.InvestmentStrategies
+            .AsNoTracking()
+            .Where(strategy => strategy.Portfolios.Any(portfolio => portfolio.PortfolioId.Equals(portfolioId.Value)))
+            .Select(strategy => strategy.Owner)
+            .SingleOrDefaultAsync(token);
+        
+        return await _context.Stakeholders
+            .AsNoTracking()
+            .Where(stakeholder => stakeholder.Id.Equals(ownerId))
+            .Select(stakeholder => stakeholder.Subscription)
+            .SingleOrDefaultAsync(token);
+    }
+    
     public async Task AddAsync(Stakeholder stakeholder, CancellationToken token = default)
     {
         await _context.Stakeholders.AddAsync(stakeholder, token);

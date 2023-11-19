@@ -5,14 +5,6 @@ namespace InvestTracker.Shared.Infrastructure.Postgres;
 
 public static class Extensions
 {
-    internal static IServiceCollection AddPostgresOptions(this IServiceCollection services)
-    {
-        var options = services.GetOptions<PostgresOptions>(PostgresOptions.SectionName);
-        services.AddSingleton(options);
-
-        return services;
-    }
-    
     public static IServiceCollection AddPostgres<T>(this IServiceCollection services, bool useLazyLoading = false)
         where T : DbContext
     {

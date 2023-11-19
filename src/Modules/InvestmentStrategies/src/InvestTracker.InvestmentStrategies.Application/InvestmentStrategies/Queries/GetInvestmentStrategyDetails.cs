@@ -1,0 +1,7 @@
+﻿using InvestTracker.InvestmentStrategies.Application.InvestmentStrategies.Dto;
+using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
+using InvestTracker.Shared.Abstractions.Queries;
+
+namespace InvestTracker.InvestmentStrategies.Application.InvestmentStrategies.Queries;
+
+public record GetInvestmentStrategyDetails(InvestmentStrategyId InvestmentStrategyId) : IQuery<InvestmentStrategyDetailsDto>;

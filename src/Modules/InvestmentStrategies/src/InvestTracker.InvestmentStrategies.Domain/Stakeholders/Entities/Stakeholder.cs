@@ -35,9 +35,29 @@ public class Stakeholder : AggregateRoot<StakeholderId>
         }
 
         Role = role;
+        IncrementVersion();
     }
-    
-    public void Lock() => IsActive = false;
-    
-    public void Unlock() => IsActive = true;
+
+    public void SetSubscription(Subscription subscription)
+    {
+        if (!IsActive)
+        {
+            throw new InactiveStakeholderException(Id);
+        }
+        
+        Subscription = subscription;
+        IncrementVersion();
+    }
+
+    public void Lock()
+    {
+        IsActive = false;
+        IncrementVersion();
+    }
+
+    public void Unlock()
+    {
+        IsActive = true;
+        IncrementVersion();
+    }
 }

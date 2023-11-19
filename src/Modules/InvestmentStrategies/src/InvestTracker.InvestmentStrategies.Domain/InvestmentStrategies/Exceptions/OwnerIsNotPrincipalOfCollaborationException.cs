@@ -6,7 +6,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Excepti
 internal class OwnerIsNotPrincipalOfCollaborationException : InvestTrackerException
 {
     public OwnerIsNotPrincipalOfCollaborationException(InvestmentStrategyId investmentStrategyId) 
-        : base($"Cannot add collaboration in investment strategy with ID: {investmentStrategyId}, because collaboration principal and strategy owner is different persons.")
+        : base($"Cannot add collaboration in investment strategy with ID: {investmentStrategyId.Value}, because collaboration principal and strategy owner is different persons.")
     {
     }
 }

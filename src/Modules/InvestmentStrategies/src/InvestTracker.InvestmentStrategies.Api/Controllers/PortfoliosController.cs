@@ -1,9 +1,9 @@
 ﻿using InvestTracker.InvestmentStrategies.Api.Controllers.Base;
 using InvestTracker.InvestmentStrategies.Api.Dto;
 using InvestTracker.InvestmentStrategies.Api.Permissions;
-using InvestTracker.InvestmentStrategies.Application.FinancialAssets.Commands;
-using InvestTracker.InvestmentStrategies.Application.FinancialAssets.Queries;
-using InvestTracker.InvestmentStrategies.Application.FinancialAssets.Queries.Dto;
+using InvestTracker.InvestmentStrategies.Application.Portfolios.Commands;
+using InvestTracker.InvestmentStrategies.Application.Portfolios.Dto;
+using InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
 using InvestTracker.Shared.Abstractions.Commands;
 using InvestTracker.Shared.Abstractions.Queries;
 using InvestTracker.Shared.Infrastructure.Authorization;
@@ -23,6 +23,12 @@ internal class PortfoliosController : ApiControllerBase
         _queryDispatcher = queryDispatcher;
     }
     
+    [HttpGet("{portfolioId:guid}")]
+    [HasPermission(InvestmentStrategiesPermission.GetPortfolioDetails)]
+    [SwaggerOperation("Returns portfolio details")]
+    public async Task<ActionResult<PortfolioDetailsDto>> GetPortfolioDetails(Guid portfolioId, CancellationToken token)
+        => OkOrNotFound(await _queryDispatcher.QueryAsync(new GetPortfolio(portfolioId), token));
+    
     [HttpPost("{portfolioId:guid}/cash")]
     [HasPermission(InvestmentStrategiesPermission.CreateCashAsset)]    
     [SwaggerOperation("Create new cash financial asset type in portfolio and optionally set initial amount")]
@@ -41,10 +47,4 @@ internal class PortfoliosController : ApiControllerBase
         await _commandDispatcher.SendAsync(command, token);
         return Ok();
     }
-
-    [HttpGet("{portfolioId:guid}/financial-assets")]
-    [HasPermission(InvestmentStrategiesPermission.GetPortfolioFinancialAssets)]
-    [SwaggerOperation("Get list of financial assets for selected portfolio")]
-    public async Task<ActionResult<IEnumerable<FinancialAssetDto>>> GetPortfolioFinancialAsset(Guid portfolioId, CancellationToken token)
-        => OkOrNotFound(await _queryDispatcher.QueryAsync(new GetPortfolioFinancialAssets(portfolioId), token));
 }

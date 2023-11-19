@@ -1,6 +1,7 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,68 +15,47 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
     {
         _context = context;
     }
-    
-    public async Task<IEnumerable<InvestmentStrategy>> GetOwnerStrategies(StakeholderId ownerId, CancellationToken token = default)
-    {
-        return await _context.InvestmentStrategies
-            .Where(strategy => strategy.Owner == ownerId)
-            .ToListAsync(token);
-    }
-
-    public async Task<IEnumerable<PortfolioId>> GetOwnerPortfolios(StakeholderId ownerId, bool asNoTracking = false, 
-        CancellationToken token = default)
-    {
-        var query = _context.InvestmentStrategies
-            .Where(strategy => strategy.Owner == ownerId)
-            .SelectMany(strategy => strategy.Portfolios)
-            .AsQueryable();
-        
-        if (asNoTracking)
-        {
-            query.AsNoTracking();
-        }
-
-        return await query
-            .Select(portfolio => portfolio.Id)
-            .ToListAsync(token);
-    }
-
-    public async Task<IEnumerable<PortfolioId>> GetStrategyPortfolios(InvestmentStrategyId id, bool asNoTracking = false, 
-        CancellationToken token = default)
-    {
-        var query = _context.InvestmentStrategies
-            .Where(strategy => strategy.Id == id)
-            .SelectMany(strategy => strategy.Portfolios)
-            .AsQueryable();
-        
-        if (asNoTracking)
-        {
-            query.AsNoTracking();
-        }
-
-        return await query
-            .Select(portfolio => portfolio.Id)
-            .ToListAsync(token);
-    }
 
     public async Task<InvestmentStrategy?> GetAsync(InvestmentStrategyId id, CancellationToken token = default)
     {
         return await _context.InvestmentStrategies.SingleOrDefaultAsync(strategy => strategy.Id == id, token);
     }
-
-    public async Task<InvestmentStrategy?> GetByPortfolioAsync(PortfolioId portfolioId, CancellationToken token = default)
+    
+    public async Task<IEnumerable<InvestmentStrategy>> GetOwnerStrategiesAsync(StakeholderId ownerId, CancellationToken token = default)
     {
         return await _context.InvestmentStrategies
-            .SingleOrDefaultAsync(strategy => strategy.Portfolios
-                .Select(portfolio => portfolio.Id)
-                .Contains(portfolioId), token);
+            .Where(strategy => strategy.Owner.Equals(ownerId))
+            .ToListAsync(token);
+    }
+    
+    public async Task<IEnumerable<PortfolioId>> GetOwnerPortfoliosAsync(StakeholderId ownerId, bool asNoTracking = false, 
+        CancellationToken token = default)
+    {
+        var strategies = await _context.InvestmentStrategies
+            .ApplyAsNoTracking(asNoTracking)
+            .Where(strategy => strategy.Owner.Equals(ownerId))
+            .ToListAsync(token);
+
+        var portfolios = strategies
+            .SelectMany(strategy => strategy.Portfolios)
+            .Select(portfolio => new PortfolioId(portfolio.PortfolioId));
+
+        return portfolios;
+    }
+    
+    public async Task<InvestmentStrategy?> GetByPortfolioAsync(PortfolioId portfolioId, bool asNoTracking = false, 
+        CancellationToken token = default)
+    {
+        return await _context.InvestmentStrategies
+            .ApplyAsNoTracking(asNoTracking)
+            .SingleOrDefaultAsync(strategy => strategy.Portfolios.Select(p => p.PortfolioId).Contains(portfolioId.Value), token);
     }
 
     public async Task<IEnumerable<InvestmentStrategy>> GetByCollaborationAsync(StakeholderId advisorId, 
         StakeholderId principalId, CancellationToken token = default)
     {
         return await _context.InvestmentStrategies
-            .Where(strategy => strategy.Owner == principalId && strategy.Collaborators.Contains(advisorId))
+            .Where(strategy => strategy.Owner == principalId && strategy.Collaborators.Select(c => c.CollaboratorId).Contains(advisorId))
             .ToListAsync(token);
     }
 

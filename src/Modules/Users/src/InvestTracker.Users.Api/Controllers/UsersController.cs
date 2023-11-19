@@ -39,12 +39,12 @@ internal class UsersController : ApiControllerBase
     public async Task<ActionResult<UserDetailsDto?>> GetUserDetails(Guid id, CancellationToken token)
         => OkOrNotFound(await _userService.GetUserDetailsAsync(id, token));
 
-    [HttpPatch("set-role")]
+    [HttpPatch("{id:guid}/set-role")]
     [HasPermission(UsersPermission.SetRole)]
     [SwaggerOperation("Set selected user role")]
-    public async Task<ActionResult> SetRole([FromBody] SetRoleDto dto, CancellationToken token)
+    public async Task<ActionResult> SetRole([FromBody] SetRoleDto dto, Guid id, CancellationToken token)
     {
-        await _userService.SetRoleAsync(dto, token);
+        await _userService.SetRoleAsync(id, dto, token);
         return Ok();
     }
     
@@ -54,6 +54,15 @@ internal class UsersController : ApiControllerBase
     public async Task<ActionResult> RemoveRole(Guid id, CancellationToken token)
     {
         await _userService.RemoveRoleAsync(id, token);
+        return Ok();
+    }
+    
+    [HttpPatch("{id:guid}/set-subscription")]
+    [HasPermission(UsersPermission.SetSubscription)]
+    [SwaggerOperation("Set selected user system subscription")]
+    public async Task<ActionResult> SetSubscription([FromBody] SetSubscriptionDto dto, Guid id, CancellationToken token)
+    {
+        await _userService.SetSubscriptionAsync(id, dto, token);
         return Ok();
     }
 }

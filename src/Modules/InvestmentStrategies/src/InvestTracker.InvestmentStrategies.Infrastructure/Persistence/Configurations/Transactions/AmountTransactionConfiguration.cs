@@ -1,7 +1,7 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Entities.Transactions;
-using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.Entities.Transactions.Amount;
-using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.ValueObjects;
-using InvestTracker.InvestmentStrategies.Domain.FinancialAssets.ValueObjects.Types;
+﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Amount;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

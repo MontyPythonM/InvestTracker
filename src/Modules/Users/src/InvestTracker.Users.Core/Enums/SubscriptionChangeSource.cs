@@ -2,8 +2,7 @@
 
 public enum SubscriptionChangeSource
 {
-    None = 0,
-    NeverChanged,
+    NeverChanged = 0,
     FromPayment,
     FromAdministrator,
 }

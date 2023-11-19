@@ -6,6 +6,7 @@ using InvestTracker.Shared.Infrastructure.Authentication;
 using InvestTracker.Shared.Infrastructure.Authorization;
 using InvestTracker.Shared.Infrastructure.Commands;
 using InvestTracker.Shared.Infrastructure.Context;
+using InvestTracker.Shared.Infrastructure.DDD;
 using InvestTracker.Shared.Infrastructure.Exceptions;
 using InvestTracker.Shared.Infrastructure.IntegrationEvents;
 using InvestTracker.Shared.Infrastructure.Messages;
@@ -34,6 +35,7 @@ public static class Extensions
             .AddCommands(assemblies)
             .AddAsyncMessages()
             .AddIntegrationEvents(assemblies)
+            .AddDomainEvents(assemblies)
             .AddSingleton<ITimeProvider, TimeProvider>()
             .AddAppAuthentication()
             .AddPermissionAuthorization();

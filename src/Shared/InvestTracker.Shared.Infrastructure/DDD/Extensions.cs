@@ -6,7 +6,7 @@ namespace InvestTracker.Shared.Infrastructure.DDD;
 
 internal static class Extensions
 {
-    public static IServiceCollection AddDomainDrivenDesignBuildingBlocks(this IServiceCollection services,
+    public static IServiceCollection AddDomainEvents(this IServiceCollection services,
         IEnumerable<Assembly> assemblies)
     {
         services.AddSingleton<IDomainEventDispatcher, DomainEventDispatcher>();
