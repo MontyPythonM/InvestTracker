@@ -13,8 +13,10 @@ internal sealed class UsersPermissionMatrix : IModulePermissionMatrix
         new(SystemRole.SystemAdministrator, UsersPermission.GetUserDetails.ToString()),
         new(SystemRole.SystemAdministrator, UsersPermission.SetRole.ToString()),
         new(SystemRole.SystemAdministrator, UsersPermission.RemoveRole.ToString()),
+        new(SystemRole.SystemAdministrator, UsersPermission.SetSubscription.ToString()),
 
         new(SystemRole.BusinessAdministrator, UsersPermission.GetUsers.ToString()),
         new(SystemRole.BusinessAdministrator, UsersPermission.GetUserDetails.ToString()),
+        new(SystemRole.BusinessAdministrator, UsersPermission.SetSubscription.ToString()),
     };
 }

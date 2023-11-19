@@ -13,15 +13,21 @@ internal class InvestorRepository : IInvestorRepository
         _context = context;
     }
     
-    public async Task<Investor?> GetAsync(Guid id, CancellationToken token)
+    public async Task<Investor?> GetAsync(Guid id, CancellationToken token = default)
         => await _context.Investors.SingleOrDefaultAsync(investor => investor.Id == id, token);
 
-    public async Task CreateAsync(Investor investor, CancellationToken token)
+    public async Task CreateAsync(Investor investor, CancellationToken token = default)
     {
         await _context.Investors.AddAsync(investor, token);
         await _context.SaveChangesAsync(token);
     }
 
-    public async Task<bool> ExistsAsync(Guid id, CancellationToken token)
+    public async Task<bool> ExistsAsync(Guid id, CancellationToken token = default)
         => await _context.Investors.AnyAsync(investor => investor.Id == id, token);
+
+    public async Task DeleteAsync(Investor investor, CancellationToken token = default)
+    {
+        _context.Investors.Remove(investor);
+        await _context.SaveChangesAsync(token);    
+    }
 }

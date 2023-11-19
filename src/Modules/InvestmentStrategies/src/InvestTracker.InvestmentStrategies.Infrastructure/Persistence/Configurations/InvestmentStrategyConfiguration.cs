@@ -27,13 +27,17 @@ internal class InvestmentStrategyConfiguration : IEntityTypeConfiguration<Invest
         builder.Property(strategy => strategy.Owner)
             .IsRequired()
             .HasConversion(s => s.Value, s => new StakeholderId(s));
-        
-        builder.Property(strategy => strategy.Portfolios)
-            .HasConversion(new GuidCollectionValueConverter())
-            .Metadata.SetValueComparer(new GuidCollectionValueComparer());
 
-        builder.Property(strategy => strategy.Collaborators)
-            .HasConversion(new GuidCollectionValueConverter())
-            .Metadata.SetValueComparer(new GuidCollectionValueComparer());
+        builder.OwnsMany(strategy => strategy.Portfolios);
+        
+        builder.OwnsMany(strategy => strategy.Collaborators);
+
+        // builder.Property(strategy => strategy.Portfolios)
+        //     .HasConversion(new GuidCollectionValueConverter())
+        //     .Metadata.SetValueComparer(new GuidCollectionValueComparer());
+        //
+        // builder.Property(strategy => strategy.Collaborators)
+        //     .HasConversion(new GuidCollectionValueConverter())
+        //     .Metadata.SetValueComparer(new GuidCollectionValueComparer());
     }
 }

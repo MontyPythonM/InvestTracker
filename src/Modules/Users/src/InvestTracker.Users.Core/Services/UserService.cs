@@ -4,6 +4,7 @@ using InvestTracker.Shared.Abstractions.Messages;
 using InvestTracker.Shared.Abstractions.Time;
 using InvestTracker.Users.Core.Dtos;
 using InvestTracker.Users.Core.Entities;
+using InvestTracker.Users.Core.Enums;
 using InvestTracker.Users.Core.Events;
 using InvestTracker.Users.Core.Exceptions;
 using InvestTracker.Users.Core.Interfaces;
@@ -93,17 +94,17 @@ internal sealed class UserService : IUserService
             })
             .SingleOrDefaultAsync(user => user.Id == id, token);
 
-    public async Task SetRoleAsync(SetRoleDto dto, CancellationToken token)
+    public async Task SetRoleAsync(Guid userId, SetRoleDto dto, CancellationToken token)
     {
         if (!SystemRole.Roles.Contains(dto.Role))
         {
             throw new RoleNotFoundException(dto.Role);
         }
         
-        var user = await _userRepository.GetAsync(dto.UserId, token);
+        var user = await _userRepository.GetAsync(userId, token);
         if (user is null)
         {
-            throw new UserNotFoundException(dto.UserId);
+            throw new UserNotFoundException(userId);
         }
 
         user.Role = new Role
@@ -134,5 +135,36 @@ internal sealed class UserService : IUserService
         
         await _userRepository.UpdateAsync(user, token);
         await _messageBroker.PublishAsync(new UserRoleRemoved(user.Id));
+    }
+
+    public async Task SetSubscriptionAsync(Guid userId, SetSubscriptionDto dto, CancellationToken token)
+    {
+        if (!SystemSubscription.Subscriptions.Contains(dto.Subscription))
+        {
+            throw new SubscriptionNotFoundException(dto.Subscription);
+        }
+
+        if (dto.ExpiredAt is not null && dto.ExpiredAt.Value < _timeProvider.Current())
+        {
+            throw new SubscriptionExpiredAtInPastException();
+        }
+
+        var user = await _userRepository.GetAsync(userId, token);
+        if (user is null)
+        {
+            throw new UserNotFoundException(userId);
+        }
+
+        user.Subscription = new Subscription
+        {
+            Value = dto.Subscription,
+            ExpiredAt = dto.ExpiredAt,
+            GrantedAt = _timeProvider.Current(),
+            GrantedBy = _requestContext.Identity.UserId,
+            ChangeSource = SubscriptionChangeSource.FromAdministrator
+        };
+        
+        await _userRepository.UpdateAsync(user, token);
+        await _messageBroker.PublishAsync(new UserSubscriptionChanged(user.Id, user.FullName, user.Email, user.Subscription.Value));
     }
 }

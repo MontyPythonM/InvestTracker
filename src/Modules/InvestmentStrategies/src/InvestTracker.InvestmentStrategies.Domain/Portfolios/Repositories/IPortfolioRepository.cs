@@ -2,6 +2,7 @@
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
+using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 

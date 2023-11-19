@@ -5,7 +5,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 
 public sealed class PortfolioNotFoundException : InvestTrackerException
 {
-    public PortfolioNotFoundException(PortfolioId portfolioId) : base($"Portfolio with ID: {portfolioId} does not exists")
+    public PortfolioNotFoundException(PortfolioId portfolioId) : base($"Portfolio with ID: {portfolioId.Value} does not exists")
     {
     }
 }

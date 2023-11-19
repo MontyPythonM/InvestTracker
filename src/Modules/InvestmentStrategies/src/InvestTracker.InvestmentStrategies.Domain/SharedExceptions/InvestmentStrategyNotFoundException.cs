@@ -7,11 +7,11 @@ namespace InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 public sealed class InvestmentStrategyNotFoundException : InvestTrackerException
 {
     public InvestmentStrategyNotFoundException(PortfolioId portfolioId) 
-        : base($"Investment strategy that containing a portfolio with ID: '{portfolioId}' not found.")
+        : base($"Investment strategy that containing a portfolio with ID: '{portfolioId.Value}' not found.")
     {
     }
 
-    public InvestmentStrategyNotFoundException(InvestmentStrategyId id) : base($"Investment strategy with ID: '{id}' not found.")
+    public InvestmentStrategyNotFoundException(InvestmentStrategyId id) : base($"Investment strategy with ID: '{id.Value}' not found.")
     {
     }
 }

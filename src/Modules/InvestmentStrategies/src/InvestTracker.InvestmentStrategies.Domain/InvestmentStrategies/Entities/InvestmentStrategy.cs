@@ -15,24 +15,27 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     public Note Note { get; private set; }
     public bool IsShareEnabled { get; private set; }
     public StakeholderId Owner { get; private set; }
-    public ICollection<Guid> Collaborators
-    {
-        get => _collaborators;
-        set => _collaborators = new List<Guid>(value);
-    }
-    public ICollection<Guid> Portfolios
-    {
-        get => _portfolios;
-        set => _portfolios = new List<Guid>(value);
-    }
+    public ICollection<RelatedCollaborators> Collaborators { get; set; } = new List<RelatedCollaborators>();
+    public ICollection<RelatedPortfolios> Portfolios { get; set; } = new List<RelatedPortfolios>();
     
-    private List<Guid> _collaborators;
-    private List<Guid> _portfolios;
+    // public ICollection<RelatedCollaborators> Collaborators
+    // {
+    //     get => _collaborators;
+    //     set => _collaborators = new List<RelatedCollaborators>(value);
+    // }
+    // public ICollection<Guid> Portfolios
+    // {
+    //     get => _portfolios;
+    //     set => _portfolios = new List<Guid>(value);
+    // }
+    
+    //private List<Guid> _collaborators;
+    //private List<Guid> _portfolios;
 
     private InvestmentStrategy()
     {
-        _collaborators = new List<Guid>();
-        _portfolios = new List<Guid>();
+        //_collaborators = new List<RelatedCollaborators>();
+        //_portfolios = new List<Guid>();
     }
 
     private InvestmentStrategy(InvestmentStrategyId id, Title title, StakeholderId owner, Note note)
@@ -42,8 +45,8 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         Note = note;
         IsShareEnabled = false;
         Owner = owner;
-        _collaborators = new List<Guid>();
-        _portfolios = new List<Guid>();
+        // Collaborators = new List<Guid>();
+        // Portfolios = new List<Guid>();
     }
 
     public static InvestmentStrategy Create(Title title, StakeholderId owner, Note note, Subscription subscription, 
@@ -85,7 +88,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
             return;
         }
 
-        _collaborators.Add(advisorId);
+        Collaborators.Add(new RelatedCollaborators(advisorId));
         IncrementVersion();
     }
 
@@ -96,27 +99,27 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
             throw new OwnerIsNotPrincipalOfCollaborationException(Id);
         }
         
-        _collaborators.Remove(advisorId);
+        Collaborators.Remove(new RelatedCollaborators(advisorId));
         IncrementVersion();
     }
 
     public bool IsOwner(StakeholderId stakeholderId) => Owner == stakeholderId;
 
     public bool IsCollaborator(StakeholderId stakeholderId)
-        => Collaborators.Contains(stakeholderId);
+        => Collaborators.Select(c => c.CollaboratorId).Contains(stakeholderId.Value);
     
     public bool IsStakeholderHaveAccess(StakeholderId stakeholderId)
         => IsOwner(stakeholderId) || (IsCollaborator(stakeholderId) && IsShareEnabled);
     
     internal void AddPortfolio(PortfolioId portfolioId)
     {
-        _portfolios.Add(portfolioId);
+        Portfolios.Add(new RelatedPortfolios(portfolioId));
         IncrementVersion();
     }
     
     internal void RemovePortfolio(PortfolioId portfolioId)
     {
-        _portfolios.Remove(portfolioId);
+        Portfolios.Remove(new RelatedPortfolios(portfolioId));
         IncrementVersion();
     }
 }

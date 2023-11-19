@@ -11,4 +11,15 @@ public class Advisor
     public string? AvatarUrl { get; set; }
     public virtual ICollection<Offer> Offers { get; set; } = new List<Offer>();
     public virtual ICollection<Collaboration> Collaborations { get; set; } = new List<Collaboration>();
+    
+    public Advisor()
+    {
+    }
+
+    public Advisor(Guid id, string fullName, string email)
+    {
+        Id = id;
+        FullName = fullName;
+        Email = email;
+    }
 }

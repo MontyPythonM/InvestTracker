@@ -3,6 +3,7 @@ using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
+using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Repositories;
@@ -44,10 +45,10 @@ internal sealed class PortfolioRepository : IPortfolioRepository
 
         return await _context.Portfolios
             .ApplyAsNoTracking(asNoTracking)
-            .Where(portfolio => ownerPortfolios.Contains(portfolio.Id))
+            .Where(portfolio => ownerPortfolios.Select(p => p.PortfolioId).Contains(portfolio.Id.Value))
             .ToListAsync(token);
     }
-    
+
     public async Task AddAsync(Portfolio portfolio, CancellationToken token = default)
     {
         await _context.Portfolios.AddAsync(portfolio, token);

@@ -2,4 +2,4 @@
 
 namespace InvestTracker.Offers.Core.Events.External;
 
-public record AdvisorAppointed(Guid Id, string FullName, string Email) : IEvent;
+public record UserSubscriptionChanged(Guid Id, string FullName, string Email, string Subscription) : IEvent;

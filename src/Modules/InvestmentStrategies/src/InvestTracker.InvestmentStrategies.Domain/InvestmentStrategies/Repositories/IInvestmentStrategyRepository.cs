@@ -10,7 +10,7 @@ public interface IInvestmentStrategyRepository
     Task<InvestmentStrategy?> GetAsync(InvestmentStrategyId id, CancellationToken token = default);
     Task<IEnumerable<InvestmentStrategy>> GetOwnerStrategiesAsync(StakeholderId ownerId, CancellationToken token = default);
     Task<IEnumerable<PortfolioId>> GetOwnerPortfoliosAsync(StakeholderId ownerId, bool asNoTracking = false, CancellationToken token = default);
-    Task<InvestmentStrategy?> GetByPortfolioAsync(PortfolioId portfolioId, CancellationToken token = default);
+    Task<InvestmentStrategy?> GetByPortfolioAsync(PortfolioId portfolioId, bool asNoTracking = false, CancellationToken token = default);
     Task<IEnumerable<InvestmentStrategy>> GetByCollaborationAsync(StakeholderId advisorId, StakeholderId principalId, CancellationToken token = default);
     Task AddAsync(InvestmentStrategy strategy, CancellationToken token = default);
     Task UpdateAsync(InvestmentStrategy strategy, CancellationToken token = default);

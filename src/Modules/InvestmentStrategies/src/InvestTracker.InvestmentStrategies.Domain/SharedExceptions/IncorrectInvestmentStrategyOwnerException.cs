@@ -5,7 +5,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 
 public sealed class IncorrectInvestmentStrategyOwnerException : InvestTrackerException
 {
-    public IncorrectInvestmentStrategyOwnerException(StakeholderId id) : base($"Investment strategy with ID: {id} does not belong to the user.")
+    public IncorrectInvestmentStrategyOwnerException(StakeholderId id) : base($"Investment strategy with ID: {id.Value} does not belong to the user.")
     {
     }
 }

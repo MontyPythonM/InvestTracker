@@ -4,6 +4,7 @@ using InvestTracker.InvestmentStrategies.Domain.Portfolios.Policies.AssetTypeLim
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
+using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Repositories;
 using InvestTracker.Shared.Abstractions.Commands;
 using InvestTracker.Shared.Abstractions.Context;
 
@@ -15,34 +16,47 @@ internal sealed class AddEdoBondAssetHandler : ICommandHandler<AddEdoBondAsset>
     private readonly IRequestContext _requestContext;
     private readonly IEnumerable<IFinancialAssetLimitPolicy> _policies;
     private readonly IPortfolioRepository _portfolioRepository;
+    private readonly IStakeholderRepository _stakeholderRepository;
 
     public AddEdoBondAssetHandler(IInvestmentStrategyRepository strategyRepository, IRequestContext requestContext, 
-        IEnumerable<IFinancialAssetLimitPolicy> policies, IPortfolioRepository portfolioRepository)
+        IEnumerable<IFinancialAssetLimitPolicy> policies, IPortfolioRepository portfolioRepository, IStakeholderRepository stakeholderRepository)
     {
         _strategyRepository = strategyRepository;
         _requestContext = requestContext;
         _policies = policies;
         _portfolioRepository = portfolioRepository;
+        _stakeholderRepository = stakeholderRepository;
     }
     
     public async Task HandleAsync(AddEdoBondAsset command, CancellationToken token)
     {
-        var currentUserPortfolios = await _strategyRepository.GetOwnerPortfoliosAsync(_requestContext.Identity.UserId, true, token);
         var portfolioId = new PortfolioId(command.PortfolioId);
-        
-        if (!currentUserPortfolios.Contains(portfolioId))
-        {
-            throw new IncorrectPortfolioOwnerException(command.PortfolioId);
-        }
-        
-        var portfolio = await _portfolioRepository.GetAsync(portfolioId, token);
+        var currentUser = _requestContext.Identity.UserId;
+        var strategy = await _strategyRepository.GetByPortfolioAsync(portfolioId, true, token);
 
+        if (strategy is null)
+        {
+            throw new InvestmentStrategyNotFoundException(portfolioId);
+        }
+
+        if (!strategy.IsStakeholderHaveAccess(currentUser))
+        {
+            throw new InvestmentStrategyAccessException(currentUser);
+        }
+
+        var portfolio = await _portfolioRepository.GetAsync(portfolioId, token);
         if (portfolio is null)
         {
             throw new PortfolioNotFoundException(portfolioId);
         }
         
-        var assetTypeLimitDto = new AssetLimitPolicyDto(_requestContext.Identity.Subscription, _policies);
+        var ownerSubscription = await _stakeholderRepository.GetSubscriptionAsync(strategy.Owner, token);
+        if (ownerSubscription is null)
+        {
+            throw new StakeholderNotFoundException(strategy.Owner);
+        }
+        
+        var assetTypeLimitDto = new AssetLimitPolicyDto(ownerSubscription, _policies);
         
         portfolio.AddEdoTreasuryBond(Guid.NewGuid(), command.Volume, command.PurchaseDate, 
             command.FirstYearInterestRate, command.Margin, command.Note, assetTypeLimitDto);

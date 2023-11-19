@@ -5,7 +5,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.Stakeholders.Exceptions;
 
 internal class InactiveStakeholderException : InvestTrackerException
 {
-    public InactiveStakeholderException(StakeholderId id) : base($"Stakeholder with ID: {id} is not active user.")
+    public InactiveStakeholderException(StakeholderId id) : base($"Stakeholder with ID: {id.Value} is not active user.")
     {
     }
 }

@@ -1,5 +1,6 @@
 ﻿using InvestTracker.InvestmentStrategies.Application.InvestmentStrategies.Dto;
 using InvestTracker.InvestmentStrategies.Application.InvestmentStrategies.Queries;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
@@ -39,14 +40,15 @@ internal sealed class GetInvestmentStrategyDetailsHandler : IQueryHandler<GetInv
         {
             throw new InvestmentStrategyAccessException(strategy.Id);
         }
-
+        
         var stakeholders = await _context.Stakeholders
             .AsNoTracking()
-            .Where(stakeholder => stakeholder.Id == strategy.Owner || strategy.Collaborators.Contains(stakeholder.Id))
+            .Where(stakeholder => stakeholder.Id.Equals(strategy.Owner) || 
+                                  strategy.Collaborators.Select(c => new StakeholderId(c.CollaboratorId)).Contains(stakeholder.Id))
             .ToListAsync(token);
-
+        
         var portfolios = await _context.Portfolios
-            .Where(portfolio => strategy.Portfolios.Contains(portfolio.Id))
+            .Where(portfolio => strategy.Portfolios.Select(p => new PortfolioId(p.PortfolioId)).Contains(portfolio.Id))
             .Select(portfolio => new PortfolioDto
             {
                 PortfolioId = portfolio.Id,

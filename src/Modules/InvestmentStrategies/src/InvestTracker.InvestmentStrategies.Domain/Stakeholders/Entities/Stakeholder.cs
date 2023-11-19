@@ -38,6 +38,17 @@ public class Stakeholder : AggregateRoot<StakeholderId>
         IncrementVersion();
     }
 
+    public void SetSubscription(Subscription subscription)
+    {
+        if (!IsActive)
+        {
+            throw new InactiveStakeholderException(Id);
+        }
+        
+        Subscription = subscription;
+        IncrementVersion();
+    }
+
     public void Lock()
     {
         IsActive = false;

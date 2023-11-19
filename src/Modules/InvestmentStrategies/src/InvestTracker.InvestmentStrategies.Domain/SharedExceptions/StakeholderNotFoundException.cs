@@ -5,7 +5,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 
 public sealed class StakeholderNotFoundException : InvestTrackerException
 {
-    public StakeholderNotFoundException(StakeholderId stakeholderId) : base($"Stakeholder with ID: {stakeholderId} not found.")
+    public StakeholderNotFoundException(StakeholderId stakeholderId) : base($"Stakeholder with ID: {stakeholderId.Value} not found.")
     {
     }
 }

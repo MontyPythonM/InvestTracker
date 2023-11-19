@@ -36,6 +36,11 @@ internal sealed class ConfirmInvitationHandler : ICommandHandler<ConfirmInvitati
             throw new InvitationNotFoundException(command.Id);
         }
 
+        if (invitation.Status != InvitationStatus.Expected)
+        {
+            throw new InvitationDecisionMadeException(invitation.Id);
+        }
+        
         var investorId = invitation.SenderId;
         var advisorId = invitation.Offer.AdvisorId;
 

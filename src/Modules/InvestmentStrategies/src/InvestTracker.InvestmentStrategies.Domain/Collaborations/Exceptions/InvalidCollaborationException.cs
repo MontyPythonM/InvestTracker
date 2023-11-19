@@ -5,8 +5,8 @@ namespace InvestTracker.InvestmentStrategies.Domain.Collaborations.Exceptions;
 
 internal class InvalidCollaborationException : InvestTrackerException
 {
-    public InvalidCollaborationException(StakeholderId stakeholderId) 
-        : base($"Cannot create collaboration where advisor and principal is the same (ID: {stakeholderId})")
+    public InvalidCollaborationException(StakeholderId id) 
+        : base($"Cannot create collaboration where advisor and principal is the same (ID: {id.Value})")
     {
     }
 }

@@ -38,22 +38,24 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
 
         var portfolios = strategies
             .SelectMany(strategy => strategy.Portfolios)
-            .Select(portfolio => new PortfolioId(portfolio));
+            .Select(portfolio => new PortfolioId(portfolio.PortfolioId));
 
         return portfolios;
     }
     
-    public async Task<InvestmentStrategy?> GetByPortfolioAsync(PortfolioId portfolioId, CancellationToken token = default)
+    public async Task<InvestmentStrategy?> GetByPortfolioAsync(PortfolioId portfolioId, bool asNoTracking = false, 
+        CancellationToken token = default)
     {
         return await _context.InvestmentStrategies
-            .SingleOrDefaultAsync(strategy => strategy.Portfolios.Contains(portfolioId.Value), token);
+            .ApplyAsNoTracking(asNoTracking)
+            .SingleOrDefaultAsync(strategy => strategy.Portfolios.Select(p => p.PortfolioId).Contains(portfolioId.Value), token);
     }
 
     public async Task<IEnumerable<InvestmentStrategy>> GetByCollaborationAsync(StakeholderId advisorId, 
         StakeholderId principalId, CancellationToken token = default)
     {
         return await _context.InvestmentStrategies
-            .Where(strategy => strategy.Owner == principalId && strategy.Collaborators.Contains(advisorId))
+            .Where(strategy => strategy.Owner == principalId && strategy.Collaborators.Select(c => c.CollaboratorId).Contains(advisorId))
             .ToListAsync(token);
     }
 

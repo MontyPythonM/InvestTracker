@@ -29,7 +29,8 @@ internal sealed class GetInvestmentStrategiesHandler : IQueryHandler<GetInvestme
         // TODO: There is a problem with Contains method and value objects collection (Collaborators)
         var currentUserAssignedStrategies = await _context.InvestmentStrategies
             .AsNoTracking()
-            .Where(strategy => strategy.Owner.Equals(currentUserId) || strategy.Collaborators.Contains(currentUserId.Value))
+            .Where(strategy => strategy.Owner.Equals(currentUserId) || 
+                               strategy.Collaborators.Select(c => c.CollaboratorId).Contains(currentUserId.Value))
             .ToListAsync(token);
 
         if (!currentUserAssignedStrategies.Any())

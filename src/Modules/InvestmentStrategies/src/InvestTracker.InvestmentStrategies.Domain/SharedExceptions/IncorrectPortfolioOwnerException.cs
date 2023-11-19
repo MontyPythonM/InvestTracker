@@ -5,7 +5,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 
 public sealed class IncorrectPortfolioOwnerException : InvestTrackerException
 {
-    public IncorrectPortfolioOwnerException(PortfolioId portfolioId) : base($"Current user is not the owner of portfolio with ID: {portfolioId}")
+    public IncorrectPortfolioOwnerException(PortfolioId portfolioId) : base($"Current user is not the owner of portfolio with ID: {portfolioId.Value}")
     {
     }
 }

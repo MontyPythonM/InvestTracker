@@ -32,7 +32,12 @@ internal sealed class RejectInvitationHandler : ICommandHandler<RejectInvitation
         {
             throw new CannotConfirmNotOwnCollaborationsException();
         }
-        
+
+        if (invitation.Status != InvitationStatus.Expected)
+        {
+            throw new InvitationDecisionMadeException(invitation.Id);
+        }
+
         invitation.Status = InvitationStatus.Rejected;
         invitation.StatusChangedAt = _timeProvider.Current();
 
