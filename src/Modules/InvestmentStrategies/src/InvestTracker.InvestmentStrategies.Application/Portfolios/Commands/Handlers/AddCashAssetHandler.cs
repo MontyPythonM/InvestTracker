@@ -45,7 +45,7 @@ internal sealed class AddCashAssetHandler : ICommandHandler<AddCashAsset>
 
         if (!strategy.IsStakeholderHaveAccess(currentUser))
         {
-            throw new InvestmentStrategyAccessException(currentUser);
+            throw new InvestmentStrategyAccessException(strategy.Id);
         }
 
         var portfolio = await _portfolioRepository.GetAsync(portfolioId, token);

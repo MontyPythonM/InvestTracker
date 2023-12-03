@@ -115,7 +115,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("PortfolioId")
+                    b.Property<Guid>("PortfolioId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -159,7 +159,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("PortfolioId")
+                    b.Property<Guid>("PortfolioId")
                         .HasColumnType("uuid");
 
                     b.Property<DateOnly>("RedemptionDate")
@@ -326,7 +326,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                     b.ToTable("Stakeholders", "investment-strategies");
                 });
 
-            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.ExchangeRate", b =>
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.ExchangeRateEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -452,14 +452,18 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                 {
                     b.HasOne("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Portfolio", null)
                         .WithMany("Cash")
-                        .HasForeignKey("PortfolioId");
+                        .HasForeignKey("PortfolioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.EdoTreasuryBond", b =>
                 {
                     b.HasOne("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Portfolio", null)
                         .WithMany("EdoTreasuryBonds")
-                        .HasForeignKey("PortfolioId");
+                        .HasForeignKey("PortfolioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.AmountTransaction", b =>

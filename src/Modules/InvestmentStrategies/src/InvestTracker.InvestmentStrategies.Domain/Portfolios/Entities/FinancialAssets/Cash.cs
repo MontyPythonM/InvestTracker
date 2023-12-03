@@ -13,6 +13,7 @@ public class Cash : IFinancialAsset, IAuditable
     public FinancialAssetId Id { get; private set; }
     public Currency Currency { get; private set; }
     public Note Note { get; private set; }
+    public PortfolioId PortfolioId { get; set; }
     public DateTime CreatedAt { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTime? ModifiedAt { get; set; }

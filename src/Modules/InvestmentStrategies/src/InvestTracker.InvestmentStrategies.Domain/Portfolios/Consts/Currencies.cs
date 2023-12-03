@@ -27,4 +27,6 @@ public static class Currencies
     public const string DKK = "DKK";
     public const string CZK = "CZK";
     public const string HUF = "HUF";
+
+    public static bool IsSupported(string currency) => AvailableCurrencies.Contains(currency.ToUpper());
 }

@@ -41,7 +41,7 @@ internal sealed class AddEdoBondAssetHandler : ICommandHandler<AddEdoBondAsset>
 
         if (!strategy.IsStakeholderHaveAccess(currentUser))
         {
-            throw new InvestmentStrategyAccessException(currentUser);
+            throw new InvestmentStrategyAccessException(strategy.Id);
         }
 
         var portfolio = await _portfolioRepository.GetAsync(portfolioId, token);

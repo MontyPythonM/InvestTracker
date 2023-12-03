@@ -3,7 +3,6 @@ using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
-using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Repositories;
@@ -59,5 +58,15 @@ internal sealed class PortfolioRepository : IPortfolioRepository
     {
         _context.Portfolios.Update(portfolio);
         await _context.SaveChangesAsync(token);
+    }
+
+    public async Task<bool> HasAccessAsync(PortfolioId portfolioId, StakeholderId stakeholderId, CancellationToken token = default)
+    {
+        return await _context.InvestmentStrategies
+            .AsNoTracking()
+            .AnyAsync(strategy => strategy.Portfolios.Select(p => p.PortfolioId).Contains(portfolioId.Value) &&
+                                  strategy.IsShareEnabled &&
+                                  (strategy.Owner == stakeholderId ||
+                                  strategy.Collaborators.Select(c => c.CollaboratorId).Contains(stakeholderId.Value)), token);
     }
 }

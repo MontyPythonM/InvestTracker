@@ -1,14 +1,14 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
-using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates;
+using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.Entities;
 using InvestTracker.InvestmentStrategies.Infrastructure.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Configurations;
 
-internal class ExchangeRateConfiguration : IEntityTypeConfiguration<ExchangeRate>
+internal class ExchangeRateConfiguration : IEntityTypeConfiguration<ExchangeRateEntity>
 {
-    public void Configure(EntityTypeBuilder<ExchangeRate> builder)
+    public void Configure(EntityTypeBuilder<ExchangeRateEntity> builder)
     {
         builder.HasIndex(exchangeRate => exchangeRate.Date);
         builder.HasIndex(exchangeRate => exchangeRate.To);

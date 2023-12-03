@@ -1,5 +1,4 @@
 ﻿using InvestTracker.Offers.Core.Entities;
-using InvestTracker.Offers.Core.Exceptions;
 using InvestTracker.Offers.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.Authorization;
 using InvestTracker.Shared.Abstractions.IntegrationEvents;
