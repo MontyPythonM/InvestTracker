@@ -27,7 +27,7 @@ internal sealed class AuditableEntitiesInterceptor : SaveChangesInterceptor
         }
         
         var now = _timeProvider.Current();
-        var author = _requestContext?.Identity is null ? string.Empty :_requestContext.Identity.UserId.ToString();
+        var author = _requestContext?.Identity?.UserId ?? Guid.Empty;
         
         foreach (var entityEntry in dbContext.ChangeTracker.Entries<IAuditable>())
         {

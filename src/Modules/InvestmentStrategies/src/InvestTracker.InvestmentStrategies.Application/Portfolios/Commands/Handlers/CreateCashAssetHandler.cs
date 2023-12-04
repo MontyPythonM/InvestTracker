@@ -11,7 +11,7 @@ using InvestTracker.Shared.Abstractions.Time;
 
 namespace InvestTracker.InvestmentStrategies.Application.Portfolios.Commands.Handlers;
 
-internal sealed class AddCashAssetHandler : ICommandHandler<AddCashAsset>
+internal sealed class CreateCashAssetHandler : ICommandHandler<CreateCashAsset>
 {
     private readonly IEnumerable<IFinancialAssetLimitPolicy> _policies;
     private readonly IRequestContext _requestContext;
@@ -20,7 +20,7 @@ internal sealed class AddCashAssetHandler : ICommandHandler<AddCashAsset>
     private readonly IPortfolioRepository _portfolioRepository;
     private readonly IStakeholderRepository _stakeholderRepository;
 
-    public AddCashAssetHandler(IEnumerable<IFinancialAssetLimitPolicy> policies, IRequestContext requestContext, 
+    public CreateCashAssetHandler(IEnumerable<IFinancialAssetLimitPolicy> policies, IRequestContext requestContext, 
         IInvestmentStrategyRepository strategyRepository, ITimeProvider timeProvider, IPortfolioRepository portfolioRepository, 
         IStakeholderRepository stakeholderRepository)
     {
@@ -32,7 +32,7 @@ internal sealed class AddCashAssetHandler : ICommandHandler<AddCashAsset>
         _stakeholderRepository = stakeholderRepository;
     }
 
-    public async Task HandleAsync(AddCashAsset command, CancellationToken token)
+    public async Task HandleAsync(CreateCashAsset command, CancellationToken token)
     {
         var portfolioId = new PortfolioId(command.PortfolioId);
         var currentUser = _requestContext.Identity.UserId;
@@ -63,9 +63,10 @@ internal sealed class AddCashAssetHandler : ICommandHandler<AddCashAsset>
         var assetTypeLimitDto = new AssetLimitPolicyDto(ownerSubscription, _policies);
         var cash = portfolio.AddCash(Guid.NewGuid(), command.Currency, command.Note, assetTypeLimitDto);
         
-        if (command.InitialAmount is not null)
+        if (command.InitialAmount is not null && command.InitialDate is not null)
         {
-            cash.AddFunds(Guid.NewGuid(), command.InitialAmount, _timeProvider.Current(), $"Opening amount of the cash asset");
+            cash.AddFunds(Guid.NewGuid(), command.InitialAmount, command.InitialDate.Value, 
+                $"Opening amount of the cash asset", _timeProvider.Current());
         }
         
         await _portfolioRepository.UpdateAsync(portfolio, token);

@@ -6,8 +6,9 @@ namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Abstractions;
 
 public interface IFinancialAsset
 {
+    public FinancialAssetId Id { get; }
     public Currency Currency { get; }
     public Note Note { get; }
-    public PortfolioId PortfolioId { get; set; }
+    public PortfolioId PortfolioId { get; }
     public string GetAssetName();
 }

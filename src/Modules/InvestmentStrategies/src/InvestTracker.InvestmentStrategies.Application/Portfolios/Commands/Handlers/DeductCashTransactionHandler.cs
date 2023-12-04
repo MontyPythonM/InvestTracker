@@ -6,21 +6,21 @@ using InvestTracker.Shared.Abstractions.Time;
 
 namespace InvestTracker.InvestmentStrategies.Application.Portfolios.Commands.Handlers;
 
-internal sealed class AddCashTransactionHandler : ICommandHandler<AddCashTransaction>
+internal sealed class DeductCashTransactionHandler : ICommandHandler<DeductCashTransaction>
 {
     private readonly IPortfolioRepository _portfolioRepository;
     private readonly IRequestContext _requestContext;
     private readonly ITimeProvider _timeProvider;
 
-    public AddCashTransactionHandler(IPortfolioRepository portfolioRepository, IRequestContext requestContext, 
+    public DeductCashTransactionHandler(IPortfolioRepository portfolioRepository, IRequestContext requestContext, 
         ITimeProvider timeProvider)
     {
         _portfolioRepository = portfolioRepository;
         _requestContext = requestContext;
         _timeProvider = timeProvider;
     }
-
-    public async Task HandleAsync(AddCashTransaction command, CancellationToken token)
+    
+    public async Task HandleAsync(DeductCashTransaction command, CancellationToken token)
     {
         var portfolio = await _portfolioRepository.GetAsync(command.PortfolioId, token);
         if (portfolio is null)
@@ -42,8 +42,8 @@ internal sealed class AddCashTransactionHandler : ICommandHandler<AddCashTransac
             throw new FinancialAssetNotFoundException(command.FinancialAssetId);
         }
 
-        cash.AddFunds(Guid.NewGuid(), command.Amount, command.TransactionDate, command.Note, _timeProvider.Current());
+        cash.DeductFunds(Guid.NewGuid(), command.Amount, command.TransactionDate, command.Note, _timeProvider.Current());
 
-        await _portfolioRepository.UpdateAsync(portfolio, token);
+        await _portfolioRepository.UpdateAsync(portfolio, token);    
     }
 }

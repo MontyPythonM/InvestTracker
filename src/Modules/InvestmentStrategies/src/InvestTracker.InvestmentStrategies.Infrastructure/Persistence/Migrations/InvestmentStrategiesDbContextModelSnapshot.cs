@@ -399,7 +399,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
 
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities.InvestmentStrategy", b =>
                 {
-                    b.OwnsMany("InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities.RelatedCollaborators", "Collaborators", b1 =>
+                    b.OwnsMany("InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities.InvestmentStrategy.Collaborators#InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities.RelatedCollaborators", "Collaborators", b1 =>
                         {
                             b1.Property<Guid>("InvestmentStrategyId")
                                 .HasColumnType("uuid");
@@ -421,7 +421,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                                 .HasForeignKey("InvestmentStrategyId");
                         });
 
-                    b.OwnsMany("InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities.RelatedPortfolios", "Portfolios", b1 =>
+                    b.OwnsMany("InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities.InvestmentStrategy.Portfolios#InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities.RelatedPortfolios", "Portfolios", b1 =>
                         {
                             b1.Property<Guid>("InvestmentStrategyId")
                                 .HasColumnType("uuid");

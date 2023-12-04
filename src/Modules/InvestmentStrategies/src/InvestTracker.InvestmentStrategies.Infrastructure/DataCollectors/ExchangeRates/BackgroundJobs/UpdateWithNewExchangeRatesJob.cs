@@ -70,14 +70,18 @@ internal sealed class UpdateWithNewExchangeRatesJob : BackgroundService
     {
         var exchangeRates = new List<ExchangeRateEntity>();
         var lastPersistedExchangeRate = await dbContext.ExchangeRates
+            .AsNoTracking()
             .OrderBy(rate => rate.Date)
             .LastOrDefaultAsync(token);
 
-        var lastExchangeRate = lastPersistedExchangeRate is null
-            ? _exchangeRateOptions.UpdateMissingFromDate
-            : lastPersistedExchangeRate.Date.AddDays(1);
-        
-        var dateRange = new DateRange(lastExchangeRate, _timeProvider.CurrentDate());
+        var lastExchangeRateDate = lastPersistedExchangeRate?.Date ?? _exchangeRateOptions.UpdateMissingFromDate;
+
+        if (lastExchangeRateDate >= _timeProvider.CurrentDate())
+        {
+            return exchangeRates;
+        }
+
+        var dateRange = new DateRange(lastExchangeRateDate.AddDays(1), _timeProvider.CurrentDate());
         var dividedDateRanges = dateRange.Divide(_exchangeRateOptions.GetAllDaysRequestLimit);
         
         foreach (var range in dividedDateRanges)
@@ -86,6 +90,12 @@ internal sealed class UpdateWithNewExchangeRatesJob : BackgroundService
             exchangeRates.AddRange(results);
         }
 
-        return exchangeRates;
+        var existingExchangeRates = await dbContext.ExchangeRates
+            .AsNoTracking()
+            .Where(rate => rate.Date >= dateRange.From && rate.Date <= dateRange.To)
+            .Select(rate => rate.Date)
+            .ToListAsync(token);
+        
+        return exchangeRates.Where(rate => !existingExchangeRates.Contains(rate.Date));
     }
 }

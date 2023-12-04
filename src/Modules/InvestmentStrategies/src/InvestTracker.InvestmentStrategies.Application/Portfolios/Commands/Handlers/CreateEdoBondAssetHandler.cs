@@ -10,7 +10,7 @@ using InvestTracker.Shared.Abstractions.Context;
 
 namespace InvestTracker.InvestmentStrategies.Application.Portfolios.Commands.Handlers;
 
-internal sealed class AddEdoBondAssetHandler : ICommandHandler<AddEdoBondAsset>
+internal sealed class CreateEdoBondAssetHandler : ICommandHandler<CrateEdoBondAsset>
 {
     private readonly IInvestmentStrategyRepository _strategyRepository;
     private readonly IRequestContext _requestContext;
@@ -18,7 +18,7 @@ internal sealed class AddEdoBondAssetHandler : ICommandHandler<AddEdoBondAsset>
     private readonly IPortfolioRepository _portfolioRepository;
     private readonly IStakeholderRepository _stakeholderRepository;
 
-    public AddEdoBondAssetHandler(IInvestmentStrategyRepository strategyRepository, IRequestContext requestContext, 
+    public CreateEdoBondAssetHandler(IInvestmentStrategyRepository strategyRepository, IRequestContext requestContext, 
         IEnumerable<IFinancialAssetLimitPolicy> policies, IPortfolioRepository portfolioRepository, IStakeholderRepository stakeholderRepository)
     {
         _strategyRepository = strategyRepository;
@@ -28,7 +28,7 @@ internal sealed class AddEdoBondAssetHandler : ICommandHandler<AddEdoBondAsset>
         _stakeholderRepository = stakeholderRepository;
     }
     
-    public async Task HandleAsync(AddEdoBondAsset command, CancellationToken token)
+    public async Task HandleAsync(CrateEdoBondAsset command, CancellationToken token)
     {
         var portfolioId = new PortfolioId(command.PortfolioId);
         var currentUser = _requestContext.Identity.UserId;

@@ -3,9 +3,9 @@ using InvestTracker.Shared.Abstractions.Exceptions;
 
 namespace InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 
-public class TransactionsNotExistsException : InvestTrackerException
+public class TransactionsNotFoundException : InvestTrackerException
 {
-    public TransactionsNotExistsException(FinancialAssetId assetId) : base($"No transactions on financial assets with identifier: {assetId}")
+    public TransactionsNotFoundException(TransactionId id) : base($"Transaction with ID: '{id.Value}' not found.")
     {
     }
 }

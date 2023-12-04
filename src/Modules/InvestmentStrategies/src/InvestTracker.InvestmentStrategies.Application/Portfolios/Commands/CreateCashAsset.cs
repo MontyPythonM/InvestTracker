@@ -5,5 +5,5 @@ using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 
 namespace InvestTracker.InvestmentStrategies.Application.Portfolios.Commands;
 
-public record AddEdoBondAsset(PortfolioId PortfolioId, Volume Volume, DateTime PurchaseDate, 
-    InterestRate FirstYearInterestRate, Margin Margin, Note Note) : ICommand;
+public record CreateCashAsset(PortfolioId PortfolioId, Currency Currency, Note Note, Amount? InitialAmount, 
+    DateTime? InitialDate) : ICommand;

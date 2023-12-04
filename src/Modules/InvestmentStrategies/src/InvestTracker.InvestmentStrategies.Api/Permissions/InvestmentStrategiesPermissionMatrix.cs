@@ -21,6 +21,9 @@ public class InvestmentStrategiesPermissionMatrix : IModulePermissionMatrix
         new(SystemSubscription.Advisor, InvestmentStrategiesPermission.GetInvestmentStrategyDetails.ToString()),
         new(SystemSubscription.Advisor, InvestmentStrategiesPermission.GetCashChart.ToString()),
         new(SystemSubscription.Advisor, InvestmentStrategiesPermission.AddCashTransaction.ToString()),
+        new(SystemSubscription.Advisor, InvestmentStrategiesPermission.DeductCashTransaction.ToString()),
+        new(SystemSubscription.Advisor, InvestmentStrategiesPermission.GetCash.ToString()),
+        new(SystemSubscription.Advisor, InvestmentStrategiesPermission.RemoveCashTransaction.ToString()),
 
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.CreateInvestmentStrategy.ToString()),
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.AddPortfolio.ToString()),
@@ -34,6 +37,8 @@ public class InvestmentStrategiesPermissionMatrix : IModulePermissionMatrix
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.GetInvestmentStrategyDetails.ToString()),
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.GetCashChart.ToString()),
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.AddCashTransaction.ToString()),
+        new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.DeductCashTransaction.ToString()),
+        new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.GetCash.ToString()),
 
         new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.CreateInvestmentStrategy.ToString()),
         new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.AddPortfolio.ToString()),
@@ -47,6 +52,9 @@ public class InvestmentStrategiesPermissionMatrix : IModulePermissionMatrix
         new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.GetInvestmentStrategyDetails.ToString()),
         new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.GetCashChart.ToString()),
         new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.AddCashTransaction.ToString()),
+        new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.DeductCashTransaction.ToString()),
+        new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.GetCash.ToString()),
+        new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.RemoveCashTransaction.ToString()),
         
         new(SystemRole.BusinessAdministrator, InvestmentStrategiesPermission.SafeSeedExchangeRate.ToString()),
         
