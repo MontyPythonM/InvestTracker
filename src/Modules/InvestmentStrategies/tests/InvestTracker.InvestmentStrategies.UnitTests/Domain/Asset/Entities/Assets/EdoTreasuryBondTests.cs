@@ -2,7 +2,7 @@
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
-using InvestTracker.Shared.Infrastructure.Types;
+using InvestTracker.Shared.Abstractions.Types;
 using Shouldly;
 using Xunit;
 

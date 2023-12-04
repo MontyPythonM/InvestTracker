@@ -1,5 +1,6 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.Consts;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Exceptions;
+using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 
@@ -15,7 +16,7 @@ public record Currency
         }
         
         value = value.ToUpper();
-        if (!Currencies.AvailableCurrencies.Contains(value))
+        if (!Currencies.IsSupported(value))
         {
             throw new UnsupportedCurrencyException(value);
         }

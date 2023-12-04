@@ -32,9 +32,9 @@ internal class PortfoliosController : ApiControllerBase
     [HttpPost("{portfolioId:guid}/cash")]
     [HasPermission(InvestmentStrategiesPermission.CreateCashAsset)]    
     [SwaggerOperation("Create new cash financial asset type in portfolio and optionally set initial amount")]
-    public async Task<ActionResult> CreateCashAsset(AddCashAssetDto dto, Guid portfolioId, CancellationToken token)
+    public async Task<ActionResult> CreateCashAsset(CreateCashAssetDto dto, Guid portfolioId, CancellationToken token)
     {
-        await _commandDispatcher.SendAsync(new AddCashAsset(portfolioId, dto.Currency, dto.Note, dto.InitialAmount), token);
+        await _commandDispatcher.SendAsync(new CreateCashAsset(portfolioId, dto.Currency, dto.Note, dto.InitialAmount, dto.InitialDate), token);
         return Ok();
     }
     
@@ -43,7 +43,7 @@ internal class PortfoliosController : ApiControllerBase
     [SwaggerOperation("Create new EDO treasury bond financial asset type in portfolio")]
     public async Task<ActionResult> CreateEdoAsset(AddEdoBondAssetDto dto, Guid portfolioId, CancellationToken token)
     {
-        var command = new AddEdoBondAsset(portfolioId, dto.Volume, dto.PurchaseDate, dto.FirstYearInterestRate, dto.Margin, dto.Note);
+        var command = new CrateEdoBondAsset(portfolioId, dto.Volume, dto.PurchaseDate, dto.FirstYearInterestRate, dto.Margin, dto.Note);
         await _commandDispatcher.SendAsync(command, token);
         return Ok();
     }

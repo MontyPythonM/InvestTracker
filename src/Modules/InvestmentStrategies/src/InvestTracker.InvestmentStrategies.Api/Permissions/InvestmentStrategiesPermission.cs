@@ -13,5 +13,10 @@ public enum InvestmentStrategiesPermission
     GetPortfolios,
     GetPortfolioDetails,
     GetInvestmentStrategies,
-    GetInvestmentStrategyDetails
+    GetInvestmentStrategyDetails,
+    GetCashChart,
+    AddCashTransaction,
+    DeductCashTransaction,
+    GetCash,
+    RemoveCashTransaction
 }

@@ -23,10 +23,11 @@ public class EdoTreasuryBond : IFinancialAsset, IAuditable
     public Currency Currency { get; private set; }
     public Note Note { get; private set; }
     public bool IsActive { get; private set; } = true;
-    public DateTime CreatedAt { get; set; }
-    public Guid CreatedBy { get; set; }
-    public DateTime? ModifiedAt { get; set; }
-    public Guid? ModifiedBy { get; set; }
+    public PortfolioId PortfolioId { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public Guid CreatedBy { get; private set; }
+    public DateTime? ModifiedAt { get; private set; }
+    public Guid? ModifiedBy { get; private set; }
     public IEnumerable<VolumeTransaction> Transactions
     {
         get => _transactions;
@@ -107,7 +108,7 @@ public class EdoTreasuryBond : IFinancialAsset, IAuditable
         => GetNominalVolume() - _transactions.OfType<OutgoingVolumeTransaction>().Sum(t => t.Volume);
 
     public string GetAssetName() => $"{Symbol} Treasury Bond";
-
+    
     private InterestRate CalculateInterestRate(ChronologicalInflationRates chronologicalInflationRates, DateOnly calculationDate)
     {
         var calculatedYearCompletion = GetInvestmentYearCompletion(calculationDate, RedemptionDate);

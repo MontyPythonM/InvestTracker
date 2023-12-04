@@ -4,8 +4,7 @@ public static class Currencies
 {
     public static readonly List<string> AvailableCurrencies = new()
     {
-        "PLN", "USD", "EUR", "GBP", "JPY", "CHF", "NOK", "SEK", "CNY", "KRW", "RUB", "BRL", "PHP", "LVL", "LTL", "BGN",
-        "DKK", "CZK", "HUF"
+        "PLN", "USD", "PHP", "SEK","KRW", "DKK", "EUR", "CNY", "BRL", "CZK", "BGN", "JPY", "HUF", "NOK", "CHF", "GBP"
     };
     
     public const string PLN = "PLN";
@@ -18,13 +17,12 @@ public static class Currencies
     public const string SEK = "SEK";
     public const string CNY = "CNY";
     public const string KRW = "KRW";
-    public const string RUB = "RUB";
     public const string BRL = "BRL";
     public const string PHP = "PHP";
-    public const string LVL = "LVL";
-    public const string LTL = "LTL";
     public const string BGN = "BGN";
     public const string DKK = "DKK";
     public const string CZK = "CZK";
     public const string HUF = "HUF";
+
+    public static bool IsSupported(string currency) => AvailableCurrencies.Contains(currency.ToUpper());
 }

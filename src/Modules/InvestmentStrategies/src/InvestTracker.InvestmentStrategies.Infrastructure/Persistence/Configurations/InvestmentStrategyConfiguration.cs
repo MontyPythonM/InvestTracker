@@ -1,8 +1,6 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Converters;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -31,13 +29,5 @@ internal class InvestmentStrategyConfiguration : IEntityTypeConfiguration<Invest
         builder.OwnsMany(strategy => strategy.Portfolios);
         
         builder.OwnsMany(strategy => strategy.Collaborators);
-
-        // builder.Property(strategy => strategy.Portfolios)
-        //     .HasConversion(new GuidCollectionValueConverter())
-        //     .Metadata.SetValueComparer(new GuidCollectionValueComparer());
-        //
-        // builder.Property(strategy => strategy.Collaborators)
-        //     .HasConversion(new GuidCollectionValueConverter())
-        //     .Metadata.SetValueComparer(new GuidCollectionValueComparer());
     }
 }

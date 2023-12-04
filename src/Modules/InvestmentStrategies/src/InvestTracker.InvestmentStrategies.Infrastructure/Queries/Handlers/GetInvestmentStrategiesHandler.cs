@@ -26,7 +26,6 @@ internal sealed class GetInvestmentStrategiesHandler : IQueryHandler<GetInvestme
     {
         var currentUserId = new StakeholderId(_requestContext.Identity.UserId);
         
-        // TODO: There is a problem with Contains method and value objects collection (Collaborators)
         var currentUserAssignedStrategies = await _context.InvestmentStrategies
             .AsNoTracking()
             .Where(strategy => strategy.Owner.Equals(currentUserId) || 

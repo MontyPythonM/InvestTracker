@@ -28,6 +28,7 @@ public static class Extensions
     {
         services
             .AddContext()
+            .AddSingleton<ITimeProvider, TimeProvider>()
             .AddExceptionHandling()
             .AddOpenApiDocumentation()
             .AddModuleRequests(assemblies)
@@ -36,7 +37,6 @@ public static class Extensions
             .AddAsyncMessages()
             .AddIntegrationEvents(assemblies)
             .AddDomainEvents(assemblies)
-            .AddSingleton<ITimeProvider, TimeProvider>()
             .AddAppAuthentication()
             .AddPermissionAuthorization();
             

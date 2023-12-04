@@ -2,7 +2,7 @@
 using InvestTracker.Shared.Abstractions.Authorization;
 using InvestTracker.Shared.Abstractions.Messages;
 using InvestTracker.Shared.Abstractions.Time;
-using InvestTracker.Shared.Infrastructure.Types;
+using InvestTracker.Shared.Abstractions.Types;
 using InvestTracker.Users.Core.Dtos;
 using InvestTracker.Users.Core.Entities;
 using InvestTracker.Users.Core.Events;

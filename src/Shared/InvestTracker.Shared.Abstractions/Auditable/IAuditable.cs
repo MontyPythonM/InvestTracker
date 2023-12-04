@@ -2,8 +2,8 @@
 
 public interface IAuditable
 {
-    public DateTime CreatedAt { get; set; }
-    public Guid CreatedBy { get; set; }
-    public DateTime? ModifiedAt { get; set; }
-    public Guid? ModifiedBy { get; set; }
+    public DateTime CreatedAt { get; }
+    public Guid CreatedBy { get; }
+    public DateTime? ModifiedAt { get; }
+    public Guid? ModifiedBy { get; }
 }

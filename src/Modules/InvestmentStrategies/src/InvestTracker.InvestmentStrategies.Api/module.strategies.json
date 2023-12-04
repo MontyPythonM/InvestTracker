@@ -1,7 +1,14 @@
 {
   "InvestmentStrategies": {
     "ExchangeRate": {
-      "NbpCsvPath": "Modules\\InvestmentStrategies\\src\\InvestTracker.InvestmentStrategies.Infrastructure\\DataCollectors\\ExchangeRates\\NbpTableA\\NbpData"
+      "ExternalApiUpdate" : {
+        "DurationHours": 24,
+        "Enabled": true,
+        "GetAllDaysRequestLimit": 90,
+        "GetDaysRequestLimit": 360,
+        "MaxErrorsNumber": 3,
+        "UpdateMissingFromDate": "2013-01-01"
+      }
     }
   }
 }
