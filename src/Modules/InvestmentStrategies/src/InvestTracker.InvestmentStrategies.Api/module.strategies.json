@@ -1,13 +1,38 @@
 {
   "InvestmentStrategies": {
     "ExchangeRate": {
-      "ExternalApiUpdate" : {
-        "DurationHours": 24,
+      "ExternalApiClient" : {
         "Enabled": true,
+        "DurationHours": 24,
         "GetAllDaysRequestLimit": 90,
         "GetDaysRequestLimit": 360,
         "MaxErrorsNumber": 3,
         "UpdateMissingFromDate": "2013-01-01"
+      }
+    },
+    "InflationRate": {
+      "ExternalApiClient": {
+        "Enabled": true,
+        "MaxErrorsNumber": 3,
+        "UpdateMissingFromYear": 2000,
+        "DurationDays": 5,
+        "RecordsNumber": 1500,
+        "PositionId1": 33617,
+        "PositionId2": 6656078,
+        "PositionId3": 6902025,
+        "ReferenceMeasure": 5,
+        "SelectorName": "Similar month of the previous year = 100"
+      },
+      "Seeder": {
+        "Enabled": true,
+        "Path": "C:\\Data\\miesieczne_wskazniki_cen_towarow_i_uslug_konsumpcyjnych.csv",
+        "IgnoreErrors": false,
+        "RowTypeIdentifier": "Analogiczny miesi�c poprzedniego roku = 100",
+        "RowTypeIdentifierColumnIndex": 2,
+        "ValueColumnIndex": 5,
+        "YearColumnIndex": 3,
+        "MonthColumnIndex": 4,
+        "SelectorName": "Similar month of the previous year = 100"
       }
     }
   }

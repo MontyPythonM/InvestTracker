@@ -56,9 +56,9 @@ public class InvestmentStrategiesPermissionMatrix : IModulePermissionMatrix
         new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.GetCash.ToString()),
         new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.RemoveCashTransaction.ToString()),
         
-        new(SystemRole.BusinessAdministrator, InvestmentStrategiesPermission.SafeSeedExchangeRate.ToString()),
+        new(SystemRole.BusinessAdministrator, InvestmentStrategiesPermission.SeedInflationRates.ToString()),
         
-        new(SystemRole.SystemAdministrator, InvestmentStrategiesPermission.SafeSeedExchangeRate.ToString()),
-        new(SystemRole.SystemAdministrator, InvestmentStrategiesPermission.ForceSeedExchangeRate.ToString()),
+        new(SystemRole.SystemAdministrator, InvestmentStrategiesPermission.SeedInflationRates.ToString()),
+        new(SystemRole.SystemAdministrator, InvestmentStrategiesPermission.ForceSeedInflationRates.ToString()),
     };
 }

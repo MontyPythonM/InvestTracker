@@ -21,15 +21,15 @@ public sealed record ChronologicalInflationRates
         }
         
         Values = rates
-            .OrderBy(rate => rate.Year)
-            .ThenBy(rate => rate.Month);
+            .OrderBy(rate => rate.MonthlyDate.Year)
+            .ThenBy(rate => rate.MonthlyDate.Month);
     }
 
     private static bool IsInflationRateHaveConsecutiveYears(IEnumerable<InflationRate> inflationRates)
     {
         var sortedDates = inflationRates
-            .OrderBy(rate => rate.Year)
-            .ThenBy(rate => rate.Month)
+            .OrderBy(rate => rate.MonthlyDate.Year)
+            .ThenBy(rate => rate.MonthlyDate.Month)
             .ToList();
 
         for (var i = 1; i < sortedDates.Count; i++)
@@ -47,7 +47,8 @@ public sealed record ChronologicalInflationRates
     }
 
     private static bool IsDatesSorted(InflationRate currentRate, InflationRate previousRate)
-        => currentRate.Year < previousRate.Year || (currentRate.Year == previousRate.Year && currentRate.Month <= previousRate.Month);
+        => currentRate.MonthlyDate.Year < previousRate.MonthlyDate.Year || 
+           (currentRate.MonthlyDate.Year == previousRate.MonthlyDate.Year && currentRate.MonthlyDate.Month <= previousRate.MonthlyDate.Month);
 
     private static bool IsInflationRatesHaveSameCurrency(IReadOnlyCollection<InflationRate> inflationRates)
         => inflationRates.All(rate => rate.Currency == inflationRates.First().Currency);

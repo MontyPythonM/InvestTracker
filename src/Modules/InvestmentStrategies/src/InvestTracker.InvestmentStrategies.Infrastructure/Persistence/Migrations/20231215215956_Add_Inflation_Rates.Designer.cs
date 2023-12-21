@@ -3,6 +3,7 @@ using System;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(InvestmentStrategiesDbContext))]
-    partial class InvestmentStrategiesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231215215956_Add_Inflation_Rates")]
+    partial class Add_Inflation_Rates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -396,8 +399,8 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                         .HasColumnType("date");
 
                     b.Property<decimal>("Value")
-                        .HasPrecision(12, 4)
-                        .HasColumnType("numeric(12,4)");
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
 
                     b.HasKey("Id");
 

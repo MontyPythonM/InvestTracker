@@ -2,8 +2,6 @@
 
 public enum InvestmentStrategiesPermission
 {
-    SafeSeedExchangeRate,
-    ForceSeedExchangeRate,
     CreateInvestmentStrategy,
     AddPortfolio,
     ShareInvestmentStrategy,
@@ -18,5 +16,7 @@ public enum InvestmentStrategiesPermission
     AddCashTransaction,
     DeductCashTransaction,
     GetCash,
-    RemoveCashTransaction
+    RemoveCashTransaction,
+    SeedInflationRates,
+    ForceSeedInflationRates
 }

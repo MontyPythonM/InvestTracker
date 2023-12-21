@@ -14,20 +14,20 @@ using Microsoft.Extensions.Logging;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.Clients;
 
-internal class NbpExchangeRateApiClient : IExchangeRateApiClient
+internal sealed class NbpExchangeRateApiClient : IExchangeRateApiClient
 {
     private const string DateFormat = "yyyy-MM-dd";
     private readonly HttpClient _httpClient;
     private readonly ITimeProvider _timeProvider;
-    private readonly ExchangeRateOptions _exchangeRateOptions;
+    private readonly ExchangeRateApiOptions _exchangeRateApiOptions;
     private readonly ILogger<NbpExchangeRateApiClient> _logger;
 
-    public NbpExchangeRateApiClient(HttpClient httpClient, ITimeProvider timeProvider, ExchangeRateOptions exchangeRateOptions, 
+    public NbpExchangeRateApiClient(HttpClient httpClient, ITimeProvider timeProvider, ExchangeRateApiOptions exchangeRateApiOptions, 
         ILogger<NbpExchangeRateApiClient> logger)
     {
         _httpClient = httpClient;
         _timeProvider = timeProvider;
-        _exchangeRateOptions = exchangeRateOptions;
+        _exchangeRateApiOptions = exchangeRateApiOptions;
         _logger = logger;
     }
 
@@ -36,7 +36,7 @@ internal class NbpExchangeRateApiClient : IExchangeRateApiClient
     {
         try
         {
-            var daysLimitPerRequest = _exchangeRateOptions.GetDaysRequestLimit;
+            var daysLimitPerRequest = _exchangeRateApiOptions.GetDaysRequestLimit;
 
             if (dateRange.IsDaysLimitExceed(daysLimitPerRequest))
             {
@@ -68,7 +68,7 @@ internal class NbpExchangeRateApiClient : IExchangeRateApiClient
     {
         try
         {
-            var daysLimitPerRequest = _exchangeRateOptions.GetAllDaysRequestLimit;
+            var daysLimitPerRequest = _exchangeRateApiOptions.GetAllDaysRequestLimit;
 
             if (dateRange.IsDaysLimitExceed(daysLimitPerRequest))
             {
@@ -90,7 +90,7 @@ internal class NbpExchangeRateApiClient : IExchangeRateApiClient
                 return new List<ExchangeRateEntity>();
             }
 
-            var errorMessage = $"Unhandled error from NbpExchangeRateApiClient GetAllAsync: {ex.Message}. Details: {ex}";
+            var errorMessage = $"Unhandled error from NbpExchangeRate API: {ex.Message}. Details: {ex}";
             _logger.LogError(errorMessage);
             throw new ExchangeRateApiClientException(errorMessage);
         }
