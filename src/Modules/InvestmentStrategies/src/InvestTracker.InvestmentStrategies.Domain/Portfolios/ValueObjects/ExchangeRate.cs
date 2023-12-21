@@ -1,4 +1,5 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.Exceptions;
+using InvestTracker.Shared.Abstractions.Types;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 
@@ -11,7 +12,7 @@ public sealed record ExchangeRate
 
     public ExchangeRate(Currency from, Currency to, DateOnly date, decimal value)
     {
-        if (date > DateOnly.FromDateTime(DateTime.Now))
+        if (date > DateTime.Now.ToDateOnly())
         {
             throw new ExchangeRateFromFutureException(date);
         }

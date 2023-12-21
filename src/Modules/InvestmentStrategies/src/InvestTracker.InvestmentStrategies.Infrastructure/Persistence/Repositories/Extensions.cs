@@ -16,7 +16,8 @@ internal static class Extensions
             .AddScoped<IStakeholderRepository, StakeholderRepository>()
             .AddScoped<ICollaborationRepository, CollaborationRepository>()
             .AddScoped<IPortfolioRepository, PortfolioRepository>()
-            .AddScoped<IExchangeRateRepository, ExchangeRateRepository>();
+            .AddScoped<IExchangeRateRepository, ExchangeRateRepository>()
+            .AddScoped<IInflationRateRepository, InflationRateRepository>();
     
     public static IQueryable<Portfolio> IncludeAssetsAndTransactions(this IQueryable<Portfolio> query)
     {

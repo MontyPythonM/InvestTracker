@@ -4,7 +4,7 @@ namespace InvestTracker.Shared.Abstractions.DDD.Exceptions;
 
 public sealed class MaxDaysLimitExceedException : InvestTrackerException
 {
-    public MaxDaysLimitExceedException(int limit) 
+    public MaxDaysLimitExceedException(uint limit) 
         : base($"Date range's day limit ({limit} days) has been exceeded")
     {
     }

@@ -1,4 +1,5 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.Exceptions;
+using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 
@@ -6,8 +7,7 @@ public sealed record InflationRate
 {
     public decimal Value { get; }
     public Currency Currency { get; }
-    public int Year { get; }
-    public int Month { get; }
+    public MonthlyDate MonthlyDate { get; }
 
     public InflationRate(decimal value, Currency currency, int year, int month)
     {
@@ -16,17 +16,8 @@ public sealed record InflationRate
             throw new InvalidInflationRateException(value);
         }
 
-        if (!IsValidYear(year) || !IsValidMonth(month))
-        {
-            throw new InvalidInflationRateException();
-        }
-
         Value = value;
         Currency = currency;
-        Year = year;
-        Month = month;
+        MonthlyDate = new MonthlyDate(year, month);
     }
-
-    private static bool IsValidYear(int year) => year > 1900;
-    private static bool IsValidMonth(int month) => month >= 1 && month <= 12;
 }

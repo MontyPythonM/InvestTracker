@@ -7,6 +7,7 @@ using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.Entities;
+using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.InflationRates.Entities;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Converters;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,7 @@ internal class InvestmentStrategiesDbContext : DbContext
     public DbSet<Collaboration> Collaborations { get; set; }
     public DbSet<Stakeholder> Stakeholders { get; set; }
     public DbSet<ExchangeRateEntity> ExchangeRates { get; set; }
+    public DbSet<InflationRateEntity> InflationRates { get; set; }
     
     public InvestmentStrategiesDbContext(DbContextOptions<InvestmentStrategiesDbContext> options, 
         DomainEventsInterceptor domainEventsInterceptor) : base(options)

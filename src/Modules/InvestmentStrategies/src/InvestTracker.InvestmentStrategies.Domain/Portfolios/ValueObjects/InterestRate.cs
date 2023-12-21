@@ -8,7 +8,7 @@ public sealed record InterestRate
     
     public InterestRate(decimal percentageValue)
     {
-        if (percentageValue is < 0 or > 100)
+        if (percentageValue is < 0 or > 1000)
         {
             throw new InvalidInterestRateException(percentageValue);
         }

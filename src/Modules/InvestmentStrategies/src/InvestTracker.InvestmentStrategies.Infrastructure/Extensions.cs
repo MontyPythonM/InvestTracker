@@ -6,7 +6,6 @@ using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Interceptors;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Repositories;
 using InvestTracker.InvestmentStrategies.Infrastructure.Services;
-using InvestTracker.Shared.Infrastructure;
 using InvestTracker.Shared.Infrastructure.Postgres;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,17 +16,14 @@ internal static class Extensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        var exchangeRateOptions = services
-            .GetOptions<ExchangeRateOptions>("InvestmentStrategies:ExchangeRate:ExternalApiUpdate");
-
-        services.AddSingleton(exchangeRateOptions);
         services.AddSingleton<DomainEventsInterceptor>();
-        
+
         return services
             .AddPostgres<InvestmentStrategiesDbContext>(useAuditableEntities: true)
             .AddRepositories()
             .AddFileManagers()
             .AddDataCollectors()
-            .AddServices();
+            .AddServices()
+            .AddAppSettingsOptions();
     }
 }

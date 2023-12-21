@@ -21,14 +21,14 @@ public sealed record DateRange
 
     public int GetDaysNumber() => CalculateDays(From, To);
     
-    public bool IsDaysLimitExceed(int limit) => CalculateDays(From, To) > limit;
+    public bool IsDaysLimitExceed(uint limit) => CalculateDays(From, To) > limit;
 
     public override string ToString() => $"Date range from {From} to {To}";
     
     public IEnumerable<DateOnly> GetDates() 
         => Enumerable.Range(0, CalculateDays(From, To)).Select(offset => From.AddDays(offset));
 
-    public IEnumerable<DateRange> Divide(int daysLimit)
+    public IEnumerable<DateRange> Divide(uint daysLimit)
     {
         if (!IsDaysLimitExceed(daysLimit))
         {
@@ -40,7 +40,7 @@ public sealed record DateRange
 
         while (true)
         {
-            var lastDayOfRange = currentDate.AddDays(daysLimit);
+            var lastDayOfRange = currentDate.AddDays((int)daysLimit);
 
             if (lastDayOfRange >= To)
             {

@@ -1,8 +1,10 @@
 ﻿using InvestTracker.InvestmentStrategies.Application.Portfolios.Dto;
 using InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
+using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Repositories;
 using InvestTracker.Shared.Abstractions.Context;
@@ -17,15 +19,19 @@ internal sealed class GetPortfolioHandler : IQueryHandler<GetPortfolio, Portfoli
     private readonly InvestmentStrategiesDbContext _context;
     private readonly IRequestContext _requestContext;
     private readonly ITimeProvider _timeProvider;
+    private readonly IInflationRateRepository _inflationRateRepository;
+    private readonly IPortfolioRepository _portfolioRepository;
 
-    public GetPortfolioHandler(InvestmentStrategiesDbContext context, IRequestContext requestContext, ITimeProvider timeProvider)
+    public GetPortfolioHandler(InvestmentStrategiesDbContext context, IRequestContext requestContext, 
+        ITimeProvider timeProvider, IInflationRateRepository inflationRateRepository, IPortfolioRepository portfolioRepository)
     {
         _context = context;
         _requestContext = requestContext;
         _timeProvider = timeProvider;
+        _inflationRateRepository = inflationRateRepository;
+        _portfolioRepository = portfolioRepository;
     }
     
-    // TODO: Add GetFinancialAssets implementation after added inflation rates data collector
     public async Task<PortfolioDetailsDto> HandleAsync(GetPortfolio query, CancellationToken token = default)
     {
         var portfolio = await _context.Portfolios
@@ -38,7 +44,16 @@ internal sealed class GetPortfolioHandler : IQueryHandler<GetPortfolio, Portfoli
             throw new PortfolioNotFoundException(query.PortfolioId);
         }
 
-        //var inflationRates = _inflationRateRepository.GetAllAsync();
+        var isStakeholderHaveAccess = await _portfolioRepository
+            .HasAccessAsync(portfolio.Id, _requestContext.Identity.UserId, token);
+        
+        if (isStakeholderHaveAccess is false)
+        {
+            throw new PortfolioAccessException(portfolio.Id);
+        }
+
+        var inflationRates = await _inflationRateRepository.GetInflationRates(token);
+        var chronologicalInflationRates = new ChronologicalInflationRates(inflationRates);
         
         return new PortfolioDetailsDto
         {
@@ -46,7 +61,7 @@ internal sealed class GetPortfolioHandler : IQueryHandler<GetPortfolio, Portfoli
             Title = portfolio.Title,
             Description = portfolio.Title,
             Note = portfolio.Note,
-            //FinancialAssets = GetFinancialAssets(portfolio, chronologicalInflationRates)
+            FinancialAssets = GetFinancialAssets(portfolio, chronologicalInflationRates)
         };
     }
 
@@ -62,13 +77,13 @@ internal sealed class GetPortfolioHandler : IQueryHandler<GetPortfolio, Portfoli
             CurrentAmount = asset.GetCurrentAmount()
         }));
 
-        // financialAssets.AddRange(portfolio.EdoTreasuryBonds.Select(asset => new FinancialAssetDto
-        // {
-        //     Id = asset.Id,
-        //     Name = asset.GetAssetName(),
-        //     Currency = asset.Currency,
-        //     CurrentAmount = asset.GetCurrentAmount(chronologicalInflationRates, _timeProvider.Current())
-        // }));
+        financialAssets.AddRange(portfolio.EdoTreasuryBonds.Select(asset => new FinancialAssetDto
+        {
+            Id = asset.Id,
+            Name = asset.GetAssetName(),
+            Currency = asset.Currency,
+            CurrentAmount = asset.GetCurrentAmount(chronologicalInflationRates, _timeProvider.Current())
+        }));
         
         return financialAssets;
     }

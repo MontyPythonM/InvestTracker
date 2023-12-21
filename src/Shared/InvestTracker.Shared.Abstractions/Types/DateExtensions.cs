@@ -1,4 +1,6 @@
-﻿namespace InvestTracker.Shared.Abstractions.Types;
+﻿using System.Globalization;
+
+namespace InvestTracker.Shared.Abstractions.Types;
 
 public static class DateExtensions
 {
@@ -13,4 +15,16 @@ public static class DateExtensions
 
     public static IEnumerable<DateOnly> ToDateOnly(this IEnumerable<DateTime> dateTimes) 
         => dateTimes.Select(d => d.ToDateOnly());
+
+    public static int GetDaysInYear(this DateTime dateTime) 
+        => new GregorianCalendar().GetDaysInYear(dateTime.Year);
+
+    public static int GetDaysInYear(this DateOnly date)
+        => GetDaysInYear(date.ToDateTime());
+    
+    public static int GetDayNumberOfYear(this DateTime dateTime)
+        => new GregorianCalendar().GetDayOfYear(dateTime);
+
+    public static int GetDayNumberOfYear(this DateOnly date)
+        => GetDayNumberOfYear(date.ToDateTime());
 }

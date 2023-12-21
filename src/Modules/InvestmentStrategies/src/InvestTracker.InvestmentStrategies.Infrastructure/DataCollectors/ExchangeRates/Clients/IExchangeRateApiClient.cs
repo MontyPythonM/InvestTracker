@@ -4,7 +4,7 @@ using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.Clients;
 
-public interface IExchangeRateApiClient
+internal interface IExchangeRateApiClient
 {
     Task<IEnumerable<ExchangeRateEntity>> GetConcreteCurrencyAsync(Currency currency, DateRange dateRange, CancellationToken token = default);
     Task<IEnumerable<ExchangeRateEntity>> GetAllAsync(DateRange dateRange, CancellationToken token = default);

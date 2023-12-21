@@ -3,6 +3,6 @@
 internal interface ICsvReader
 {
     string Read(string filePath);
-    CsvTable Parse(string data);
+    public CsvTable Parse(string data, char delimiter = ';');
     IEnumerable<string> GetColumnValues(CsvTable table, string columnName, int headerRowIndex = 0);
 }

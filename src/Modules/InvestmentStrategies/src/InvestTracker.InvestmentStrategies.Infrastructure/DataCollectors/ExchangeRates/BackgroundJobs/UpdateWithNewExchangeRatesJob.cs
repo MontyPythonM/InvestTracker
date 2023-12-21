@@ -15,28 +15,28 @@ internal sealed class UpdateWithNewExchangeRatesJob : BackgroundService
 {
     private readonly IExchangeRateApiClient _exchangeRateApiClient;
     private readonly ITimeProvider _timeProvider;
-    private readonly ExchangeRateOptions _exchangeRateOptions;
+    private readonly ExchangeRateApiOptions _exchangeRateApiOptions;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<UpdateWithNewExchangeRatesJob> _logger;
     
     public UpdateWithNewExchangeRatesJob(IExchangeRateApiClient exchangeRateApiClient, ITimeProvider timeProvider, 
-        ExchangeRateOptions exchangeRateOptions, IServiceProvider serviceProvider, ILogger<UpdateWithNewExchangeRatesJob> logger)
+        ExchangeRateApiOptions exchangeRateApiOptions, IServiceProvider serviceProvider, ILogger<UpdateWithNewExchangeRatesJob> logger)
     {
         _exchangeRateApiClient = exchangeRateApiClient;
         _timeProvider = timeProvider;
-        _exchangeRateOptions = exchangeRateOptions;
+        _exchangeRateApiOptions = exchangeRateApiOptions;
         _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (_exchangeRateOptions.Enabled is false)
+        if (_exchangeRateApiOptions.Enabled is false)
         {
             return;
         }
         
-        using var timer = new PeriodicTimer(TimeSpan.FromHours(_exchangeRateOptions.DurationHours));
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(_exchangeRateApiOptions.DurationHours));
         var errorsNumber = 0;
         
         do
@@ -53,11 +53,11 @@ internal sealed class UpdateWithNewExchangeRatesJob : BackgroundService
             }
             catch (Exception ex)
             {
-                var message = $"Background job named 'UpdateWithNewExchangeRatesJob' failed. Message: {ex.Message}, details: {ex}";
+                var message = $"Background job named '{nameof(UpdateWithNewExchangeRatesJob)}' failed. Message: {ex.Message}, details: {ex}";
                 _logger.LogError(message);
 
                 errorsNumber++;
-                if (errorsNumber > _exchangeRateOptions.MaxErrorsNumber)
+                if (errorsNumber > _exchangeRateApiOptions.MaxErrorsNumber)
                 {
                     _logger.LogCritical(message);
                     break;
@@ -74,7 +74,7 @@ internal sealed class UpdateWithNewExchangeRatesJob : BackgroundService
             .OrderBy(rate => rate.Date)
             .LastOrDefaultAsync(token);
 
-        var lastExchangeRateDate = lastPersistedExchangeRate?.Date ?? _exchangeRateOptions.UpdateMissingFromDate;
+        var lastExchangeRateDate = lastPersistedExchangeRate?.Date ?? _exchangeRateApiOptions.UpdateMissingFromDate;
 
         if (lastExchangeRateDate >= _timeProvider.CurrentDate())
         {
@@ -82,7 +82,7 @@ internal sealed class UpdateWithNewExchangeRatesJob : BackgroundService
         }
 
         var dateRange = new DateRange(lastExchangeRateDate.AddDays(1), _timeProvider.CurrentDate());
-        var dividedDateRanges = dateRange.Divide(_exchangeRateOptions.GetAllDaysRequestLimit);
+        var dividedDateRanges = dateRange.Divide(_exchangeRateApiOptions.GetAllDaysRequestLimit);
         
         foreach (var range in dividedDateRanges)
         {
