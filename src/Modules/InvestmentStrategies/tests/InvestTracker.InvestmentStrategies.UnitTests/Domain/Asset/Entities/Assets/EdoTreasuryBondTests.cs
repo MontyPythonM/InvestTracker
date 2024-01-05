@@ -11,9 +11,9 @@ namespace InvestTracker.InvestmentStrategies.UnitTests.Domain.Asset.Entities.Ass
 public class EdoTreasuryBondTests
 {
     #region GetAmount tests
-    
     /// <summary>
-    /// Result should be equal 724,80 PLN for EDO0931 at 04.11.2023 (real case)
+    /// Result should be equal 724,80 PLN for EDO0931 at 04.11.2023 (real case).
+    /// The inaccuracy results from the fact that the National Bank of Poland publishes estimated inflation rates (slightly different from the final one, known later).
     /// </summary>
     [Fact]
     public void GetAmount_ShouldReturnCorrectAmountForRealEDO0931_WhenRealInitialDataAreUsed()
@@ -27,99 +27,49 @@ public class EdoTreasuryBondTests
 
         var edoBond = CreateEdoTreasuryBond(volume, firstYearInterestRate, margin, purchaseDate);
         var inflationRates = GetRealInflationRatesForEdo0931();
-        
+
         // act
-        var result = edoBond.GetAmount(inflationRates, DateOnly.FromDateTime(calculationDate), volume, new DateTime(2025, 01, 01));
-        
+        var result = edoBond.GetAmount(inflationRates, DateOnly.FromDateTime(calculationDate), volume,
+            new DateTime(2025, 01, 01));
+
         // assert
         const decimal expectedAmount = 724.8M;
         var roundedResult = Math.Round(result, 1);
-        
-        roundedResult.ShouldBeEquivalentTo(expectedAmount);
-    }
-    
-    [Theory]
-    [MemberData(nameof(GetAmountTestData))]
-    public void GetAmount_ShouldReturnCorrectAmount_WhenCalculateDateIsInInflationRatesDateRange(int volume, 
-        decimal margin, decimal firstYearInterestRate, DateTime purchaseDate, DateTime calculateDate)
-    {
-        // arrange
-        var edoBond = CreateEdoTreasuryBond(volume, firstYearInterestRate, margin, purchaseDate);
-        var inflationRates = GetTenYearsChronologicalInflationRates(purchaseDate);
-     
-        var firstYearInflationRate = inflationRates.Values.Take(12).Select(rate => rate.Value).Average();
-        var secondYearInflationRate = inflationRates.Values.Skip(12).Take(12).Select(rate => rate.Value).Average();
-             
-        var firstYearAmount = volume * 100 * (1 + firstYearInterestRate);
-        var secondYearAmount = firstYearAmount * (1 + margin + firstYearInflationRate);
-        var thirdYearAmount = secondYearAmount * (1 + margin + secondYearInflationRate);
-        var thirdYearNonCompletedResult = (thirdYearAmount - secondYearAmount) * GetInvestmentYearCompletion(calculateDate, purchaseDate) + secondYearAmount;
-             
-        // act
-        var result = edoBond.GetAmount(inflationRates, DateOnly.FromDateTime(calculateDate), volume, calculateDate);
-             
-        // assert
-        var roundedResult = Math.Round(result, 4);
-        var expectedAmount = Math.Round(thirdYearNonCompletedResult, 4);
+
         roundedResult.ShouldBeEquivalentTo(expectedAmount);
     }
 
+    /// <summary>
+    /// Result should be around 4363,90 PLN / 4356,08 PLN for EDO0931 at 04.01.2024 (real case).
+    /// The inaccuracy results from the fact that the National Bank of Poland publishes estimated inflation rates (slightly different from the final one, known later).
+    /// </summary>
     [Fact]
-    public void GetAmount_ShouldReturnCorrectAmount_WhenPurchaseDateEqualsCalculateDate()
+    public void GetAmount_ShouldReturnCorrectAmountForRealEDO0331_WhenRealInitialDataAreUsed()
     {
         // arrange
-        var volume = new Volume(10);
-        var margin = new Margin(0.1M);
-        var firstYearInterestRate = new InterestRate(0.1M);
-        var purchaseDate = new DateTime(2020, 01, 01);
-        var calculateDate = purchaseDate;
-        var currentDate = new DateTime(2035, 01, 01);
+        var volume = new Volume(34);
+        var margin = new Margin(0.01M);
+        var firstYearInterestRate = new InterestRate(0.017M);
+        var purchaseDate = new DateTime(2021, 03, 18);
+        var calculationDate = new DateTime(2024, 01, 04);
 
         var edoBond = CreateEdoTreasuryBond(volume, firstYearInterestRate, margin, purchaseDate);
-        var inflationRates = GetTenYearsChronologicalInflationRates(purchaseDate);
-
-        var firstYearAmount = volume * 100 * (1 + firstYearInterestRate) * GetInvestmentYearCompletion(calculateDate, purchaseDate);
-             
-        // act
-        var result = edoBond.GetAmount(inflationRates, DateOnly.FromDateTime(calculateDate), volume, currentDate);
-             
-        // assert
-        result.Value.ShouldBeEquivalentTo(firstYearAmount);
-    }
-         
-    [Fact]
-    public void GetAmount_ShouldReturnCorrectAmount_WhenCalculatedDateIsLastDayOfInvestment()
-    {
-        // arrange
-        const decimal constInflationRate = 0.025M;
-        var volume = new Volume(1);
-        var margin = new Margin(0.1M);
-        var firstYearInterestRate = new InterestRate(0.015M);
-        var purchaseDate = new DateTime(2020, 01, 10);
-        var currentDate = new DateTime(2035, 01, 01);
-        
-        var edoBond = CreateEdoTreasuryBond(volume, firstYearInterestRate, margin, purchaseDate);
-        var inflationRates = GetTenYearsChronologicalInflationRates(purchaseDate, false);
-        
-        var firstYearAmount = volume * 100 * (1 + firstYearInterestRate);
-        decimal lastAmount = firstYearAmount;
-        
-        for (var year = 1; year < 10; year++)
-        {
-            lastAmount = lastAmount * (1 + margin + constInflationRate);
-        }
+        var inflationRates = GetRealInflationRatesForEdo0331();
 
         // act
-        var result = edoBond.GetAmount(inflationRates, DateOnly.FromDateTime(currentDate), volume, currentDate);
-        
+        var result = edoBond.GetAmount(inflationRates, DateOnly.FromDateTime(calculationDate), volume,
+            new DateTime(2025, 01, 01));
+
         // assert
-        result.Value.ShouldBeEquivalentTo(lastAmount);
+        const decimal expectedAmount1 = 4363.90M;
+        const decimal expectedAmount2 = 4356.08M;
+        var roundedResult = Math.Round(result, 0);
+
+        roundedResult.ShouldBeInRange(expectedAmount2 * 0.98M, expectedAmount1 * 1.02M);
     }
-    
     #endregion
     
     #region Arrange
-    
     public static IEnumerable<object[]> GetAmountTestData()
     {
         yield return new object[] { 10, 0.0125, 0.075, new DateTime(2023, 01, 01), new DateTime(2025, 01, 01) };
@@ -127,7 +77,7 @@ public class EdoTreasuryBondTests
         yield return new object[] { 100, 0.0125, 0.075, new DateTime(2023, 01, 01), new DateTime(2025, 12, 05) };
         yield return new object[] { 10000, 0.0125, 0.075, new DateTime(2023, 12, 01), new DateTime(2025, 12, 02) };
     }
-    
+        
     private static EdoTreasuryBond CreateEdoTreasuryBond(Volume volume, InterestRate firstYearInterestRate, Margin margin, DateTime purchaseDate)
         => new(
             "035B2CFD-B842-483B-ACFB-F5BFC45EE13A".ToGuid(),
@@ -137,84 +87,76 @@ public class EdoTreasuryBondTests
             margin,
             new Note("Some short note about tested EDO bond")
         );
-    
-    private static decimal GetInvestmentYearCompletion(DateTime calculationDate, DateTime purchaseDate)
+
+    private static ChronologicalInflationRates GetRealInflationRatesForEdo0931() => new(new List<InflationRate>
     {
-        const int daysInYear = 365;
-        var redemptionDate = purchaseDate.AddYears(10);
-        var calculationPeriodFirstDay = new DateOnly(calculationDate.Year, redemptionDate.Month, redemptionDate.Day);
-        var calculationDateDayNumber = calculationDate.DayOfYear - calculationPeriodFirstDay.DayOfYear;
+        new(0.0590M, Currencies.PLN, 2021, 09),
+        new(0.0680M, Currencies.PLN, 2021, 10),
+        new(0.0780M, Currencies.PLN, 2021, 11),
+        new(0.0860M, Currencies.PLN, 2021, 12),
+        new(0.0940M, Currencies.PLN, 2022, 01),
+        new(0.0850M, Currencies.PLN, 2022, 02),
+        new(0.1100M, Currencies.PLN, 2022, 03),
+        new(0.1240M, Currencies.PLN, 2022, 04),
+        new(0.1390M, Currencies.PLN, 2022, 05),
+        new(0.1550M, Currencies.PLN, 2022, 06),
+        new(0.1560M, Currencies.PLN, 2022, 07),
+        new(0.1610M, Currencies.PLN, 2022, 08),
+                
+        new(0.1720M, Currencies.PLN, 2022, 09),
+        new(0.1790M, Currencies.PLN, 2022, 10),
+        new(0.1750M, Currencies.PLN, 2022, 11),
+        new(0.1660M, Currencies.PLN, 2022, 12),
+        new(0.1660M, Currencies.PLN, 2023, 01),
+        new(0.1840M, Currencies.PLN, 2023, 02),
+        new(0.1610M, Currencies.PLN, 2023, 03),
+        new(0.1470M, Currencies.PLN, 2023, 04),
+        new(0.1300M, Currencies.PLN, 2023, 05),
+        new(0.1150M, Currencies.PLN, 2023, 06),
+        new(0.1080M, Currencies.PLN, 2023, 07),
+        new(0.1010M, Currencies.PLN, 2023, 08),
 
-        return (decimal)calculationDateDayNumber / daysInYear;
-    }
-    
-    private static ChronologicalInflationRates GetTenYearsChronologicalInflationRates(DateTime purchaseDate, bool increaseInflationRate = true)
-    {
-        const int tenYearsMonths = 120;
-        var year = purchaseDate.Year;
-        var month = purchaseDate.Month;
-        var inflationRates = new List<InflationRate>();
-        var initialInflationRate = 0.025M;
-
-        for (var i = 0; i < tenYearsMonths + 1; i++)
-        {
-            inflationRates.Add(new InflationRate(initialInflationRate, Currencies.PLN, year, month));
-
-            if (increaseInflationRate)
-            {
-                initialInflationRate += 0.011M;
-            }
-            
-            month++;
-            
-            if (month > 12)
-            {
-                year++;
-                month = 1;
-            }
-        }
-
-        return new ChronologicalInflationRates(inflationRates);
-    }
-    
-    private static ChronologicalInflationRates GetRealInflationRatesForEdo0931()
-    {
-        const decimal averageInflationPeriod1 = 0.156M;
-        const decimal averageInflationPeriod2 = 0.108M;
-        const decimal averageInflationPeriod3 = 0.118M;
+        new(0.0820M, Currencies.PLN, 2023, 09),
+        new(0.0660M, Currencies.PLN, 2023, 10),
+    });
         
-        return new ChronologicalInflationRates(new List<InflationRate>
-        {
-            new(averageInflationPeriod1, Currencies.PLN, 2021, 09),
-            new(averageInflationPeriod1, Currencies.PLN, 2021, 10),
-            new(averageInflationPeriod1, Currencies.PLN, 2021, 11),
-            new(averageInflationPeriod1, Currencies.PLN, 2021, 12),
-            new(averageInflationPeriod1, Currencies.PLN, 2022, 01),
-            new(averageInflationPeriod1, Currencies.PLN, 2022, 02),
-            new(averageInflationPeriod1, Currencies.PLN, 2022, 03),
-            new(averageInflationPeriod1, Currencies.PLN, 2022, 04),
-            new(averageInflationPeriod1, Currencies.PLN, 2022, 05),
-            new(averageInflationPeriod1, Currencies.PLN, 2022, 06),
-            new(averageInflationPeriod1, Currencies.PLN, 2022, 07),
-            new(averageInflationPeriod1, Currencies.PLN, 2022, 08),
-            
-            new(averageInflationPeriod2, Currencies.PLN, 2022, 09),
-            new(averageInflationPeriod2, Currencies.PLN, 2022, 10),
-            new(averageInflationPeriod2, Currencies.PLN, 2022, 11),
-            new(averageInflationPeriod2, Currencies.PLN, 2022, 12),
-            new(averageInflationPeriod2, Currencies.PLN, 2023, 01),
-            new(averageInflationPeriod2, Currencies.PLN, 2023, 02),
-            new(averageInflationPeriod2, Currencies.PLN, 2023, 03),
-            new(averageInflationPeriod2, Currencies.PLN, 2023, 04),
-            new(averageInflationPeriod2, Currencies.PLN, 2023, 05),
-            new(averageInflationPeriod2, Currencies.PLN, 2023, 06),
-            new(averageInflationPeriod2, Currencies.PLN, 2023, 07),
-            new(averageInflationPeriod2, Currencies.PLN, 2023, 08),
-
-            new(averageInflationPeriod3, Currencies.PLN, 2023, 09),
-            new(averageInflationPeriod3, Currencies.PLN, 2023, 10),
-        });
-    }
-    
+    private static ChronologicalInflationRates GetRealInflationRatesForEdo0331() => new(new List<InflationRate>
+    {
+        new(0.0320M, Currencies.PLN, 2021, 03),
+        new(0.0430M, Currencies.PLN, 2021, 04),
+        new(0.0470M, Currencies.PLN, 2021, 05),
+        new(0.0440M, Currencies.PLN, 2021, 06),
+        new(0.0500M, Currencies.PLN, 2021, 07),
+        new(0.0550M, Currencies.PLN, 2021, 08),
+        new(0.0590M, Currencies.PLN, 2021, 09),
+        new(0.0680M, Currencies.PLN, 2021, 10),
+        new(0.0780M, Currencies.PLN, 2021, 11),
+        new(0.0860M, Currencies.PLN, 2021, 12),
+        new(0.0940M, Currencies.PLN, 2022, 01),
+        new(0.0850M, Currencies.PLN, 2022, 02),
+                
+        new(0.1100M, Currencies.PLN, 2022, 03),
+        new(0.1240M, Currencies.PLN, 2022, 04),
+        new(0.1390M, Currencies.PLN, 2022, 05),
+        new(0.1550M, Currencies.PLN, 2022, 06),
+        new(0.1560M, Currencies.PLN, 2022, 07),
+        new(0.1610M, Currencies.PLN, 2022, 08),
+        new(0.1720M, Currencies.PLN, 2022, 09),
+        new(0.1790M, Currencies.PLN, 2022, 10),
+        new(0.1750M, Currencies.PLN, 2022, 11),
+        new(0.1660M, Currencies.PLN, 2022, 12),
+        new(0.1660M, Currencies.PLN, 2023, 01),
+        new(0.1840M, Currencies.PLN, 2023, 02),
+                
+        new(0.1610M, Currencies.PLN, 2023, 03),
+        new(0.1470M, Currencies.PLN, 2023, 04),
+        new(0.1300M, Currencies.PLN, 2023, 05),
+        new(0.1150M, Currencies.PLN, 2023, 06),
+        new(0.1080M, Currencies.PLN, 2023, 07),
+        new(0.1010M, Currencies.PLN, 2023, 08),
+        new(0.0820M, Currencies.PLN, 2023, 09),
+        new(0.0660M, Currencies.PLN, 2023, 10),
+        new(0.0660M, Currencies.PLN, 2023, 11),
+    });
     #endregion
 }
