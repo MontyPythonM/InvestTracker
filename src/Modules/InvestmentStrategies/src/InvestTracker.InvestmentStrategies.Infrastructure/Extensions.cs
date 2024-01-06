@@ -1,4 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
+using InvestTracker.InvestmentStrategies.Domain.Common;
+using InvestTracker.InvestmentStrategies.Infrastructure.Authorization;
 using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors;
 using InvestTracker.InvestmentStrategies.Infrastructure.FileManagers;
 using InvestTracker.InvestmentStrategies.Infrastructure.Options;
@@ -17,6 +19,7 @@ internal static class Extensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddSingleton<DomainEventsInterceptor>();
+        services.AddScoped<IResourceAccessor, ResourceAccessor>();
 
         return services
             .AddPostgres<InvestmentStrategiesDbContext>(useAuditableEntities: true)

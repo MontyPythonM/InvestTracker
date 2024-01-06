@@ -76,4 +76,14 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
         _context.InvestmentStrategies.UpdateRange(strategies);
         await _context.SaveChangesAsync(token);
     }
+
+    public async Task<bool> HasAccessAsync(InvestmentStrategyId strategyId, StakeholderId stakeholderId, CancellationToken token = default)
+    {
+        return await _context.InvestmentStrategies
+            .AsNoTracking()
+            .AnyAsync(strategy => strategy.Id == strategyId && 
+                                  (strategy.Owner == stakeholderId || 
+                                   strategy.IsShareEnabled && 
+                                   strategy.Collaborators.Select(c => c.CollaboratorId).Contains(stakeholderId.Value)), token);
+    }
 }

@@ -1,13 +1,12 @@
 ﻿using InvestTracker.InvestmentStrategies.Application.Portfolios.Dto;
 using InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
+using InvestTracker.InvestmentStrategies.Domain.Common;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
-using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Repositories;
-using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.Queries;
 using InvestTracker.Shared.Abstractions.Time;
 using Microsoft.EntityFrameworkCore;
@@ -17,19 +16,17 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Queries.Handlers;
 internal sealed class GetPortfolioHandler : IQueryHandler<GetPortfolio, PortfolioDetailsDto>
 {
     private readonly InvestmentStrategiesDbContext _context;
-    private readonly IRequestContext _requestContext;
     private readonly ITimeProvider _timeProvider;
     private readonly IInflationRateRepository _inflationRateRepository;
-    private readonly IPortfolioRepository _portfolioRepository;
-
-    public GetPortfolioHandler(InvestmentStrategiesDbContext context, IRequestContext requestContext, 
-        ITimeProvider timeProvider, IInflationRateRepository inflationRateRepository, IPortfolioRepository portfolioRepository)
+    private readonly IResourceAccessor _resourceAccessor;
+    
+    public GetPortfolioHandler(InvestmentStrategiesDbContext context, ITimeProvider timeProvider, 
+        IInflationRateRepository inflationRateRepository,  IResourceAccessor resourceAccessor)
     {
         _context = context;
-        _requestContext = requestContext;
         _timeProvider = timeProvider;
         _inflationRateRepository = inflationRateRepository;
-        _portfolioRepository = portfolioRepository;
+        _resourceAccessor = resourceAccessor;
     }
     
     public async Task<PortfolioDetailsDto> HandleAsync(GetPortfolio query, CancellationToken token = default)
@@ -44,13 +41,7 @@ internal sealed class GetPortfolioHandler : IQueryHandler<GetPortfolio, Portfoli
             throw new PortfolioNotFoundException(query.PortfolioId);
         }
 
-        var isStakeholderHaveAccess = await _portfolioRepository
-            .HasAccessAsync(portfolio.Id, _requestContext.Identity.UserId, token);
-        
-        if (isStakeholderHaveAccess is false)
-        {
-            throw new PortfolioAccessException(portfolio.Id);
-        }
+        await _resourceAccessor.CheckAsync(portfolio.Id, token);
 
         var inflationRates = await _inflationRateRepository.GetInflationRates(token);
         var chronologicalInflationRates = new ChronologicalInflationRates(inflationRates);

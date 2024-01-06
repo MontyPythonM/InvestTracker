@@ -64,9 +64,9 @@ internal sealed class PortfolioRepository : IPortfolioRepository
     {
         return await _context.InvestmentStrategies
             .AsNoTracking()
-            .AnyAsync(strategy => strategy.Portfolios.Select(p => p.PortfolioId).Contains(portfolioId.Value) &&
-                                  strategy.IsShareEnabled &&
-                                  (strategy.Owner == stakeholderId ||
-                                  strategy.Collaborators.Select(c => c.CollaboratorId).Contains(stakeholderId.Value)), token);
+            .AnyAsync(strategy => strategy.Portfolios.Select(p => p.PortfolioId).Contains(portfolioId.Value) && 
+                                  (strategy.Owner == stakeholderId || 
+                                   strategy.IsShareEnabled && 
+                                   strategy.Collaborators.Select(c => c.CollaboratorId).Contains(stakeholderId.Value)), token);
     }
 }
