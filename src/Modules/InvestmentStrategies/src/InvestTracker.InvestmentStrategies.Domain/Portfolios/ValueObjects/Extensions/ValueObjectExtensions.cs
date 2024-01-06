@@ -2,7 +2,7 @@
 
 public static class ValueObjectExtensions
 {
-    public static ChronologicalInflationRates ReduceToTimeScope(this ChronologicalInflationRates chronologicalInflationRates, 
+    public static ChronologicalInflationRates ReduceToInvestmentPeriodRange(this ChronologicalInflationRates chronologicalInflationRates, 
         DateOnly from, DateOnly to)
     {
         var reducedInflationRates = chronologicalInflationRates.Values

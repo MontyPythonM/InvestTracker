@@ -89,9 +89,9 @@ public class EdoTreasuryBond : IFinancialAsset, IAuditable
     
     public Amount GetAmount(ChronologicalInflationRates chronologicalInflationRates, DateOnly calculationDate, Volume volume, DateTime now)
     {
-        var reducedInflationRates = chronologicalInflationRates.ReduceToTimeScope(GetPurchaseDate(), RedemptionDate);
+        var reducedInflationRates = chronologicalInflationRates.ReduceToInvestmentPeriodRange(GetPurchaseDate(), RedemptionDate);
         
-        if (!IsInflationRatesCoverEntireInvestment(reducedInflationRates))
+        if (!AreIncludedInInvestmentPeriod(reducedInflationRates))
         {
             throw new InvalidInflationRatesYearsException(Id);
         }
@@ -116,7 +116,7 @@ public class EdoTreasuryBond : IFinancialAsset, IAuditable
 
     private IEnumerable<InterestRate> CalculateInterestRates(ChronologicalInflationRates chronologicalInflationRates, DateOnly calculationDate)
     {
-        var calculatedYearCompletion = GetYearPeriodCompletion(calculationDate, RedemptionDate);
+        var calculatedYearCompletion = GetInvestmentPeriodCompletion(calculationDate);
         var inflationRatesPerPeriods = GroupInflationRatesIntoInvestmentYears(chronologicalInflationRates, calculationDate);
 
         var interestRates = new List<InterestRate>();
@@ -151,24 +151,34 @@ public class EdoTreasuryBond : IFinancialAsset, IAuditable
     private InflationRate GetPreviousPeriodInflationRate(ChronologicalInflationRates chronologicalInflationRates, int period)
     {
         var purchaseDate = GetPurchaseDate();
-        var purchaseMonthlyDate = new MonthlyDate(purchaseDate.Year + period - 1, purchaseDate.Month - 2);
-
-        return chronologicalInflationRates.Values.Single(rate => rate.MonthlyDate == purchaseMonthlyDate);
+        var previousPeriodDate = new MonthlyDate(new DateOnly(purchaseDate.Year, purchaseDate.Month, 01)
+            .AddYears(period - 1)
+            .AddMonths(-2));
+        
+        return chronologicalInflationRates.Values.Single(rate => rate.MonthlyDate == previousPeriodDate);
     }
 
-    private static decimal GetYearPeriodCompletion(DateOnly calculationDate, DateOnly lastYearPeriodDate)
+    private decimal GetInvestmentPeriodCompletion(DateOnly calculationDate)
     {
-        var daysInYear = calculationDate.GetDaysInYear();
-        
-        if (lastYearPeriodDate <= calculationDate)
+        const decimal completedYear = 1;
+        if (RedemptionDate <= calculationDate)
         {
-            return 1;
+            return completedYear;
         }
+
+        if (calculationDate < GetPurchaseDate())
+        {
+            throw new DateOutOfInvestmentPeriodRangeException(calculationDate);
+        }
+
+        var calculationPeriod = GetPurchaseDate()
+            .GetYearlyRanges(InvestmentDurationYears)
+            .Single(period => period.From <= calculationDate && period.To >= calculationDate);
         
-        var calculationPeriodFirstDay = new DateOnly(calculationDate.Year, lastYearPeriodDate.Month, lastYearPeriodDate.Day);
-        var calculationDateDayNumber = calculationDate.DayOfYear - calculationPeriodFirstDay.DayOfYear;
+        var calculationPeriodTotalDays = calculationPeriod.GetDaysNumber();
+        var calculationDateDayOfPeriod = (calculationDate.ToDateTime() - calculationPeriod.From.ToDateTime()).TotalDays;
         
-        return (decimal)calculationDateDayNumber / daysInYear;
+        return (decimal) calculationDateDayOfPeriod / calculationPeriodTotalDays;
     }
 
     private static Dictionary<int, GroupedInflationRate> GroupInflationRatesIntoInvestmentYears(
@@ -210,7 +220,7 @@ public class EdoTreasuryBond : IFinancialAsset, IAuditable
     private Volume GetNominalVolume() 
         => _transactions.OfType<IncomingVolumeTransaction>().Single().Volume;
     
-    private bool IsInflationRatesCoverEntireInvestment(ChronologicalInflationRates chronologicalInflationRates)
+    private bool AreIncludedInInvestmentPeriod(ChronologicalInflationRates chronologicalInflationRates)
     {
         var purchaseDate = GetPurchaseDate();
         var firstRate = chronologicalInflationRates.Values.First();
@@ -226,8 +236,7 @@ public class EdoTreasuryBond : IFinancialAsset, IAuditable
         => (RedemptionDate.Month >= lastRate.MonthlyDate.Month && RedemptionDate.Year == lastRate.MonthlyDate.Year) || 
            RedemptionDate.Year > lastRate.MonthlyDate.Year;
 
-    private DateOnly GetPurchaseDate() 
-        => _transactions.OfType<IncomingVolumeTransaction>().Single().TransactionDate.ToDateOnly();
+    private DateOnly GetPurchaseDate() => RedemptionDate.AddYears(-InvestmentDurationYears);
 
     private bool IsFirstInvestmentYear(DateOnly date) => GetPurchaseDate().AddYears(1) > date;
 

@@ -1,11 +1,11 @@
 ﻿using InvestTracker.InvestmentStrategies.Application.InvestmentStrategies.Dto;
 using InvestTracker.InvestmentStrategies.Application.InvestmentStrategies.Queries;
+using InvestTracker.InvestmentStrategies.Domain.Common;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
-using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.Queries;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,19 +14,17 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Queries.Handlers;
 internal sealed class GetInvestmentStrategyDetailsHandler : IQueryHandler<GetInvestmentStrategyDetails, InvestmentStrategyDetailsDto>
 {
     private readonly InvestmentStrategiesDbContext _context;
-    private readonly IRequestContext _requestContext;
-
-    public GetInvestmentStrategyDetailsHandler(InvestmentStrategiesDbContext context, IRequestContext requestContext)
+    private readonly IResourceAccessor _resourceAccessor;
+    
+    public GetInvestmentStrategyDetailsHandler(InvestmentStrategiesDbContext context, IResourceAccessor resourceAccessor)
     {
         _context = context;
-        _requestContext = requestContext;
+        _resourceAccessor = resourceAccessor;
     }
     
     public async Task<InvestmentStrategyDetailsDto> HandleAsync(GetInvestmentStrategyDetails query, 
         CancellationToken token = default)
     {
-        var currentUserId = new StakeholderId(_requestContext.Identity.UserId);
-
         var strategy = await _context.InvestmentStrategies
             .AsNoTracking()
             .SingleOrDefaultAsync(strategy => strategy.Id == query.InvestmentStrategyId, token);
@@ -36,10 +34,7 @@ internal sealed class GetInvestmentStrategyDetailsHandler : IQueryHandler<GetInv
             throw new InvestmentStrategyNotFoundException(query.InvestmentStrategyId);
         }
 
-        if (!strategy.IsStakeholderHaveAccess(currentUserId))
-        {
-            throw new InvestmentStrategyAccessException(strategy.Id);
-        }
+        _resourceAccessor.Check(strategy);
         
         var stakeholders = await _context.Stakeholders
             .AsNoTracking()

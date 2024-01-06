@@ -1,11 +1,7 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.Consts;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
-using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.Clients;
-using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.Entities;
-using InvestTracker.InvestmentStrategies.Infrastructure.Exceptions;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
-using InvestTracker.Shared.Abstractions.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Repositories;
