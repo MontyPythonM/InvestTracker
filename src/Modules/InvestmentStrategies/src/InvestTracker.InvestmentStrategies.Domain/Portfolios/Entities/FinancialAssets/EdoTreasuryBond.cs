@@ -151,9 +151,11 @@ public class EdoTreasuryBond : IFinancialAsset, IAuditable
     private InflationRate GetPreviousPeriodInflationRate(ChronologicalInflationRates chronologicalInflationRates, int period)
     {
         var purchaseDate = GetPurchaseDate();
-        var purchaseMonthlyDate = new MonthlyDate(purchaseDate.Year + period - 1, purchaseDate.Month - 2);
-
-        return chronologicalInflationRates.Values.Single(rate => rate.MonthlyDate == purchaseMonthlyDate);
+        var previousPeriodDate = new MonthlyDate(new DateOnly(purchaseDate.Year, purchaseDate.Month, 01)
+            .AddYears(period - 1)
+            .AddMonths(-2));
+        
+        return chronologicalInflationRates.Values.Single(rate => rate.MonthlyDate == previousPeriodDate);
     }
 
     private decimal GetInvestmentPeriodCompletion(DateOnly calculationDate)
