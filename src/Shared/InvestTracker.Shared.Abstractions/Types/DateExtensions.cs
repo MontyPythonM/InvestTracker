@@ -46,4 +46,7 @@ public static class DateExtensions
 
         return yearlyRanges;
     }
+    
+    public static DateOnly AsFirstDayOfMonth(this DateOnly date) => new(date.Year, date.Month, 01);
+    public static DateTime AsFirstDayOfMonth(this DateTime date) => new(date.Year, date.Month, 01);
 }

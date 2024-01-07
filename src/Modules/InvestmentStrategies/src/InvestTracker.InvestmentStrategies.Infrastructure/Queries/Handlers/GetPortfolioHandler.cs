@@ -73,7 +73,7 @@ internal sealed class GetPortfolioHandler : IQueryHandler<GetPortfolio, Portfoli
             Id = asset.Id,
             Name = asset.GetAssetName(),
             Currency = asset.Currency,
-            CurrentAmount = asset.GetCurrentAmount(chronologicalInflationRates, _timeProvider.Current())
+            CurrentAmount = asset.GetCurrentAmount(chronologicalInflationRates, _timeProvider.CurrentDate())
         }));
         
         return financialAssets;

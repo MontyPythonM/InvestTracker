@@ -24,6 +24,7 @@ public class InvestmentStrategiesPermissionMatrix : IModulePermissionMatrix
         new(SystemSubscription.Advisor, InvestmentStrategiesPermission.DeductCashTransaction.ToString()),
         new(SystemSubscription.Advisor, InvestmentStrategiesPermission.GetCash.ToString()),
         new(SystemSubscription.Advisor, InvestmentStrategiesPermission.RemoveCashTransaction.ToString()),
+        new(SystemSubscription.Advisor, InvestmentStrategiesPermission.GetEdoTreasuryBond.ToString()),
 
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.CreateInvestmentStrategy.ToString()),
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.AddPortfolio.ToString()),
@@ -39,6 +40,7 @@ public class InvestmentStrategiesPermissionMatrix : IModulePermissionMatrix
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.AddCashTransaction.ToString()),
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.DeductCashTransaction.ToString()),
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.GetCash.ToString()),
+        new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.GetEdoTreasuryBond.ToString()),
 
         new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.CreateInvestmentStrategy.ToString()),
         new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.AddPortfolio.ToString()),
@@ -55,6 +57,7 @@ public class InvestmentStrategiesPermissionMatrix : IModulePermissionMatrix
         new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.DeductCashTransaction.ToString()),
         new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.GetCash.ToString()),
         new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.RemoveCashTransaction.ToString()),
+        new(SystemSubscription.ProfessionalInvestor, InvestmentStrategiesPermission.GetEdoTreasuryBond.ToString()),
         
         new(SystemRole.BusinessAdministrator, InvestmentStrategiesPermission.SeedInflationRates.ToString()),
         

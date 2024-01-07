@@ -30,7 +30,7 @@ public class EdoTreasuryBondTests
 
         // act
         var result = edoBond.GetAmount(inflationRates, DateOnly.FromDateTime(calculationDate), volume,
-            new DateTime(2025, 01, 01));
+            new DateOnly(2025, 01, 01));
 
         // assert
         const decimal expectedAmount = 724.8M;
@@ -58,7 +58,7 @@ public class EdoTreasuryBondTests
 
         // act
         var result = edoBond.GetAmount(inflationRates, DateOnly.FromDateTime(calculationDate), volume,
-            new DateTime(2025, 01, 01));
+            new DateOnly(2025, 01, 01));
 
         // assert
         const decimal expectedAmount1 = 4363.90M;

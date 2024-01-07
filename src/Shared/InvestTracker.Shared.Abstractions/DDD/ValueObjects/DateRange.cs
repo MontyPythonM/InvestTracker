@@ -54,7 +54,7 @@ public sealed record DateRange
 
         return dividedDateRanges;
     }
-
+    
     private static int CalculateDays(DateOnly from, DateOnly to) 
         => (int)(to.ToDateTime() - from.ToDateTime()).TotalDays;
 }
