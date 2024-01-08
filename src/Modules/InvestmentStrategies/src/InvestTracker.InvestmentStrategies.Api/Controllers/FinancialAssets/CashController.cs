@@ -1,4 +1,5 @@
-﻿using InvestTracker.InvestmentStrategies.Api.Dto;
+﻿using InvestTracker.InvestmentStrategies.Api.Controllers.Base;
+using InvestTracker.InvestmentStrategies.Api.Dto;
 using InvestTracker.InvestmentStrategies.Api.Permissions;
 using InvestTracker.InvestmentStrategies.Application.Portfolios.Commands;
 using InvestTracker.InvestmentStrategies.Application.Portfolios.Dto;
@@ -12,11 +13,15 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace InvestTracker.InvestmentStrategies.Api.Controllers.FinancialAssets;
 
-internal sealed class CashController : FinancialAssetsController
+internal sealed class CashController : ApiControllerBase
 {
-    public CashController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher) 
-        : base(commandDispatcher, queryDispatcher)
+    private readonly ICommandDispatcher _commandDispatcher;
+    private readonly IQueryDispatcher _queryDispatcher;
+
+    public CashController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher)
     {
+        _commandDispatcher = commandDispatcher;
+        _queryDispatcher = queryDispatcher;
     }
     
     [HttpGet("{portfolioId:guid}/cash/{assetId:guid}")]
@@ -25,7 +30,7 @@ internal sealed class CashController : FinancialAssetsController
     public async Task<ActionResult<CashDto>> GetCash(Guid portfolioId, Guid assetId, CancellationToken token)
     {
         var query = new GetCash(assetId, portfolioId);
-        return Ok(await QueryDispatcher.QueryAsync(query, token));
+        return Ok(await _queryDispatcher.QueryAsync(query, token));
     }
 
     [HttpGet("{portfolioId:guid}/cash/{assetId:guid}/chart")]
@@ -35,7 +40,7 @@ internal sealed class CashController : FinancialAssetsController
         Guid portfolioId, Guid assetId, CancellationToken token)
     {
         var query = new GetCashChart(assetId, portfolioId, dto.DisplayInCurrency, new DateRange(dto.DateFrom, dto.DateTo));
-        return Ok(await QueryDispatcher.QueryAsync(query, token));
+        return Ok(await _queryDispatcher.QueryAsync(query, token));
     }
     
     [HttpPost("{portfolioId:guid}/cash/{assetId:guid}/add")]
@@ -44,7 +49,7 @@ internal sealed class CashController : FinancialAssetsController
     public async Task<ActionResult> AddCash(CashTransactionDto dto, Guid portfolioId, Guid assetId, CancellationToken token)
     {
         var command = new AddCashTransaction(assetId, portfolioId, dto.Amount, dto.TransactionDate, dto.Note);
-        await CommandDispatcher.SendAsync(command, token);
+        await _commandDispatcher.SendAsync(command, token);
         return Ok();
     }
     
@@ -54,7 +59,7 @@ internal sealed class CashController : FinancialAssetsController
     public async Task<ActionResult> DeductCash(CashTransactionDto dto, Guid portfolioId, Guid assetId, CancellationToken token)
     {
         var command = new DeductCashTransaction(assetId, portfolioId, dto.Amount, dto.TransactionDate, dto.Note);
-        await CommandDispatcher.SendAsync(command, token);
+        await _commandDispatcher.SendAsync(command, token);
         return Ok();
     }
     
@@ -64,7 +69,7 @@ internal sealed class CashController : FinancialAssetsController
     public async Task<ActionResult> RemoveCashTransaction(Guid portfolioId, Guid assetId, Guid transactionId, CancellationToken token)
     {
         var command = new RemoveCashTransaction(portfolioId, assetId, transactionId);
-        await CommandDispatcher.SendAsync(command, token);
+        await _commandDispatcher.SendAsync(command, token);
         return Ok();
     }
 }

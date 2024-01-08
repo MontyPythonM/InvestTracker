@@ -1,4 +1,5 @@
-﻿using InvestTracker.InvestmentStrategies.Api.Permissions;
+﻿using InvestTracker.InvestmentStrategies.Api.Controllers.Base;
+using InvestTracker.InvestmentStrategies.Api.Permissions;
 using InvestTracker.InvestmentStrategies.Application.Portfolios.Dto;
 using InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
 using InvestTracker.Shared.Abstractions.Commands;
@@ -9,11 +10,15 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace InvestTracker.InvestmentStrategies.Api.Controllers.FinancialAssets;
 
-internal sealed class EdoTreasuryBondController : FinancialAssetsController
+internal sealed class EdoTreasuryBondController : ApiControllerBase
 {
-    public EdoTreasuryBondController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher) 
-        : base(commandDispatcher, queryDispatcher)
+    private readonly ICommandDispatcher _commandDispatcher;
+    private readonly IQueryDispatcher _queryDispatcher;
+
+    public EdoTreasuryBondController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher)
     {
+        _commandDispatcher = commandDispatcher;
+        _queryDispatcher = queryDispatcher;
     }
     
     [HttpGet("{portfolioId:guid}/bonds/{assetId:guid}")]
@@ -22,6 +27,6 @@ internal sealed class EdoTreasuryBondController : FinancialAssetsController
     public async Task<ActionResult<EdoTreasuryBondDto>> GetEdoTreasuryBond(Guid portfolioId, Guid assetId, CancellationToken token)
     {
         var query = new GetEdoTreasuryBond(assetId, portfolioId);
-        return Ok(await QueryDispatcher.QueryAsync(query, token));
+        return Ok(await _queryDispatcher.QueryAsync(query, token));
     }
 }
