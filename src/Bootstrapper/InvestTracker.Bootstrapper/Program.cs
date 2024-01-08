@@ -10,11 +10,12 @@ using InvestTracker.Users.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 var assemblies = ModuleLoader.LoadAssemblies();
+var modules = ModuleLoader.LoadModules(assemblies);
 
 builder.Host.ConfigureModuleAppSettings();
 
 builder.Services
-    .AddSharedInfrastructure(assemblies)
+    .AddSharedInfrastructure(assemblies, modules)
     .AddOffersModule()
     .AddCalculatorsModule()
     .AddNotificationsModule()
@@ -24,5 +25,5 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseSharedInfrastructure();
+app.UseSharedInfrastructure(modules);
 app.Run();
