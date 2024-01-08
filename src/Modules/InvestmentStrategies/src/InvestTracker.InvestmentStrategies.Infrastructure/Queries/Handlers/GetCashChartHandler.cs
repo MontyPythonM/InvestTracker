@@ -1,10 +1,10 @@
 ﻿using InvestTracker.InvestmentStrategies.Application.Portfolios.Dto;
 using InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
+using InvestTracker.InvestmentStrategies.Domain.Common;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using InvestTracker.InvestmentStrategies.Infrastructure.Services.Charts;
-using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.Queries;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,30 +13,22 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Queries.Handlers;
 internal sealed class GetCashChartHandler : IQueryHandler<GetCashChart, IEnumerable<CashChartValue>>
 {
     private readonly InvestmentStrategiesDbContext _context;
-    private readonly IRequestContext _requestContext;
     private readonly IExchangeRateRepository _exchangeRateRepository;
-    private readonly IPortfolioRepository _portfolioRepository;
     private readonly IChartService _chartService;
+    private readonly IResourceAccessor _resourceAccessor;
     
-    public GetCashChartHandler(InvestmentStrategiesDbContext context, IRequestContext requestContext, 
-        IExchangeRateRepository exchangeRateRepository, IPortfolioRepository portfolioRepository, IChartService chartService)
+    public GetCashChartHandler(InvestmentStrategiesDbContext context, IExchangeRateRepository exchangeRateRepository,
+        IChartService chartService, IResourceAccessor resourceAccessor)
     {
         _context = context;
-        _requestContext = requestContext;
         _exchangeRateRepository = exchangeRateRepository;
-        _portfolioRepository = portfolioRepository;
         _chartService = chartService;
+        _resourceAccessor = resourceAccessor;
     }
 
     public async Task<IEnumerable<CashChartValue>> HandleAsync(GetCashChart query, CancellationToken token = default)
     {
-        var isStakeholderHaveAccess = await _portfolioRepository
-            .HasAccessAsync(query.PortfolioId, _requestContext.Identity.UserId, token);
-        
-        if (isStakeholderHaveAccess is false)
-        {
-            throw new PortfolioAccessException(query.PortfolioId);
-        }
+        await _resourceAccessor.CheckAsync(query.PortfolioId, token);
 
         var cash = await _context.Cash
             .AsNoTracking()

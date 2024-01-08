@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using InvestTracker.Shared.Abstractions.Modules;
 
 namespace InvestTracker.Bootstrapper;
 
@@ -16,4 +17,13 @@ internal static class ModuleLoader
         files.ForEach(x => assemblies.Add(AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(x))));
         return assemblies;
     }
+    
+    public static IList<IModule> LoadModules(IEnumerable<Assembly> assemblies)
+        => assemblies
+            .SelectMany(x => x.GetTypes())
+            .Where(x => typeof(IModule).IsAssignableFrom(x) && !x.IsInterface)
+            .OrderBy(x => x.Name)
+            .Select(Activator.CreateInstance)
+            .Cast<IModule>()
+            .ToList();
 }

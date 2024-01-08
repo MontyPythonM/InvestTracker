@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 
 namespace InvestTracker.Shared.Abstractions.Types;
 
@@ -27,4 +28,25 @@ public static class DateExtensions
 
     public static int GetDayNumberOfYear(this DateOnly date)
         => GetDayNumberOfYear(date.ToDateTime());
+    
+    public static IEnumerable<DateRange> GetYearlyRanges(this DateOnly startDate, uint years)
+    {
+        var yearlyRanges = new List<DateRange>();
+        var currentDate = startDate;
+
+        for (var year = 0; year < years; year++)
+        {
+            var firstDayOfRange = currentDate;
+            var lastDayOfRange = currentDate.AddYears(1).AddDays(-1);
+            var range = new DateRange(firstDayOfRange, lastDayOfRange);
+            yearlyRanges.Add(range);
+
+            currentDate = lastDayOfRange.AddDays(1);
+        }
+
+        return yearlyRanges;
+    }
+    
+    public static DateOnly AsFirstDayOfMonth(this DateOnly date) => new(date.Year, date.Month, 01);
+    public static DateTime AsFirstDayOfMonth(this DateTime date) => new(date.Year, date.Month, 01);
 }

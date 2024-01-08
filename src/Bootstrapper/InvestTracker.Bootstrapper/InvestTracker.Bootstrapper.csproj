@@ -9,7 +9,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Modules\Calculators\src\InvestTracker.Calculators.Api\InvestTracker.Calculators.Api.csproj" />
-      <ProjectReference Include="..\..\Modules\Exports\src\InvestTracker.Exports.Api\InvestTracker.Exports.Api.csproj" />
       <ProjectReference Include="..\..\Modules\InvestmentStrategies\src\InvestTracker.InvestmentStrategies.Api\InvestTracker.InvestmentStrategies.Api.csproj" />
       <ProjectReference Include="..\..\Modules\Notifications\src\InvestTracker.Notifications.Api\InvestTracker.Notifications.Api.csproj" />
       <ProjectReference Include="..\..\Modules\Offers\src\InvestTracker.Offers.Api\InvestTracker.Offers.Api.csproj" />

@@ -3,6 +3,7 @@
 namespace InvestTracker.Notifications.Api.Controllers;
 
 [ApiController]
+[ApiExplorerSettings(GroupName = NotificationsModule.BasePath)]
 [Route(NotificationsModule.BasePath + "/[controller]")]
 internal class ApiControllerBase : ControllerBase
 {

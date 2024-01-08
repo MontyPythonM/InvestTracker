@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
+using InvestTracker.Shared.Abstractions.Modules;
 using InvestTracker.Shared.Abstractions.Time;
 using InvestTracker.Shared.Infrastructure.Api;
 using InvestTracker.Shared.Infrastructure.Authentication;
@@ -24,13 +25,13 @@ namespace InvestTracker.Shared.Infrastructure;
 
 public static class Extensions
 {
-    internal static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IList<Assembly> assemblies)
+    internal static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IList<Assembly> assemblies, IList<IModule> modules)
     {
         services
             .AddContext()
             .AddSingleton<ITimeProvider, TimeProvider>()
             .AddExceptionHandling()
-            .AddOpenApiDocumentation()
+            .AddOpenApiDocumentation(modules)
             .AddModuleRequests(assemblies)
             .AddQueries(assemblies)
             .AddCommands(assemblies)
@@ -50,10 +51,10 @@ public static class Extensions
         return services;
     }
 
-    internal static IApplicationBuilder UseSharedInfrastructure(this IApplicationBuilder app)
+    internal static IApplicationBuilder UseSharedInfrastructure(this IApplicationBuilder app, IList<IModule> modules)
     {
         app.UseExceptionHandling();
-        app.UseOpenApiDocumentation();
+        app.UseOpenApiDocumentation(modules);
         app.UseAuthentication();
         app.UseRouting();
         app.UsePermissionsInjector();

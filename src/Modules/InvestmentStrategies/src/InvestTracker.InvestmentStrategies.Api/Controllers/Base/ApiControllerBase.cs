@@ -3,6 +3,7 @@
 namespace InvestTracker.InvestmentStrategies.Api.Controllers.Base;
 
 [ApiController]
+[ApiExplorerSettings(GroupName = InvestmentStrategiesModule.BasePath)]
 [Route(InvestmentStrategiesModule.BasePath + "/[controller]")]
 internal class ApiControllerBase : ControllerBase
 {

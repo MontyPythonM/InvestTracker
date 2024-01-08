@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using InvestTracker.Shared.Abstractions.Modules;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
@@ -8,12 +9,17 @@ internal static class Extensions
 {
    private const string AppName = "InvestTracker API";
    
-   public static IServiceCollection AddOpenApiDocumentation(this IServiceCollection services)
+   public static IServiceCollection AddOpenApiDocumentation(this IServiceCollection services, IList<IModule> modules)
    {
       services.AddSwaggerGen(options =>
       {
          options.EnableAnnotations();
-         
+
+         foreach (var module in modules)
+         {
+            options.SwaggerDoc(module.SwaggerGroup, new OpenApiInfo { Title = $"{AppName} - {module.Title}", Version = module.Version });
+         }
+
          options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
          {
             In = ParameterLocation.Header,
@@ -38,23 +44,22 @@ internal static class Extensions
                ArraySegment<string>.Empty
             }
          });
-         
-         
-         options.SwaggerDoc("v1", new OpenApiInfo
-         {
-            Title = AppName,
-            Version = "v1",
-         });
       });
       
       return services;
    }
-   
-   public static IApplicationBuilder UseOpenApiDocumentation(this IApplicationBuilder app)
+
+   public static IApplicationBuilder UseOpenApiDocumentation(this IApplicationBuilder app, IList<IModule> modules)
    {
       app.UseSwagger();
-      app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", AppName));
-      
+      app.UseSwaggerUI(c =>
+      {
+         foreach (var module in modules)
+         {
+            c.SwaggerEndpoint($"/swagger/{module.SwaggerGroup}/swagger.json", module.SwaggerGroup);
+         }
+      });
+
       return app;
    }
 }
