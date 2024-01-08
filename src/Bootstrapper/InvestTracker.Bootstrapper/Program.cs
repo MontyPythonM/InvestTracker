@@ -1,6 +1,5 @@
 using InvestTracker.Bootstrapper;
 using InvestTracker.Calculators.Api;
-using InvestTracker.Exports.Api;
 using InvestTracker.InvestmentStrategies.Api;
 using InvestTracker.Notifications.Api;
 using InvestTracker.Offers.Api;
@@ -19,7 +18,6 @@ builder.Services
     .AddOffersModule()
     .AddCalculatorsModule()
     .AddNotificationsModule()
-    .AddExportsModule()
     .AddUsersModule()
     .AddInvestmentStrategiesModule();
 
