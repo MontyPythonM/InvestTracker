@@ -39,7 +39,8 @@ public static class Extensions
             .AddIntegrationEvents(assemblies)
             .AddDomainEvents(assemblies)
             .AddAppAuthentication()
-            .AddPermissionAuthorization();
+            .AddPermissionAuthorization()
+            .AddCorsPolicy();
             
         services
             .AddControllers()
@@ -64,6 +65,7 @@ public static class Extensions
             endpoints.MapControllers();
             endpoints.MapGet("/", context => context.Response.WriteAsync("InvestTracker API"));
         });
+        app.UseCorsPolicy();
 
         return app;
     }
