@@ -23,6 +23,7 @@ internal class InvestmentStrategiesDbContext : DbContext
     public DbSet<InvestmentStrategy> InvestmentStrategies { get; set; }
     public DbSet<Portfolio> Portfolios { get; set; }
     public DbSet<EdoTreasuryBond> EdoTreasuryBonds { get; set; }
+    public DbSet<CoiTreasuryBond> CoiTreasuryBonds { get; set; }
     public DbSet<Cash> Cash { get; set; }
     public DbSet<AmountTransaction> AmountTransactions { get; set; }
     public DbSet<VolumeTransaction> VolumeTransactions { get; set; }
