@@ -64,7 +64,7 @@ public class Portfolio : AggregateRoot<PortfolioId>
         return new Portfolio(id, title, note, description, investmentStrategyId);
     }
 
-    public EdoTreasuryBond AddEdoTreasuryBond(FinancialAssetId id, Volume volume, DateTime purchaseDate, 
+    public EdoTreasuryBond AddEdoTreasuryBond(FinancialAssetId id, Volume volume, DateOnly purchaseDate, 
         InterestRate firstYearInterestRate, Margin margin, Note note, AssetLimitPolicyDto dto)
     {
         var edoBond = new EdoTreasuryBond(id, volume, purchaseDate, firstYearInterestRate, margin, note);

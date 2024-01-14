@@ -7,20 +7,23 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Services.Charts;
 
 internal sealed class ChartService : IChartService
 {
-    public IEnumerable<CashChartValue> CalculateCashChart(IEnumerable<ExchangeRate> exchangeRates, 
-        IEnumerable<AmountTransaction> transactions, Currency fromCurrency, Currency toCurrency)
+    public CashChart CalculateCashChart(IEnumerable<ExchangeRate> exchangeRates, IEnumerable<AmountTransaction> transactions)
     {
-        var chartPoints = new List<CashChartValue>();
+        var chartPoints = new List<ChartValue<DateOnly, decimal>>();
         var orderedTransactions = transactions.OrderBy(t => t.TransactionDate).ToList();
         var orderedExchangeRates = exchangeRates.DistinctBy(rate => new { rate.Date, rate.To }).OrderBy(e => e.Date).ToList();
         
         foreach (var rate in orderedExchangeRates)
         {
             var amount = GetLastTransactionAmount(orderedTransactions, rate.Date);
-            chartPoints.Add(new CashChartValue(rate.Date, rate.To, amount.Value * rate.Value));
+            chartPoints.Add(new ChartValue<DateOnly, decimal>
+            {
+                X = rate.Date, 
+                Y = amount.Value * rate.Value
+            });
         }
 
-        return chartPoints;
+        return new CashChart(orderedExchangeRates.First().To, chartPoints);
     }
 
     private static Amount GetLastTransactionAmount(IReadOnlyCollection<AmountTransaction> transactions, DateOnly date)

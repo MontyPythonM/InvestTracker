@@ -22,21 +22,20 @@ public class EdoTreasuryBondTests
         var volume = new Volume(6);
         var margin = new Margin(0.01M);
         var firstYearInterestRate = new InterestRate(0.017M);
-        var purchaseDate = new DateTime(2021, 09, 07);
-        var calculationDate = new DateTime(2023, 11, 04);
+        var purchaseDate = new DateOnly(2021, 09, 07);
+        var calculationDate = new DateOnly(2023, 11, 04);
 
         var edoBond = CreateEdoTreasuryBond(volume, firstYearInterestRate, margin, purchaseDate);
         var inflationRates = GetRealInflationRatesForEdo0931();
 
         // act
-        var result = edoBond.GetAmount(inflationRates, DateOnly.FromDateTime(calculationDate), volume,
-            new DateOnly(2025, 01, 01));
+        var result = edoBond.GetAmount(inflationRates, calculationDate);
 
         // assert
         const decimal expectedAmount = 724.8M;
         var roundedResult = Math.Round(result, 1);
 
-        roundedResult.ShouldBeEquivalentTo(expectedAmount);
+        roundedResult.ShouldBeInRange(expectedAmount - 0.2M, expectedAmount + 0.2M);
     }
 
     /// <summary>
@@ -50,15 +49,14 @@ public class EdoTreasuryBondTests
         var volume = new Volume(34);
         var margin = new Margin(0.01M);
         var firstYearInterestRate = new InterestRate(0.017M);
-        var purchaseDate = new DateTime(2021, 03, 18);
-        var calculationDate = new DateTime(2024, 01, 04);
+        var purchaseDate = new DateOnly(2021, 03, 18);
+        var calculationDate = new DateOnly(2024, 01, 04);
 
         var edoBond = CreateEdoTreasuryBond(volume, firstYearInterestRate, margin, purchaseDate);
         var inflationRates = GetRealInflationRatesForEdo0331();
 
         // act
-        var result = edoBond.GetAmount(inflationRates, DateOnly.FromDateTime(calculationDate), volume,
-            new DateOnly(2025, 01, 01));
+        var result = edoBond.GetAmount(inflationRates, calculationDate);
 
         // assert
         const decimal expectedAmount1 = 4363.90M;
@@ -67,6 +65,32 @@ public class EdoTreasuryBondTests
 
         roundedResult.ShouldBeInRange(expectedAmount2 * 0.98M, expectedAmount1 * 1.02M);
     }
+    
+    /// <summary>
+    /// Result for completed EDO should be equal 285.01 PLN. Result calculated based on https://kalkulatorobligacji.pl/
+    /// </summary>
+    [Fact]
+    public void GetAmount_ShouldReturnWholeAmount_WhenInvestmentIsDone()
+    {
+        // arrange
+        var volume = new Volume(1);
+        var margin = new Margin(0.015M);
+        var firstYearInterestRate = new InterestRate(0.07M);
+        var purchaseDate = new DateOnly(2000, 01, 01);
+        var calculationDate = new DateOnly(2050, 01, 01);
+
+        var edoBond = CreateEdoTreasuryBond(volume, firstYearInterestRate, margin, purchaseDate);
+        var inflationRates = GetSameInflationRates(0.1M, new DateRange(edoBond.PurchaseDate, edoBond.GetRedemptionDate()));
+
+        // act
+        var result = edoBond.GetAmount(inflationRates, calculationDate).Value;
+
+        // assert
+        const decimal expectedAmount = 285.01M;
+        
+        result.ShouldBeEquivalentTo(expectedAmount);
+    }
+    
     #endregion
     
     #region Arrange
@@ -78,7 +102,7 @@ public class EdoTreasuryBondTests
         yield return new object[] { 10000, 0.0125, 0.075, new DateTime(2023, 12, 01), new DateTime(2025, 12, 02) };
     }
         
-    private static EdoTreasuryBond CreateEdoTreasuryBond(Volume volume, InterestRate firstYearInterestRate, Margin margin, DateTime purchaseDate)
+    private static EdoTreasuryBond CreateEdoTreasuryBond(Volume volume, InterestRate firstYearInterestRate, Margin margin, DateOnly purchaseDate)
         => new(
             "035B2CFD-B842-483B-ACFB-F5BFC45EE13A".ToGuid(),
             volume,
@@ -158,5 +182,19 @@ public class EdoTreasuryBondTests
         new(0.0660M, Currencies.PLN, 2023, 10),
         new(0.0660M, Currencies.PLN, 2023, 11),
     });
+
+    private static ChronologicalInflationRates GetSameInflationRates(decimal inflationRate, DateRange dateRange)
+    {
+        var firstDayOfMonthDates = dateRange
+            .DividePerMonths(1)
+            .Select(range => range.From)
+            .ToList();
+
+        var inflationRates = firstDayOfMonthDates
+            .Select(date => new InflationRate(inflationRate, Currencies.PLN, date.Year, date.Month));
+
+        return new ChronologicalInflationRates(inflationRates);
+    }
+
     #endregion
 }

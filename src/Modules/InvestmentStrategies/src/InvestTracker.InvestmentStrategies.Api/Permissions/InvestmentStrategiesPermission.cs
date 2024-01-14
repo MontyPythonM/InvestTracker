@@ -19,5 +19,7 @@ public enum InvestmentStrategiesPermission
     RemoveCashTransaction,
     SeedInflationRates,
     ForceSeedInflationRates,
-    GetEdoTreasuryBond
+    GetEdoBond,
+    GetEdoVolumeChart,
+    GetEdoAmountChart
 }

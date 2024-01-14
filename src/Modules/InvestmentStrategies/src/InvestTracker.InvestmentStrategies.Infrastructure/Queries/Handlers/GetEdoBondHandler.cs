@@ -12,14 +12,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Queries.Handlers;
 
-internal sealed class GetEdoTreasuryBondHandler : IQueryHandler<GetEdoTreasuryBond, EdoTreasuryBondDto>
+internal sealed class GetEdoBondHandler : IQueryHandler<GetEdoBond, EdoBondDto>
 {
     private readonly IResourceAccessor _resourceAccessor;
     private readonly InvestmentStrategiesDbContext _context;
     private readonly ITimeProvider _timeProvider;
     private readonly IInflationRateRepository _inflationRateRepository;
     
-    public GetEdoTreasuryBondHandler(IResourceAccessor resourceAccessor, InvestmentStrategiesDbContext context, 
+    public GetEdoBondHandler(IResourceAccessor resourceAccessor, InvestmentStrategiesDbContext context, 
     ITimeProvider timeProvider, IInflationRateRepository inflationRateRepository)
     {
         _resourceAccessor = resourceAccessor;
@@ -28,7 +28,7 @@ internal sealed class GetEdoTreasuryBondHandler : IQueryHandler<GetEdoTreasuryBo
         _inflationRateRepository = inflationRateRepository;
     }
 
-    public async Task<EdoTreasuryBondDto> HandleAsync(GetEdoTreasuryBond query, CancellationToken token = default)
+    public async Task<EdoBondDto> HandleAsync(GetEdoBond query, CancellationToken token = default)
     {
        await _resourceAccessor.CheckAsync(query.PortfolioId, token);
 
@@ -44,11 +44,11 @@ internal sealed class GetEdoTreasuryBondHandler : IQueryHandler<GetEdoTreasuryBo
 
        var now = _timeProvider.CurrentDate();
        var inflationRates = await _inflationRateRepository
-           .GetChronologicalInflationRates(new DateRange(edo.GetPurchaseDate(), now), token);
+           .GetChronologicalInflationRatesAsync(new DateRange(edo.PurchaseDate, now), token);
 
        var interestRates = edo.CalculateInterestRates(inflationRates, now).ToList();
 
-       return new EdoTreasuryBondDto
+       return new EdoBondDto
        {
            Id = edo.Id,
            Symbol = edo.Symbol,
@@ -57,8 +57,8 @@ internal sealed class GetEdoTreasuryBondHandler : IQueryHandler<GetEdoTreasuryBo
            CurrentAmount = edo.GetCurrentAmount(inflationRates, now),
            CurrentVolume = edo.GetCurrentVolume(),
            Note = edo.Note,
-           PurchaseDate = edo.GetPurchaseDate(),
-           RedemptionDate = edo.RedemptionDate,
+           PurchaseDate = edo.PurchaseDate,
+           RedemptionDate = edo.GetRedemptionDate(),
            CreatedAt = edo.CreatedAt,
            CumulativeInterestRate = interestRates.GetCumulativeInterestRate(),
            PeriodInterestRates = interestRates.Select(rate => (decimal)rate),

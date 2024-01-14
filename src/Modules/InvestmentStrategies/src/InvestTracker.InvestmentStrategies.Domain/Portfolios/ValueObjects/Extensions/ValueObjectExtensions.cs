@@ -2,7 +2,7 @@
 
 public static class ValueObjectExtensions
 {
-    public static ChronologicalInflationRates ReduceToInvestmentPeriodRange(this ChronologicalInflationRates chronologicalInflationRates, 
+    public static ChronologicalInflationRates ReduceToDateRange(this ChronologicalInflationRates chronologicalInflationRates, 
         DateOnly from, DateOnly to)
     {
         var reducedInflationRates = chronologicalInflationRates.Values
@@ -15,4 +15,13 @@ public static class ValueObjectExtensions
     
     public static InterestRate GetCumulativeInterestRate(this IEnumerable<InterestRate> interestRates)
         => interestRates.Aggregate<InterestRate, InterestRate>(1, (current, interestRate) => current * (1 + interestRate));
+    
+    public static ChronologicalInflationRates SetZeroInflationRateForDeflation(this ChronologicalInflationRates chronologicalInflationRates)
+    {
+        var inflationRates = chronologicalInflationRates.Values
+            .Select(rate => new InflationRate(rate.Value < 0 ? 0M : rate.Value, rate.Currency, rate.MonthlyDate.Year, rate.MonthlyDate.Month))
+            .ToList();
+        
+        return new ChronologicalInflationRates(inflationRates);
+    }
 }

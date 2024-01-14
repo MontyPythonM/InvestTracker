@@ -43,7 +43,7 @@ internal sealed class GetPortfolioHandler : IQueryHandler<GetPortfolio, Portfoli
 
         await _resourceAccessor.CheckAsync(portfolio.Id, token);
 
-        var inflationRates = await _inflationRateRepository.GetInflationRates(token);
+        var inflationRates = await _inflationRateRepository.GetInflationRatesAsync(token);
         var chronologicalInflationRates = new ChronologicalInflationRates(inflationRates);
         
         return new PortfolioDetailsDto

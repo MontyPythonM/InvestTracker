@@ -36,7 +36,7 @@ internal sealed class CashController : ApiControllerBase
     [HttpGet("{portfolioId:guid}/cash/{assetId:guid}/chart")]
     [HasPermission(InvestmentStrategiesPermission.GetCashChart)]
     [SwaggerOperation("Return cash chart with optional currency conversion")]
-    public async Task<ActionResult<IEnumerable<CashChartValue>>> GetCashChart([FromQuery]GetCashChartDto dto, 
+    public async Task<ActionResult<CashChart>> GetCashChart([FromQuery]GetCashChartDto dto, 
         Guid portfolioId, Guid assetId, CancellationToken token)
     {
         var query = new GetCashChart(assetId, portfolioId, dto.DisplayInCurrency, new DateRange(dto.DateFrom, dto.DateTo));

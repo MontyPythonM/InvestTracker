@@ -1,6 +1,6 @@
 ﻿namespace InvestTracker.InvestmentStrategies.Application.Portfolios.Dto;
 
-public class EdoTreasuryBondDto
+public class EdoBondDto
 {
     public Guid Id { get; set; }
     public string Symbol { get; set; }

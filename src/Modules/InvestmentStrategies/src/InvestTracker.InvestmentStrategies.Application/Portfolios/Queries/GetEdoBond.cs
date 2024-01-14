@@ -4,4 +4,4 @@ using InvestTracker.Shared.Abstractions.Queries;
 
 namespace InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
 
-public record GetEdoTreasuryBond(FinancialAssetId FinancialAssetId, PortfolioId PortfolioId) : IQuery<EdoTreasuryBondDto>;
+public record GetEdoBond(FinancialAssetId FinancialAssetId, PortfolioId PortfolioId) : IQuery<EdoBondDto>;
