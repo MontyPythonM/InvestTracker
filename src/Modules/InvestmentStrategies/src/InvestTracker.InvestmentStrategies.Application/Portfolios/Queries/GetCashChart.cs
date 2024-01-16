@@ -7,4 +7,4 @@ using InvestTracker.Shared.Abstractions.Queries;
 namespace InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
 
 public record GetCashChart(FinancialAssetId FinancialAssetId, PortfolioId PortfolioId, Currency DisplayInCurrency, 
-    DateRange DateRange) : IQuery<IEnumerable<CashChartValue>>;
+    DateRange DateRange) : IQuery<CashChart>;

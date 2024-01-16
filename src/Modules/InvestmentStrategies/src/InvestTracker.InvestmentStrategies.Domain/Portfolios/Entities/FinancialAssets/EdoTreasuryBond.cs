@@ -3,8 +3,8 @@ using InvestTracker.InvestmentStrategies.Domain.Portfolios.Consts;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Volume;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Exceptions;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Extensions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
-using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Extensions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.Shared.Abstractions.Auditable;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
@@ -12,16 +12,15 @@ using InvestTracker.Shared.Abstractions.Types;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 
-public class EdoTreasuryBond : IFinancialAsset, IAuditable
+public class EdoTreasuryBond : TreasuryBond, IFinancialAsset, IAuditable
 {
-    private const int NominalUnitValue = 100;
-    private const int InvestmentDurationYears = 10;
+    private HashSet<VolumeTransaction> _transactions = new();
 
     public FinancialAssetId Id { get; private set; }
     public string Symbol { get; private set; }
     public InterestRate FirstYearInterestRate { get; private set; }
     public Margin Margin { get; private set; }
-    public DateOnly RedemptionDate { get; private set; }
+    public DateOnly PurchaseDate { get; set; }
     public Currency Currency { get; private set; }
     public Note Note { get; private set; }
     public bool IsActive { get; private set; } = true;
@@ -36,26 +35,25 @@ public class EdoTreasuryBond : IFinancialAsset, IAuditable
         set => _transactions = new HashSet<VolumeTransaction>(value);
     }
     
-    private HashSet<VolumeTransaction> _transactions = new();
-
+    protected sealed override int InvestmentDurationYears => 10;
+    protected sealed override int NominalUnitValue => 100;
+    
     private EdoTreasuryBond()
     {
     }
     
-    internal EdoTreasuryBond(FinancialAssetId id, Volume volume, DateTime purchaseDate, 
+    internal EdoTreasuryBond(FinancialAssetId id, Volume volume, DateOnly purchaseDate, 
         InterestRate firstYearInterestRate, Margin margin, Note note)
     {
-        var redemptionDate = purchaseDate.AddYears(InvestmentDurationYears);
-        
         Id = id;
-        Symbol = $"EDO{redemptionDate:MMyy}";
+        Symbol = $"EDO{purchaseDate.AddYears(InvestmentDurationYears):MMyy}";
+        PurchaseDate = purchaseDate;
         FirstYearInterestRate = firstYearInterestRate;
         Margin = margin;
-        RedemptionDate = redemptionDate.ToDateOnly();
         Currency = Currencies.PLN;
         Note = note;
 
-        _transactions.Add(new IncomingVolumeTransaction(Guid.NewGuid(), volume, purchaseDate, note));
+        _transactions.Add(new IncomingVolumeTransaction(Guid.NewGuid(), volume, purchaseDate.ToDateTime(), note));
     }
 
     public OutgoingVolumeTransaction EarlyRedeem(Volume redeemVolume, DateTime sellDate, Note note)
@@ -79,47 +77,59 @@ public class EdoTreasuryBond : IFinancialAsset, IAuditable
 
     public void PlannedRedeem(DateOnly today)
     {
-        if (RedemptionDate > today)
+        var redemptionDate = GetRedemptionDate();
+        if (redemptionDate > today)
         {
-            throw new PlannedRedemptionTooEarlyException(RedemptionDate);
+            throw new PlannedRedemptionTooEarlyException(redemptionDate);
         }
         
         IsActive = false;
     }
     
-    public Amount GetAmount(ChronologicalInflationRates chronologicalInflationRates, DateOnly calculationDate, Volume volume, DateOnly now)
+    public Amount GetAmount(ChronologicalInflationRates chronologicalInflationRates, DateOnly calculationDate)
     {
-        if (calculationDate > now)
+        if (calculationDate < PurchaseDate)
         {
-            throw new EdoTreasuryBondAmountFromFutureException();
+            throw new DateOutOfInvestmentPeriodRangeException(calculationDate);
         }
 
+        var volume = GetVolume(calculationDate);
         var cumulativeInterestRate = CalculateInterestRates(chronologicalInflationRates, calculationDate).GetCumulativeInterestRate();
 
         return Math.Round(volume * NominalUnitValue * cumulativeInterestRate, 2);
     }
-    
-    public Amount GetCurrentAmount(ChronologicalInflationRates chronologicalInflationRates, DateOnly now) 
-        => GetAmount(chronologicalInflationRates, now, GetCurrentVolume(), now);
 
     public Volume GetCurrentVolume() 
         => GetNominalVolume() - _transactions.OfType<OutgoingVolumeTransaction>().Sum(t => t.Volume);
 
-    public string GetAssetName() => $"{Symbol} Treasury Bond";
+    public Volume GetVolume(DateOnly calculationDate)
+    {
+        if (calculationDate < PurchaseDate)
+        {
+            throw new DateOutOfInvestmentPeriodRangeException(calculationDate);
+        }
+        
+        var outgoingTransactions = _transactions
+            .OfType<OutgoingVolumeTransaction>()
+            .Where(t => t.TransactionDate <= calculationDate.ToDateTime())
+            .Sum(t => t.Volume);
 
-    public DateOnly GetPurchaseDate() => RedemptionDate.AddYears(-InvestmentDurationYears);
+        return GetNominalVolume() - outgoingTransactions;
+    }
 
     public IEnumerable<InterestRate> CalculateInterestRates(ChronologicalInflationRates chronologicalInflationRates, DateOnly calculationDate)
     {
-        var reducedInflationRates = chronologicalInflationRates.ReduceToInvestmentPeriodRange(GetPurchaseDate(), RedemptionDate);
+        var reducedInflationRates = chronologicalInflationRates
+            .ReduceToDateRange(PurchaseDate, GetRedemptionDate())
+            .SetZeroInflationRateForDeflation();
         
-        if (!AreIncludedInInvestmentPeriod(reducedInflationRates))
+        if (!AreIncludedInInvestmentPeriod(reducedInflationRates, PurchaseDate, GetRedemptionDate()))
         {
             throw new InvalidInflationRatesYearsException(Id);
         }
         
-        var calculatedYearCompletion = GetInvestmentPeriodCompletion(calculationDate);
-        var inflationRatesPerPeriods = GroupInflationRatesIntoInvestmentYears(reducedInflationRates, calculationDate);
+        var calculatedYearCompletion = GetInvestmentPeriodCompletion(calculationDate, PurchaseDate, GetRedemptionDate());
+        var inflationRatesPerPeriods = GroupInflationRatesIntoInvestmentYears(reducedInflationRates, calculationDate, PurchaseDate);
 
         var interestRates = new List<InterestRate>();
         for (var period = 1; period <= inflationRatesPerPeriods.Count; period++)
@@ -136,7 +146,7 @@ public class EdoTreasuryBond : IFinancialAsset, IAuditable
                 continue;
             }
 
-            var previousPeriodInflationRate = GetPreviousPeriodInflationRate(reducedInflationRates, period);
+            var previousPeriodInflationRate = GetPreviousPeriodInflationRate(reducedInflationRates, period, PurchaseDate);
 
             if (inflationRatesPerPeriods[period].IsPeriodCompleted is false)
             {
@@ -149,107 +159,14 @@ public class EdoTreasuryBond : IFinancialAsset, IAuditable
 
         return interestRates.Select(rate => new InterestRate(Math.Round(rate, 4)));
     }
+
+    public string GetAssetName() => $"{Symbol} Treasury Bond";
     
-    private InflationRate GetPreviousPeriodInflationRate(ChronologicalInflationRates chronologicalInflationRates, int period)
-    {
-        var purchaseDate = GetPurchaseDate();
-        var previousPeriodDate = new MonthlyDate(new DateOnly(purchaseDate.Year, purchaseDate.Month, 01)
-            .AddYears(period - 1)
-            .AddMonths(-2));
-        
-        var rate = chronologicalInflationRates.Values.SingleOrDefault(rate => rate.MonthlyDate == previousPeriodDate);
-
-        if (rate is null)
-        {
-            throw new InflationRateNotFoundException(previousPeriodDate);
-        }
-        
-        return rate;
-    }
-
-    private decimal GetInvestmentPeriodCompletion(DateOnly calculationDate)
-    {
-        const decimal completedYear = 1;
-        if (RedemptionDate <= calculationDate)
-        {
-            return completedYear;
-        }
-
-        if (calculationDate < GetPurchaseDate())
-        {
-            throw new DateOutOfInvestmentPeriodRangeException(calculationDate);
-        }
-
-        var calculationPeriod = GetPurchaseDate()
-            .GetYearlyRanges(InvestmentDurationYears)
-            .Single(period => period.From <= calculationDate && period.To >= calculationDate);
-        
-        var calculationPeriodTotalDays = calculationPeriod.GetDaysNumber();
-        var calculationDateDayOfPeriod = (calculationDate.ToDateTime() - calculationPeriod.From.ToDateTime()).TotalDays;
-        
-        return (decimal) calculationDateDayOfPeriod / calculationPeriodTotalDays;
-    }
-
-    private static Dictionary<int, GroupedInflationRate> GroupInflationRatesIntoInvestmentYears(
-        ChronologicalInflationRates chronologicalInflationRates, DateOnly calculateDate, int groupSize = 12)
-    {
-        var inflationRatesPerPeriods = new Dictionary<int, GroupedInflationRate>();
-        var investmentYear = 1;
-
-        for (var i = 0; i < chronologicalInflationRates.Values.Count(); i += groupSize)
-        {
-            var newPeriod = new GroupedInflationRate();
-            var groupedRates = chronologicalInflationRates.Values
-                .Skip(i)
-                .Take(groupSize)
-                .ToList();
-            
-            var lastMonth = groupedRates.Last();
-            var isNotCompletedLastMonth = lastMonth.MonthlyDate.Year == calculateDate.Year && 
-                                          lastMonth.MonthlyDate.Month == calculateDate.Month;
-            
-            if (groupedRates.Count == groupSize && !isNotCompletedLastMonth)
-            {
-                newPeriod.IsPeriodCompleted = true;
-            }
-
-            newPeriod.InflationRates = groupedRates;
-            inflationRatesPerPeriods.Add(investmentYear, newPeriod);
-            investmentYear++;
-        }
-
-        if (inflationRatesPerPeriods.Select(x => x.Value).Count(x => x.IsPeriodCompleted is false) > 1)
-        {
-            throw new MoreThanOneIncompletePeriodInGroupedInflationRatesException();
-        }
-
-        return inflationRatesPerPeriods;
-    }
+    public DateOnly GetRedemptionDate() => PurchaseDate.AddYears(InvestmentDurationYears);
     
-    private Volume GetNominalVolume() 
-        => _transactions.OfType<IncomingVolumeTransaction>().Single().Volume;
+    public IEnumerable<DateRange> GetInvestmentPeriods() => GetInvestmentDateRange().DividePerYears(1);
     
-    private bool AreIncludedInInvestmentPeriod(ChronologicalInflationRates chronologicalInflationRates)
-    {
-        var purchaseDate = GetPurchaseDate();
-        var firstRate = chronologicalInflationRates.Values.First();
-        var lastRate = chronologicalInflationRates.Values.Last();
-
-        return IsFirstRateEqualsPurchaseDate(purchaseDate, firstRate) && IsLastRateNotExceedRedemptionDate(lastRate);
-    }
+    public DateRange GetInvestmentDateRange() => new(PurchaseDate, GetRedemptionDate());
     
-    private static bool IsFirstRateEqualsPurchaseDate(DateOnly purchaseDate, InflationRate firstRate)
-        => purchaseDate.Month == firstRate.MonthlyDate.Month && purchaseDate.Year == firstRate.MonthlyDate.Year;
-    
-    private bool IsLastRateNotExceedRedemptionDate(InflationRate lastRate)
-        => (RedemptionDate.Month >= lastRate.MonthlyDate.Month && RedemptionDate.Year == lastRate.MonthlyDate.Year) || 
-           RedemptionDate.Year > lastRate.MonthlyDate.Year;
-    
-    private bool IsFirstInvestmentYear(DateOnly date) => GetPurchaseDate().AddYears(1) > date;
-
-    private sealed class GroupedInflationRate
-    {
-        public IEnumerable<InflationRate> InflationRates { get; set; } = new List<InflationRate>();
-        public bool IsPeriodCompleted { get; set; }
-    }
+    private Volume GetNominalVolume() => _transactions.OfType<IncomingVolumeTransaction>().Single().Volume;
 }

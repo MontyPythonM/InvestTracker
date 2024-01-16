@@ -125,6 +125,57 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                     b.ToTable("FinancialAssets.Cash", "investment-strategies");
                 });
 
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.CoiTreasuryBond", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("FirstYearInterestRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("Margin")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("PortfolioId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("PurchaseDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PortfolioId");
+
+                    b.ToTable("FinancialAssets.CoiTreasuryBonds", "investment-strategies");
+                });
+
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.EdoTreasuryBond", b =>
                 {
                     b.Property<Guid>("Id")
@@ -162,7 +213,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                     b.Property<Guid>("PortfolioId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateOnly>("RedemptionDate")
+                    b.Property<DateOnly>("PurchaseDate")
                         .HasColumnType("date");
 
                     b.Property<string>("Symbol")
@@ -254,6 +305,9 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("CoiTreasuryBondId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("EdoTreasuryBondId")
                         .HasColumnType("uuid");
 
@@ -272,6 +326,8 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CoiTreasuryBondId");
 
                     b.HasIndex("EdoTreasuryBondId");
 
@@ -496,6 +552,15 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.CoiTreasuryBond", b =>
+                {
+                    b.HasOne("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Portfolio", null)
+                        .WithMany("CoiTreasuryBonds")
+                        .HasForeignKey("PortfolioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.EdoTreasuryBond", b =>
                 {
                     b.HasOne("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Portfolio", null)
@@ -514,12 +579,21 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
 
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.VolumeTransaction", b =>
                 {
+                    b.HasOne("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.CoiTreasuryBond", null)
+                        .WithMany("Transactions")
+                        .HasForeignKey("CoiTreasuryBondId");
+
                     b.HasOne("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.EdoTreasuryBond", null)
                         .WithMany("Transactions")
                         .HasForeignKey("EdoTreasuryBondId");
                 });
 
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.Cash", b =>
+                {
+                    b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.CoiTreasuryBond", b =>
                 {
                     b.Navigation("Transactions");
                 });
@@ -532,6 +606,8 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Portfolio", b =>
                 {
                     b.Navigation("Cash");
+
+                    b.Navigation("CoiTreasuryBonds");
 
                     b.Navigation("EdoTreasuryBonds");
                 });

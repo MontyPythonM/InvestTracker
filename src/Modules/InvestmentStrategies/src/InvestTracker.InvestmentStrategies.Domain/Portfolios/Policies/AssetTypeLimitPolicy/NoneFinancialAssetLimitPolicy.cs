@@ -9,6 +9,6 @@ internal class NoneFinancialAssetLimitPolicy : IFinancialAssetLimitPolicy
     public bool CanBeApplied(Subscription subscription)
         => subscription == SystemSubscription.None;
 
-    public bool CanAddAsset(IFinancialAsset asset, IEnumerable<IFinancialAsset> existingAssets)
+    public bool CanAddAsset(IFinancialAsset asset, List<IFinancialAsset> existingAssets)
         => false;
 }

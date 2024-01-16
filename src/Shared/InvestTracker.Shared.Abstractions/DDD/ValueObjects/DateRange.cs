@@ -28,7 +28,7 @@ public sealed record DateRange
     public IEnumerable<DateOnly> GetDates() 
         => Enumerable.Range(0, CalculateDays(From, To)).Select(offset => From.AddDays(offset));
 
-    public IEnumerable<DateRange> Divide(uint daysLimit)
+    public IEnumerable<DateRange> DividePerDays(uint daysLimit)
     {
         if (!IsDaysLimitExceed(daysLimit))
         {
@@ -54,6 +54,52 @@ public sealed record DateRange
 
         return dividedDateRanges;
     }
+
+    public IEnumerable<DateRange> DividePerMonths(uint monthsLimit)
+    {
+        var currentDate = From;
+        var dividedDateRanges = new List<DateRange>();
+
+        while (true)
+        {
+            var lastDayOfRange = currentDate.AddMonths((int)monthsLimit);
+
+            if (lastDayOfRange >= To)
+            {
+                dividedDateRanges.Add(new DateRange(currentDate, To));
+                break;
+            }
+
+            dividedDateRanges.Add(new DateRange(currentDate, lastDayOfRange));
+            currentDate = lastDayOfRange;
+        }
+
+        return dividedDateRanges;
+    }
+
+    public IEnumerable<DateRange> DividePerYears(uint yearLimit)
+    {
+        var currentDate = From;
+        var dividedDateRanges = new List<DateRange>();
+
+        while (true)
+        {
+            var lastDayOfRange = currentDate.AddYears((int)yearLimit);
+
+            if (lastDayOfRange >= To)
+            {
+                dividedDateRanges.Add(new DateRange(currentDate, To));
+                break;
+            }
+
+            dividedDateRanges.Add(new DateRange(currentDate, lastDayOfRange.AddDays(-1)));
+            currentDate = lastDayOfRange;
+        }
+
+        return dividedDateRanges;
+    }
+    
+    public bool IsIncludedInRange(DateOnly date) => date >= From && date <= To; 
     
     private static int CalculateDays(DateOnly from, DateOnly to) 
         => (int)(to.ToDateTime() - from.ToDateTime()).TotalDays;

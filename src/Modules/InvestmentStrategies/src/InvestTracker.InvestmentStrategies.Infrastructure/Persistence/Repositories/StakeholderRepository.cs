@@ -21,6 +21,20 @@ internal sealed class StakeholderRepository : IStakeholderRepository
         return await _context.Stakeholders.SingleOrDefaultAsync(stakeholder => stakeholder.Id == id, token);
     }
 
+    public async Task<Stakeholder?> GetOwnerAsync(PortfolioId portfolioId, bool asNoTracking = false, CancellationToken token = default)
+    {
+        var ownerId = await _context.InvestmentStrategies
+            .AsNoTracking()
+            .Where(strategy => strategy.Portfolios.Any(portfolio => portfolio.PortfolioId.Equals(portfolioId.Value)))
+            .Select(strategy => strategy.Owner)
+            .SingleOrDefaultAsync(token);
+        
+        return await _context.Stakeholders
+            .ApplyAsNoTracking(asNoTracking)
+            .Where(stakeholder => stakeholder.Id.Equals(ownerId))
+            .SingleOrDefaultAsync(token);
+    }
+    
     public async Task<bool> ExistsAsync(StakeholderId id, CancellationToken token = default)
     {
         return await _context.Stakeholders.AnyAsync(stakeholder => stakeholder.Id == id, token);
@@ -35,7 +49,7 @@ internal sealed class StakeholderRepository : IStakeholderRepository
             .SingleOrDefaultAsync(token);
     }
     
-    public async Task<Subscription?> GetOwnerSubscription(PortfolioId portfolioId, CancellationToken token = default)
+    public async Task<Subscription?> GetOwnerSubscriptionAsync(PortfolioId portfolioId, CancellationToken token = default)
     {
         var ownerId = await _context.InvestmentStrategies
             .AsNoTracking()
@@ -49,7 +63,7 @@ internal sealed class StakeholderRepository : IStakeholderRepository
             .Select(stakeholder => stakeholder.Subscription)
             .SingleOrDefaultAsync(token);
     }
-    
+
     public async Task AddAsync(Stakeholder stakeholder, CancellationToken token = default)
     {
         await _context.Stakeholders.AddAsync(stakeholder, token);

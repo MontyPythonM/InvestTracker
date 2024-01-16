@@ -5,7 +5,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 
 public interface IInflationRateRepository
 {
-    public Task<IEnumerable<InflationRate>> GetInflationRates(CancellationToken token = default);
-    public Task<IEnumerable<InflationRate>> GetInflationRates(DateRange dateRange, CancellationToken token = default);
-    public Task<ChronologicalInflationRates> GetChronologicalInflationRates(DateRange dateRange, CancellationToken token = default);
+    public Task<IEnumerable<InflationRate>> GetInflationRatesAsync(CancellationToken token = default);
+    public Task<IEnumerable<InflationRate>> GetInflationRatesAsync(DateRange dateRange, CancellationToken token = default);
+    public Task<ChronologicalInflationRates> GetChronologicalRatesAsync(DateRange dateRange, CancellationToken token = default);
 }

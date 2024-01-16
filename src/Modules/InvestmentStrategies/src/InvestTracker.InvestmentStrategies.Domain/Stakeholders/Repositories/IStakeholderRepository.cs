@@ -8,9 +8,10 @@ namespace InvestTracker.InvestmentStrategies.Domain.Stakeholders.Repositories;
 public interface IStakeholderRepository
 {
     Task<Stakeholder?> GetAsync(StakeholderId id, CancellationToken token = default);
+    Task<Stakeholder?> GetOwnerAsync(PortfolioId portfolioId, bool asNoTracking = false, CancellationToken token = default);
     Task<bool> ExistsAsync(StakeholderId id, CancellationToken token = default);
     Task<Subscription?> GetSubscriptionAsync(StakeholderId id, CancellationToken token = default);
-    Task<Subscription?> GetOwnerSubscription(PortfolioId portfolioId, CancellationToken token = default);
+    Task<Subscription?> GetOwnerSubscriptionAsync(PortfolioId portfolioId, CancellationToken token = default);
     Task AddAsync(Stakeholder stakeholder, CancellationToken token = default);
     Task UpdateAsync(Stakeholder stakeholder, CancellationToken token = default);
 }

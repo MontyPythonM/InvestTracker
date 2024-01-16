@@ -6,5 +6,5 @@ namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Policies.AssetTyp
 public interface IFinancialAssetLimitPolicy
 {
     bool CanBeApplied(Subscription subscription);
-    bool CanAddAsset(IFinancialAsset asset, IEnumerable<IFinancialAsset> existingAssets);
+    bool CanAddAsset(IFinancialAsset asset, List<IFinancialAsset> existingAssets);
 }

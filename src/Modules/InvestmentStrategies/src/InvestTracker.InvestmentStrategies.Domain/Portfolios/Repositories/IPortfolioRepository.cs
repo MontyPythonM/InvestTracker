@@ -8,6 +8,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 public interface IPortfolioRepository
 {
     Task<Portfolio?> GetAsync(PortfolioId id, CancellationToken token = default);
+    Task<Portfolio?> GetAsync(PortfolioId id, bool asNoTracking = false, CancellationToken token = default);
     Task<IEnumerable<Portfolio>> GetByInvestmentStrategyAsync(InvestmentStrategyId investmentStrategyId, bool asNoTracking = false, CancellationToken token = default);    
     Task<IEnumerable<Portfolio>> GetOwnerPortfoliosAsync(StakeholderId ownerId, bool asNoTracking = false, CancellationToken token = default);
     Task AddAsync(Portfolio portfolio, CancellationToken token = default);

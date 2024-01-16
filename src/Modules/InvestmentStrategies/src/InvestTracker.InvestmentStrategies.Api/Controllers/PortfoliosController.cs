@@ -30,20 +30,30 @@ internal class PortfoliosController : ApiControllerBase
         => OkOrNotFound(await _queryDispatcher.QueryAsync(new GetPortfolio(portfolioId), token));
     
     [HttpPost("{portfolioId:guid}/cash")]
-    [HasPermission(InvestmentStrategiesPermission.CreateCashAsset)]    
-    [SwaggerOperation("Create new cash financial asset type in portfolio and optionally set initial amount")]
-    public async Task<ActionResult> CreateCashAsset(CreateCashAssetDto dto, Guid portfolioId, CancellationToken token)
+    [HasPermission(InvestmentStrategiesPermission.AddCashAsset)]    
+    [SwaggerOperation("Create new cash financial asset in portfolio and optionally set initial amount")]
+    public async Task<ActionResult> AddCashAsset(AddCashAssetDto dto, Guid portfolioId, CancellationToken token)
     {
-        await _commandDispatcher.SendAsync(new CreateCashAsset(portfolioId, dto.Currency, dto.Note, dto.InitialAmount, dto.InitialDate), token);
+        await _commandDispatcher.SendAsync(new AddCashAsset(portfolioId, dto.Currency, dto.Note, dto.InitialAmount, dto.InitialDate), token);
         return Ok();
     }
     
     [HttpPost("{portfolioId:guid}/edo")]
-    [HasPermission(InvestmentStrategiesPermission.CreateEdoAsset)]
-    [SwaggerOperation("Create new EDO treasury bond financial asset type in portfolio")]
-    public async Task<ActionResult> CreateEdoAsset(AddEdoBondAssetDto dto, Guid portfolioId, CancellationToken token)
+    [HasPermission(InvestmentStrategiesPermission.AddEdoAsset)]
+    [SwaggerOperation("Create new EDO treasury bond financial asset in portfolio")]
+    public async Task<ActionResult> AddEdoAsset(AddEdoAssetDto dto, Guid portfolioId, CancellationToken token)
     {
-        var command = new CrateEdoBondAsset(portfolioId, dto.Volume, dto.PurchaseDate, dto.FirstYearInterestRate, dto.Margin, dto.Note);
+        var command = new AddEdoAsset(portfolioId, dto.Volume, dto.PurchaseDate, dto.FirstYearInterestRate, dto.Margin, dto.Note);
+        await _commandDispatcher.SendAsync(command, token);
+        return Ok();
+    }
+    
+    [HttpPost("{portfolioId:guid}/coi")]
+    [HasPermission(InvestmentStrategiesPermission.AddCoiAsset)]
+    [SwaggerOperation("Create new COI treasury bond financial asset in portfolio")]
+    public async Task<ActionResult> AddCoiAsset(AddCoiAssetDto dto, Guid portfolioId, CancellationToken token)
+    {
+        var command = new AddCoiAsset(portfolioId, dto.Volume, dto.PurchaseDate, dto.FirstYearInterestRate, dto.Margin, dto.Note);
         await _commandDispatcher.SendAsync(command, token);
         return Ok();
     }

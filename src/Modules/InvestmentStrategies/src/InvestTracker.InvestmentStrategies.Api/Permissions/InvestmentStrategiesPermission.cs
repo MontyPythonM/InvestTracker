@@ -5,8 +5,8 @@ public enum InvestmentStrategiesPermission
     CreateInvestmentStrategy,
     AddPortfolio,
     ShareInvestmentStrategy,
-    CreateCashAsset,
-    CreateEdoAsset,
+    AddCashAsset,
+    AddEdoAsset,
     GetPortfolioFinancialAssets,
     GetPortfolios,
     GetPortfolioDetails,
@@ -19,5 +19,11 @@ public enum InvestmentStrategiesPermission
     RemoveCashTransaction,
     SeedInflationRates,
     ForceSeedInflationRates,
-    GetEdoTreasuryBond
+    GetEdoBond,
+    GetEdoVolumeChart,
+    GetEdoAmountChart,
+    GetCoiBond,
+    GetCoiVolumeChart,
+    GetCoiAmountChart,
+    AddCoiAsset
 }

@@ -19,16 +19,24 @@ internal sealed class PortfolioRepository : IPortfolioRepository
     public async Task<Portfolio?> GetAsync(PortfolioId id, CancellationToken token = default)
     {
         return await _context.Portfolios
-            .IncludeAssetsAndTransactions()
+            .ApplyIncludes()
             .SingleOrDefaultAsync(portfolio => portfolio!.Id == id, token);
     }
-
+    
+    public async Task<Portfolio?> GetAsync(PortfolioId id, bool asNoTracking = false, CancellationToken token = default)
+    {
+        return await _context.Portfolios
+            .ApplyAsNoTracking(asNoTracking)
+            .ApplyIncludes()
+            .SingleOrDefaultAsync(portfolio => portfolio!.Id == id, token);
+    }
+    
     public async Task<IEnumerable<Portfolio>> GetByInvestmentStrategyAsync(InvestmentStrategyId investmentStrategyId, 
         bool asNoTracking = false, CancellationToken token = default)
     {
         return await _context.Portfolios
             .ApplyAsNoTracking(asNoTracking)
-            .IncludeAssetsAndTransactions()
+            .ApplyIncludes()
             .Where(portfolio => portfolio.InvestmentStrategyId == investmentStrategyId)
             .ToListAsync(token);
     }

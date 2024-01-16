@@ -82,7 +82,7 @@ internal sealed class UpdateWithNewExchangeRatesJob : BackgroundService
         }
 
         var dateRange = new DateRange(lastExchangeRateDate.AddDays(1), _timeProvider.CurrentDate());
-        var dividedDateRanges = dateRange.Divide(_exchangeRateApiOptions.GetAllDaysRequestLimit);
+        var dividedDateRanges = dateRange.DividePerDays(_exchangeRateApiOptions.GetAllDaysRequestLimit);
         
         foreach (var range in dividedDateRanges)
         {

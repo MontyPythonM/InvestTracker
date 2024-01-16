@@ -8,7 +8,7 @@ public record Volume
     
     public Volume(int value)
     {
-        if (value is <= 0 or > 1_000_000_000)
+        if (value is < 0 or > 1_000_000_000)
         {
             throw new InvalidVolumeException(value);
         }

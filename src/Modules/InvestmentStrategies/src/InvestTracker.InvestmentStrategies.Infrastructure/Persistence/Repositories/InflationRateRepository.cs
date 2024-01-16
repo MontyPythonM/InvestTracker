@@ -15,14 +15,14 @@ internal sealed class InflationRateRepository : IInflationRateRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<InflationRate>> GetInflationRates(CancellationToken token = default)
+    public async Task<IEnumerable<InflationRate>> GetInflationRatesAsync(CancellationToken token = default)
     {
         return await _context.InflationRates
             .Select(rate => new InflationRate(rate.Value, rate.Currency, rate.MonthlyDate.Year, rate.MonthlyDate.Month))
             .ToListAsync(token);    
     }
     
-    public async Task<IEnumerable<InflationRate>> GetInflationRates(DateRange dateRange, 
+    public async Task<IEnumerable<InflationRate>> GetInflationRatesAsync(DateRange dateRange, 
         CancellationToken token = default)
     {
         return await _context.InflationRates
@@ -31,7 +31,7 @@ internal sealed class InflationRateRepository : IInflationRateRepository
             .ToListAsync(token);
     }
 
-    public async Task<ChronologicalInflationRates> GetChronologicalInflationRates(DateRange dateRange, 
+    public async Task<ChronologicalInflationRates> GetChronologicalRatesAsync(DateRange dateRange, 
         CancellationToken token = default)
     {
         var rates = await _context.InflationRates

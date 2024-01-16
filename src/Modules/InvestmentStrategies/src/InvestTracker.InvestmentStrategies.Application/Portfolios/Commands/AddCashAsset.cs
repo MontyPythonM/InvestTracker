@@ -5,5 +5,5 @@ using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 
 namespace InvestTracker.InvestmentStrategies.Application.Portfolios.Commands;
 
-public record CreateCashAsset(PortfolioId PortfolioId, Currency Currency, Note Note, Amount? InitialAmount, 
+public record AddCashAsset(PortfolioId PortfolioId, Currency Currency, Note Note, Amount? InitialAmount, 
     DateTime? InitialDate) : ICommand;

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Queries.Handlers;
 
-internal sealed class GetCashChartHandler : IQueryHandler<GetCashChart, IEnumerable<CashChartValue>>
+internal sealed class GetCashChartHandler : IQueryHandler<GetCashChart, CashChart>
 {
     private readonly InvestmentStrategiesDbContext _context;
     private readonly IExchangeRateRepository _exchangeRateRepository;
@@ -26,15 +26,14 @@ internal sealed class GetCashChartHandler : IQueryHandler<GetCashChart, IEnumera
         _resourceAccessor = resourceAccessor;
     }
 
-    public async Task<IEnumerable<CashChartValue>> HandleAsync(GetCashChart query, CancellationToken token = default)
+    public async Task<CashChart> HandleAsync(GetCashChart query, CancellationToken token = default)
     {
         await _resourceAccessor.CheckAsync(query.PortfolioId, token);
 
         var cash = await _context.Cash
             .AsNoTracking()
             .Include(asset => asset.Transactions)
-            .Where(asset => asset.Id == query.FinancialAssetId && asset.PortfolioId == query.PortfolioId)
-            .SingleOrDefaultAsync(token);
+            .SingleOrDefaultAsync(asset => asset.Id == query.FinancialAssetId && asset.PortfolioId == query.PortfolioId, token);
 
         if (cash is null)
         {
@@ -43,6 +42,6 @@ internal sealed class GetCashChartHandler : IQueryHandler<GetCashChart, IEnumera
         
         var exchangeRates = await _exchangeRateRepository.GetAsync(cash.Currency, query.DisplayInCurrency, query.DateRange, token);
 
-        return _chartService.CalculateCashChart(exchangeRates, cash.Transactions, cash.Currency, query.DisplayInCurrency);
+        return _chartService.CalculateCashChart(exchangeRates, cash.Transactions);
     }
 }

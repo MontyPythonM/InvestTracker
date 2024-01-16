@@ -20,6 +20,12 @@ internal static class Extensions
             options.SwaggerDoc(module.SwaggerGroup, new OpenApiInfo { Title = $"{AppName} - {module.Title}", Version = module.Version });
          }
 
+         options.MapType<DateOnly>(() => new OpenApiSchema
+         {
+            Type = "string",
+            Format = "date"
+         });
+
          options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
          {
             In = ParameterLocation.Header,
