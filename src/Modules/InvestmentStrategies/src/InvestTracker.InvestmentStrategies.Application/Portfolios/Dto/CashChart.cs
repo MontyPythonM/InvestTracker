@@ -1,4 +1,5 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
+﻿using InvestTracker.InvestmentStrategies.Application.Portfolios.Dto.Charts;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 
 namespace InvestTracker.InvestmentStrategies.Application.Portfolios.Dto;
 

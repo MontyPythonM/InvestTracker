@@ -4,4 +4,4 @@ using InvestTracker.Shared.Abstractions.Queries;
 
 namespace InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
 
-public record GetEdoAmountChart(FinancialAssetId FinancialAssetId, PortfolioId PortfolioId) : IQuery<AmountChart>;
+public record GetCoiAmountChart(FinancialAssetId FinancialAssetId, PortfolioId PortfolioId) : IQuery<AmountChart>;

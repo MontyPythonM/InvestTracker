@@ -11,49 +11,49 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Queries.Handlers;
 
-internal sealed class GetEdoAmountChartHandler : IQueryHandler<GetEdoAmountChart, AmountChart>
+internal sealed class GetCoiAmountChartHandler : IQueryHandler<GetCoiAmountChart, AmountChart>
 {
-    private readonly IResourceAccessor _resourceAccessor;
     private readonly InvestmentStrategiesDbContext _context;
+    private readonly IResourceAccessor _resourceAccessor;
     private readonly IInflationRateRepository _inflationRateRepository;
 
-    public GetEdoAmountChartHandler(IResourceAccessor resourceAccessor, InvestmentStrategiesDbContext context, 
+    public GetCoiAmountChartHandler(InvestmentStrategiesDbContext context, IResourceAccessor resourceAccessor, 
         IInflationRateRepository inflationRateRepository)
     {
-        _resourceAccessor = resourceAccessor;
         _context = context;
+        _resourceAccessor = resourceAccessor;
         _inflationRateRepository = inflationRateRepository;
     }
 
-    public async Task<AmountChart> HandleAsync(GetEdoAmountChart query, CancellationToken token = default)
+    public async Task<AmountChart> HandleAsync(GetCoiAmountChart query, CancellationToken token = default)
     {
         await _resourceAccessor.CheckAsync(query.PortfolioId, token);
 
-        var edo = await _context.EdoTreasuryBonds
+        var coi = await _context.CoiTreasuryBonds
             .AsNoTracking()
             .Include(asset => asset.Transactions)
             .SingleOrDefaultAsync(asset => asset.Id == query.FinancialAssetId && asset.PortfolioId == query.PortfolioId, token);
 
-        if (edo is null)
+        if (coi is null)
         {
             throw new FinancialAssetNotFoundException(query.FinancialAssetId);
         }
 
         var inflationRates = await _inflationRateRepository
-            .GetChronologicalRatesAsync(new DateRange(edo.PurchaseDate, edo.GetRedemptionDate()), token);
+            .GetChronologicalRatesAsync(new DateRange(coi.PurchaseDate, coi.GetRedemptionDate()), token);
 
-        var amounts = new List<ChartValue<DateOnly, decimal>>();
         var calculationDates = new List<DateOnly>();
+        calculationDates.AddRange(coi.Transactions.Select(transaction => transaction.TransactionDate.ToDateOnly()));
+        calculationDates.AddRange(coi.GetInvestmentPeriods().Select(dateRange => dateRange.To));
         
-        calculationDates.AddRange(edo.Transactions.Select(transaction => transaction.TransactionDate.ToDateOnly()));
-        calculationDates.AddRange(edo.GetInvestmentPeriods().Select(dateRange => dateRange.To));
+        var amounts = calculationDates
+            .Order()
+            .Select(date => new ChartValue<DateOnly, decimal>
+            {
+                X = date, 
+                Y = coi.GetAmount(inflationRates, date)
+            });
         
-        foreach (var calculationDate in calculationDates.Order())
-        {
-            var amount = edo.GetAmount(inflationRates, calculationDate);
-            amounts.Add(new ChartValue<DateOnly, decimal>{ X = calculationDate, Y = amount });
-        }
-        
-        return new AmountChart(amounts, edo.Symbol, edo.Currency);
+        return new AmountChart(amounts, coi.Symbol, coi.Currency);    
     }
 }

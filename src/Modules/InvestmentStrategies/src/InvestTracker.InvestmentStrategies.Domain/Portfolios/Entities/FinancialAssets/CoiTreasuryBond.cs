@@ -1,41 +1,156 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.Abstractions;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Consts;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Volume;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Exceptions;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Extensions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.Shared.Abstractions.Auditable;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
+using InvestTracker.Shared.Abstractions.Types;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 
-public class CoiTreasuryBond : IFinancialAsset, IAuditable
+public class CoiTreasuryBond : TreasuryBond, IFinancialAsset, IAuditable
 {
-    private const int NominalUnitValue = 100;
-    private const int InvestmentDurationYears = 4;
+    private HashSet<VolumeTransaction> _transactions = new();
 
     public FinancialAssetId Id { get; private set; }
-    public Currency Currency { get; private set; }
-    public Note Note { get; private set; }
-    public PortfolioId PortfolioId { get; private set; }
     public string Symbol { get; private set; }
     public InterestRate FirstYearInterestRate { get; private set; }
     public Margin Margin { get; private set; }
-    public DateOnly RedemptionDate { get; private set; }
+    public DateOnly PurchaseDate { get; set; }
+    public Currency Currency { get; private set; }
+    public Note Note { get; private set; }
+    public bool IsActive { get; private set; } = true;
+    public PortfolioId PortfolioId { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public Guid CreatedBy { get; private set; }
     public DateTime? ModifiedAt { get; private set; }
-    public Guid? ModifiedBy { get;  private  set; }
-    
+    public Guid? ModifiedBy { get; private set; }
     public IEnumerable<VolumeTransaction> Transactions
     {
         get => _transactions;
         set => _transactions = new HashSet<VolumeTransaction>(value);
     }
-    
-    private HashSet<VolumeTransaction> _transactions = new();
-    
+
+    protected sealed override int InvestmentDurationYears => 4;
+    protected sealed override int NominalUnitValue => 100;
+
     private CoiTreasuryBond()
     {
     }
+    
+    internal CoiTreasuryBond(FinancialAssetId id, Volume volume, DateOnly purchaseDate, InterestRate firstYearInterestRate, Margin margin, Note note)
+    {
+        Id = id;
+        Symbol = $"COI{purchaseDate.AddYears(InvestmentDurationYears):MMyy}";
+        PurchaseDate = purchaseDate;
+        FirstYearInterestRate = firstYearInterestRate;
+        Margin = margin;
+        Currency = Currencies.PLN;
+        Note = note;
 
+        _transactions.Add(new IncomingVolumeTransaction(Guid.NewGuid(), volume, purchaseDate.ToDateTime(), note));
+    }
+    
+    public Amount GetAmount(ChronologicalInflationRates chronologicalInflationRates, DateOnly calculationDate)
+    {
+        if (calculationDate < PurchaseDate)
+        {
+            throw new DateOutOfInvestmentPeriodRangeException(calculationDate);
+        }
+
+        var volume = GetVolume(calculationDate);
+        var interestRates = CalculateInterestRates(chronologicalInflationRates, calculationDate);
+        var lastInterestRate = interestRates.LastOrDefault() ?? 0;
+        
+        return Math.Round(volume * NominalUnitValue * (1 + lastInterestRate), 2);
+    }
+
+    public Amount GetCumulativeAmount(ChronologicalInflationRates chronologicalInflationRates, DateOnly calculationDate)
+    {
+        if (calculationDate < PurchaseDate)
+        {
+            throw new DateOutOfInvestmentPeriodRangeException(calculationDate);
+        }
+
+        var volume = GetVolume(calculationDate);
+        var cumulativeInterestRate = CalculateInterestRates(chronologicalInflationRates, calculationDate).GetCumulativeInterestRate();
+
+        return Math.Round(volume * NominalUnitValue * cumulativeInterestRate, 2);
+    }
+
+    public Volume GetVolume(DateOnly calculationDate)
+    {
+        if (calculationDate < PurchaseDate)
+        {
+            throw new DateOutOfInvestmentPeriodRangeException(calculationDate);
+        }
+
+        var outgoingTransactions = _transactions
+            .OfType<OutgoingVolumeTransaction>()
+            .Where(t => t.TransactionDate <= calculationDate.ToDateTime())
+            .Sum(t => t.Volume);
+
+        return GetNominalVolume() - outgoingTransactions;
+    }
+
+    public Volume GetCurrentVolume() 
+        => GetNominalVolume() - _transactions.OfType<OutgoingVolumeTransaction>().Sum(t => t.Volume);
+    
+    private Volume GetNominalVolume() 
+        => _transactions.OfType<IncomingVolumeTransaction>().Single().Volume;
+    
+    public DateOnly GetRedemptionDate() => PurchaseDate.AddYears(InvestmentDurationYears);
+    
+    public DateRange GetInvestmentDateRange() => new(PurchaseDate, GetRedemptionDate());
+    
+    public IEnumerable<DateRange> GetInvestmentPeriods() =>  GetInvestmentDateRange().DividePerYears(1);
+    
     public string GetAssetName() => $"{Symbol} Treasury Bond";
+
+    public IEnumerable<InterestRate> CalculateInterestRates(ChronologicalInflationRates chronologicalInflationRates, DateOnly calculationDate)
+    {
+        var reducedInflationRates = chronologicalInflationRates
+            .ReduceToDateRange(PurchaseDate, GetRedemptionDate())
+            .SetZeroInflationRateForDeflation();
+        
+        if (!AreIncludedInInvestmentPeriod(reducedInflationRates, PurchaseDate, GetRedemptionDate()))
+        {
+            throw new InvalidInflationRatesYearsException(Id);
+        }
+        
+        var calculatedYearCompletion = GetInvestmentPeriodCompletion(calculationDate, PurchaseDate, GetRedemptionDate());
+        var inflationRatesPerPeriods = GroupInflationRatesIntoInvestmentYears(reducedInflationRates, calculationDate, PurchaseDate);
+
+        var interestRates = new List<InterestRate>();
+        for (var period = 1; period <= inflationRatesPerPeriods.Count; period++)
+        {
+            if (period == 1)
+            {
+                if (inflationRatesPerPeriods.Count == 1)
+                {
+                    interestRates.Add(FirstYearInterestRate * calculatedYearCompletion);
+                    break;
+                }
+
+                interestRates.Add(FirstYearInterestRate);
+                continue;
+            }
+
+            var previousPeriodInflationRate = GetPreviousPeriodInflationRate(reducedInflationRates, period, PurchaseDate);
+
+            if (inflationRatesPerPeriods[period].IsPeriodCompleted is false)
+            {
+                interestRates.Add((Margin + previousPeriodInflationRate.Value) * calculatedYearCompletion);
+                continue;
+            }
+            
+            interestRates.Add(Margin + previousPeriodInflationRate.Value);
+        }
+
+        return interestRates.Select(rate => new InterestRate(Math.Round(rate, 4)));
+    }
 }

@@ -46,7 +46,7 @@ internal sealed class CashController : ApiControllerBase
     [HttpPost("{portfolioId:guid}/cash/{assetId:guid}/add")]
     [HasPermission(InvestmentStrategiesPermission.AddCashTransaction)]    
     [SwaggerOperation("Add incoming cash transaction to exising cash financial asset")]
-    public async Task<ActionResult> AddCash(CashTransactionDto dto, Guid portfolioId, Guid assetId, CancellationToken token)
+    public async Task<ActionResult> AddCashTransaction(CashTransactionDto dto, Guid portfolioId, Guid assetId, CancellationToken token)
     {
         var command = new AddCashTransaction(assetId, portfolioId, dto.Amount, dto.TransactionDate, dto.Note);
         await _commandDispatcher.SendAsync(command, token);
@@ -56,7 +56,7 @@ internal sealed class CashController : ApiControllerBase
     [HttpPost("{portfolioId:guid}/cash/{assetId:guid}/deduct")]
     [HasPermission(InvestmentStrategiesPermission.DeductCashTransaction)]    
     [SwaggerOperation("Add outgoing cash transaction to exising cash financial asset")]
-    public async Task<ActionResult> DeductCash(CashTransactionDto dto, Guid portfolioId, Guid assetId, CancellationToken token)
+    public async Task<ActionResult> DeductCashTransaction(CashTransactionDto dto, Guid portfolioId, Guid assetId, CancellationToken token)
     {
         var command = new DeductCashTransaction(assetId, portfolioId, dto.Amount, dto.TransactionDate, dto.Note);
         await _commandDispatcher.SendAsync(command, token);

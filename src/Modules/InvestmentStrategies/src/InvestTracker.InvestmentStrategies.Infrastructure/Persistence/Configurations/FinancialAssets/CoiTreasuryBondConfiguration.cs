@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Configurations.FinancialAssets;
 
-public class CoiTreasuryBondConfiguration : IEntityTypeConfiguration<CoiTreasuryBond>
+internal class CoiTreasuryBondConfiguration : IEntityTypeConfiguration<CoiTreasuryBond>
 {
     public void Configure(EntityTypeBuilder<CoiTreasuryBond> builder)
     {

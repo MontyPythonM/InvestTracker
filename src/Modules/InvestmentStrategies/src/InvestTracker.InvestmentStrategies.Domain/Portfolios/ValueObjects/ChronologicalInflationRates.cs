@@ -4,38 +4,34 @@ namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 
 public sealed record ChronologicalInflationRates
 {
-    public IOrderedEnumerable<InflationRate> Values { get; }
+    public IEnumerable<InflationRate> InflationRates { get; }
 
     public ChronologicalInflationRates(IEnumerable<InflationRate> inflationRates)
     {
-        var rates = inflationRates.ToList();
+        var orderedRates = inflationRates
+            .OrderBy(rate => rate.MonthlyDate.Year)
+            .ThenBy(rate => rate.MonthlyDate.Month)
+            .ToList();
         
-        if (!IsInflationRatesHaveSameCurrency(rates))
+        if (!IsInflationRatesHaveSameCurrency(orderedRates))
         {
             throw new InvalidInflationRatesCurrencyException();
         }
 
-        if (!IsInflationRateHaveConsecutiveYears(rates))
+        if (!IsInflationRateHaveConsecutiveYears(orderedRates))
         {
             throw new InflationRatesYearsInconsistencyException();
         }
-        
-        Values = rates
-            .OrderBy(rate => rate.MonthlyDate.Year)
-            .ThenBy(rate => rate.MonthlyDate.Month);
+
+        InflationRates = orderedRates;
     }
 
-    private static bool IsInflationRateHaveConsecutiveYears(IEnumerable<InflationRate> inflationRates)
+    private static bool IsInflationRateHaveConsecutiveYears(IReadOnlyList<InflationRate> inflationRates)
     {
-        var sortedDates = inflationRates
-            .OrderBy(rate => rate.MonthlyDate.Year)
-            .ThenBy(rate => rate.MonthlyDate.Month)
-            .ToList();
-
-        for (var i = 1; i < sortedDates.Count; i++)
+        for (var i = 1; i < inflationRates.Count; i++)
         {
-            var currentRate = sortedDates[i];
-            var previousRate = sortedDates[i - 1];
+            var currentRate = inflationRates[i];
+            var previousRate = inflationRates[i - 1];
             
             if (IsDatesSorted(currentRate, previousRate))
             {

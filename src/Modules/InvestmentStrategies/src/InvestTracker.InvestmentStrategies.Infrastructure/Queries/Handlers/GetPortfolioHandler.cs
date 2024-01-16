@@ -33,7 +33,7 @@ internal sealed class GetPortfolioHandler : IQueryHandler<GetPortfolio, Portfoli
     {
         var portfolio = await _context.Portfolios
             .AsNoTracking()
-            .IncludeAssetsAndTransactions()
+            .ApplyIncludes()
             .SingleOrDefaultAsync(portfolio => portfolio.Id == query.PortfolioId, token);
 
         if (portfolio is null)
@@ -73,7 +73,15 @@ internal sealed class GetPortfolioHandler : IQueryHandler<GetPortfolio, Portfoli
             Id = asset.Id,
             Name = asset.GetAssetName(),
             Currency = asset.Currency,
-            CurrentAmount = asset.GetCurrentAmount(chronologicalInflationRates, _timeProvider.CurrentDate())
+            CurrentAmount = asset.GetAmount(chronologicalInflationRates, _timeProvider.CurrentDate())
+        }));
+        
+        financialAssets.AddRange(portfolio.CoiTreasuryBonds.Select(asset => new FinancialAssetDto
+        {
+            Id = asset.Id,
+            Name = asset.GetAssetName(),
+            Currency = asset.Currency,
+            CurrentAmount = asset.GetCumulativeAmount(chronologicalInflationRates, _timeProvider.CurrentDate())
         }));
         
         return financialAssets;

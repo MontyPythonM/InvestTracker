@@ -1,4 +1,5 @@
 ﻿using InvestTracker.InvestmentStrategies.Application.Portfolios.Dto;
+using InvestTracker.InvestmentStrategies.Application.Portfolios.Dto.Charts;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.Shared.Abstractions.Types;

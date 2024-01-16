@@ -7,5 +7,5 @@ public interface IInflationRateRepository
 {
     public Task<IEnumerable<InflationRate>> GetInflationRatesAsync(CancellationToken token = default);
     public Task<IEnumerable<InflationRate>> GetInflationRatesAsync(DateRange dateRange, CancellationToken token = default);
-    public Task<ChronologicalInflationRates> GetChronologicalInflationRatesAsync(DateRange dateRange, CancellationToken token = default);
+    public Task<ChronologicalInflationRates> GetChronologicalRatesAsync(DateRange dateRange, CancellationToken token = default);
 }

@@ -1,5 +1,4 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.Abstractions;
-using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 using InvestTracker.Shared.Abstractions.Authorization;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 
@@ -12,27 +11,9 @@ internal class AdvisorFinancialAssetLimitPolicy : IFinancialAssetLimitPolicy
     public bool CanBeApplied(Subscription subscription) 
         => subscription == SystemSubscription.Advisor;
 
-    public bool CanAddAsset(IFinancialAsset asset, IEnumerable<IFinancialAsset> existingAssets)
+    public bool CanAddAsset(IFinancialAsset newAsset, List<IFinancialAsset> existingAssets)
     {
-        var assets = existingAssets.ToList();
-        
-        return !IsAssetTypesNumberExceed(assets) && !IsTryAddAnotherConcreteCurrencyCash(asset, assets);
-    }
-
-    private static bool IsAssetTypesNumberExceed(IEnumerable<IFinancialAsset> existingAssets)
-    {
-        var existingAssetTypes = existingAssets
-            .Select(asset => asset.GetType())
-            .Distinct();
-        
-        return existingAssetTypes.Count() < AdvisorAssetLimit;
-    }
-
-    private static bool IsTryAddAnotherConcreteCurrencyCash(IFinancialAsset asset, 
-        IEnumerable<IFinancialAsset> existingAssets)
-    {
-        var existingCashCurrencies = existingAssets.Select(a => a.Currency);
-
-        return asset.GetType() == typeof(Cash) && existingCashCurrencies.Contains(asset.Currency);
+        return !existingAssets.IsAssetTypesNumberExceed(AdvisorAssetLimit) && 
+               !existingAssets.IsConcreteCurrencyCashDuplicated(newAsset);
     }
 }

@@ -31,7 +31,7 @@ internal sealed class InflationRateRepository : IInflationRateRepository
             .ToListAsync(token);
     }
 
-    public async Task<ChronologicalInflationRates> GetChronologicalInflationRatesAsync(DateRange dateRange, 
+    public async Task<ChronologicalInflationRates> GetChronologicalRatesAsync(DateRange dateRange, 
         CancellationToken token = default)
     {
         var rates = await _context.InflationRates

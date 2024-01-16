@@ -1,8 +1,8 @@
 ﻿using InvestTracker.InvestmentStrategies.Application.Portfolios.Dto;
 using InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
 using InvestTracker.InvestmentStrategies.Domain.Common;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Extensions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
-using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Extensions;
 using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
@@ -42,10 +42,10 @@ internal sealed class GetEdoBondHandler : IQueryHandler<GetEdoBond, EdoBondDto>
            throw new FinancialAssetNotFoundException(query.FinancialAssetId);
        }
 
-       var now = _timeProvider.CurrentDate();
        var inflationRates = await _inflationRateRepository
-           .GetChronologicalInflationRatesAsync(new DateRange(edo.PurchaseDate, now), token);
-
+           .GetChronologicalRatesAsync(new DateRange(edo.PurchaseDate, edo.GetRedemptionDate()), token);
+       
+       var now = _timeProvider.CurrentDate();
        var interestRates = edo.CalculateInterestRates(inflationRates, now).ToList();
 
        return new EdoBondDto
@@ -54,7 +54,7 @@ internal sealed class GetEdoBondHandler : IQueryHandler<GetEdoBond, EdoBondDto>
            Symbol = edo.Symbol,
            Currency = edo.Currency,
            Margin = edo.Margin,
-           CurrentAmount = edo.GetCurrentAmount(inflationRates, now),
+           CurrentAmount = edo.GetAmount(inflationRates, now),
            CurrentVolume = edo.GetCurrentVolume(),
            Note = edo.Note,
            PurchaseDate = edo.PurchaseDate,

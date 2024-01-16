@@ -1,24 +1,23 @@
-﻿namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Extensions;
+﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 
-public static class ValueObjectExtensions
+namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Extensions;
+
+public static class ChronologicalInflationRatesExtensions
 {
     public static ChronologicalInflationRates ReduceToDateRange(this ChronologicalInflationRates chronologicalInflationRates, 
         DateOnly from, DateOnly to)
     {
-        var reducedInflationRates = chronologicalInflationRates.Values
+        var reducedInflationRates = chronologicalInflationRates.InflationRates
             .Where(rate => (rate.MonthlyDate.Year > from.Year && rate.MonthlyDate.Year < to.Year) ||
-                           (rate.MonthlyDate.Year == to.Year && rate.MonthlyDate.Month <= to.Month) ||
+                           (rate.MonthlyDate.Year == to.Year && rate.MonthlyDate.Month < to.Month) ||
                            (rate.MonthlyDate.Year == from.Year && rate.MonthlyDate.Month >= from.Month));
 
         return new ChronologicalInflationRates(reducedInflationRates);
     }
-    
-    public static InterestRate GetCumulativeInterestRate(this IEnumerable<InterestRate> interestRates)
-        => interestRates.Aggregate<InterestRate, InterestRate>(1, (current, interestRate) => current * (1 + interestRate));
-    
+
     public static ChronologicalInflationRates SetZeroInflationRateForDeflation(this ChronologicalInflationRates chronologicalInflationRates)
     {
-        var inflationRates = chronologicalInflationRates.Values
+        var inflationRates = chronologicalInflationRates.InflationRates
             .Select(rate => new InflationRate(rate.Value < 0 ? 0M : rate.Value, rate.Currency, rate.MonthlyDate.Year, rate.MonthlyDate.Month))
             .ToList();
         

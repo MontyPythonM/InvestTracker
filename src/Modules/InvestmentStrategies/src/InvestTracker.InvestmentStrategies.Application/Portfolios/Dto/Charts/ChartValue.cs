@@ -1,4 +1,4 @@
-﻿namespace InvestTracker.InvestmentStrategies.Application.Portfolios.Dto;
+﻿namespace InvestTracker.InvestmentStrategies.Application.Portfolios.Dto.Charts;
 
 public class ChartValue<XValue, YValue>
 {

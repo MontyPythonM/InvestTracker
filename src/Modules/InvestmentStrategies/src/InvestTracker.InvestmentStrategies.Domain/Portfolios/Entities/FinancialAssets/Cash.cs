@@ -68,7 +68,7 @@ public class Cash : IFinancialAsset, IAuditable
     }
     
     public decimal GetCurrentAmount() => _transactions.OfType<IncomingAmountTransaction>().Sum(x => x.Amount) - 
-                                     _transactions.OfType<OutgoingAmountTransaction>().Sum(x => x.Amount);
+                                         _transactions.OfType<OutgoingAmountTransaction>().Sum(x => x.Amount);
     
     public string GetAssetName() => $"Cash ({Currency.Value})";
 
