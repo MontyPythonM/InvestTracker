@@ -64,8 +64,8 @@ internal class InvestmentStrategiesDbContext : DbContext
             .Ignore(x => x.AssetName);
         
         modelBuilder.Entity<Cash>().ToTable("FinancialAsset.Cash");
-        modelBuilder.Entity<EdoTreasuryBond>().ToTable("FinancialAsset.EdoTreasuryBond");
-        modelBuilder.Entity<CoiTreasuryBond>().ToTable("FinancialAsset.CoiTreasuryBond");
+        modelBuilder.Entity<EdoTreasuryBond>().ToTable("FinancialAsset.EdoTreasuryBonds");
+        modelBuilder.Entity<CoiTreasuryBond>().ToTable("FinancialAsset.CoiTreasuryBonds");
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

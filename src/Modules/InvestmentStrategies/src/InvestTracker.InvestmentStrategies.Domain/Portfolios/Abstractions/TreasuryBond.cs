@@ -11,6 +11,8 @@ public abstract class TreasuryBond : FinancialAsset
     public abstract int InvestmentDurationYears { get; }
     public abstract int NominalUnitValue { get; }
     
+    public Volume CalculateVolume(Amount amount) => (int)amount / NominalUnitValue;
+
     protected decimal GetInvestmentPeriodCompletion(DateOnly calculationDate, DateOnly purchaseDate, DateOnly redemptionDate)
     {
         const decimal completedYear = 1;

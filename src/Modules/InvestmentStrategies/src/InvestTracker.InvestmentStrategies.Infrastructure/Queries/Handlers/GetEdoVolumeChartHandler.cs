@@ -37,7 +37,7 @@ internal sealed class GetEdoVolumeChartHandler : IQueryHandler<GetEdoVolumeChart
         var volumes = edo.Transactions.Select(transaction => new ChartValue<DateOnly, int>
         {
             X = transaction.TransactionDate.ToDateOnly(),
-            Y = (int)transaction.Amount / edo.NominalUnitValue
+            Y = edo.CalculateVolume(transaction.Amount)
         });
 
         return new VolumeChart(volumes, edo.Symbol, edo.Currency);
