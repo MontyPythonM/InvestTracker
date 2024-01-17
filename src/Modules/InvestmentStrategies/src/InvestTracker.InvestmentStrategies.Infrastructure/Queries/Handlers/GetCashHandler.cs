@@ -1,7 +1,7 @@
 ﻿using InvestTracker.InvestmentStrategies.Application.Portfolios.Dto;
 using InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
 using InvestTracker.InvestmentStrategies.Domain.Common;
-using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Amount;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions;
 using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using InvestTracker.Shared.Abstractions.Queries;
@@ -45,7 +45,7 @@ internal sealed class GetCashHandler : IQueryHandler<GetCash, CashDto>
             {
                 Id = t.Id,
                 Date = t.TransactionDate,
-                Value = t is IncomingAmountTransaction ? t.Amount : -t.Amount,
+                Amount = t is IncomingTransaction ? t.Amount : -t.Amount,
                 Note = t.Note
             })
         };

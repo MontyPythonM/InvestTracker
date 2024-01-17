@@ -3,7 +3,6 @@ using InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
 using InvestTracker.InvestmentStrategies.Domain.Common;
 using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
-using InvestTracker.InvestmentStrategies.Infrastructure.Services.Charts;
 using InvestTracker.Shared.Abstractions.Queries;
 using InvestTracker.Shared.Abstractions.Types;
 using Microsoft.EntityFrameworkCore;
@@ -14,13 +13,11 @@ internal sealed class GetEdoVolumeChartHandler : IQueryHandler<GetEdoVolumeChart
 {
     private readonly IResourceAccessor _resourceAccessor;
     private readonly InvestmentStrategiesDbContext _context;
-    private readonly IChartService _chartService;
 
-    public GetEdoVolumeChartHandler(IResourceAccessor resourceAccessor, InvestmentStrategiesDbContext context, IChartService chartService)
+    public GetEdoVolumeChartHandler(IResourceAccessor resourceAccessor, InvestmentStrategiesDbContext context)
     {
         _resourceAccessor = resourceAccessor;
         _context = context;
-        _chartService = chartService;
     }
 
     public async Task<VolumeChart> HandleAsync(GetEdoVolumeChart query, CancellationToken token = default)
@@ -40,7 +37,7 @@ internal sealed class GetEdoVolumeChartHandler : IQueryHandler<GetEdoVolumeChart
         var volumes = edo.Transactions.Select(transaction => new ChartValue<DateOnly, int>
         {
             X = transaction.TransactionDate.ToDateOnly(),
-            Y = transaction.Volume
+            Y = (int)transaction.Amount / edo.NominalUnitValue
         });
 
         return new VolumeChart(volumes, edo.Symbol, edo.Currency);

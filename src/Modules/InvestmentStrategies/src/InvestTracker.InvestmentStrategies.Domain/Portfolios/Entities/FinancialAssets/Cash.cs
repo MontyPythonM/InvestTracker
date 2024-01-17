@@ -1,6 +1,5 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.Abstractions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions;
-using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Amount;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
@@ -10,23 +9,14 @@ using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 
-public class Cash : IFinancialAsset, IAuditable
+public class Cash : FinancialAsset, IAuditable
 {
-    public FinancialAssetId Id { get; private set; }
-    public Currency Currency { get; private set; }
-    public Note Note { get; private set; }
-    public PortfolioId PortfolioId { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public Guid CreatedBy { get; private set; }
     public DateTime? ModifiedAt { get; private set; }
     public Guid? ModifiedBy { get; private set; }
-    public IEnumerable<AmountTransaction> Transactions
-    {
-        get => _transactions;
-        set => _transactions = new HashSet<AmountTransaction>(value);
-    }
-    
-    private HashSet<AmountTransaction> _transactions = new();
+
+    public override string AssetName => $"Cash ({Currency.Value})";
 
     private Cash()
     {
@@ -39,7 +29,7 @@ public class Cash : IFinancialAsset, IAuditable
         Note = note;
     }
     
-    public IncomingAmountTransaction AddFunds(TransactionId transactionId, Amount amount, DateTime transactionDate, 
+    public IncomingTransaction AddFunds(TransactionId transactionId, Amount amount, DateTime transactionDate, 
         Note note, DateTime now)
     {
         if (transactionDate > now)
@@ -47,13 +37,13 @@ public class Cash : IFinancialAsset, IAuditable
             throw new FutureTransactionException();
         }
 
-        var transaction = new IncomingAmountTransaction(transactionId, amount, transactionDate, note);
+        var transaction = new IncomingTransaction(transactionId, amount, transactionDate, note);
         _transactions.Add(transaction);
 
         return transaction;
     }
 
-    public OutgoingAmountTransaction DeductFunds(TransactionId transactionId, Amount amount, DateTime transactionDate, 
+    public OutgoingTransaction DeductFunds(TransactionId transactionId, Amount amount, DateTime transactionDate, 
         Note note, DateTime now)
     {
         if (transactionDate > now)
@@ -61,16 +51,25 @@ public class Cash : IFinancialAsset, IAuditable
             throw new FutureTransactionException();
         }
         
-        var transaction = new OutgoingAmountTransaction(transactionId, amount, transactionDate, note);
+        var transaction = new OutgoingTransaction(transactionId, amount, transactionDate, note);
         _transactions.Add(transaction);
 
         return transaction;
     }
     
-    public decimal GetCurrentAmount() => _transactions.OfType<IncomingAmountTransaction>().Sum(x => x.Amount) - 
-                                         _transactions.OfType<OutgoingAmountTransaction>().Sum(x => x.Amount);
-    
-    public string GetAssetName() => $"Cash ({Currency.Value})";
+    public decimal GetCurrentAmount() => _transactions.OfType<IncomingTransaction>().Sum(x => x.Amount) - 
+                                         _transactions.OfType<OutgoingTransaction>().Sum(x => x.Amount);
+
+    public decimal GetAmount(DateTime dateTime)
+    {
+        var existingTransactions = _transactions
+            .Where(t => t.TransactionDate <= dateTime)
+            .OrderBy(t => t.TransactionDate)
+            .ToList();
+        
+        return existingTransactions.OfType<IncomingTransaction>().Sum(x => x.Amount) - 
+               existingTransactions.OfType<OutgoingTransaction>().Sum(x => x.Amount);
+    }
 
     public void RemoveTransaction(TransactionId transactionId)
     {

@@ -28,13 +28,5 @@ internal class PortfolioConfiguration : IEntityTypeConfiguration<Portfolio>
         builder.Property(portfolio => portfolio.InvestmentStrategyId)
             .IsRequired()
             .HasConversion(p => p.Value, p => new InvestmentStrategyId(p));
-
-        builder.HasMany(portfolio => portfolio.Cash)
-            .WithOne()
-            .HasForeignKey(a => a.PortfolioId);
-        
-        builder.HasMany(portfolio => portfolio.EdoTreasuryBonds)
-            .WithOne()
-            .HasForeignKey(a => a.PortfolioId);
     }
 }

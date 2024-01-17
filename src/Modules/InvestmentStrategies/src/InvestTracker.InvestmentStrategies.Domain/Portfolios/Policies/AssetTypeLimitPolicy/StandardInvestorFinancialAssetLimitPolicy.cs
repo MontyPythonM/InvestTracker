@@ -11,7 +11,7 @@ internal class StandardInvestorFinancialAssetLimitPolicy : IFinancialAssetLimitP
     public bool CanBeApplied(Subscription subscription) 
         => subscription == SystemSubscription.StandardInvestor;
 
-    public bool CanAddAsset(IFinancialAsset newAsset, List<IFinancialAsset> existingAssets)
+    public bool CanAddAsset(FinancialAsset newAsset, List<FinancialAsset> existingAssets)
     {
         return !existingAssets.IsAssetTypesNumberExceed(StandardInvestorAssetLimit) && 
                !existingAssets.IsConcreteCurrencyCashDuplicated(newAsset);

@@ -37,7 +37,7 @@ internal sealed class GetCoiVolumeChartHandler : IQueryHandler<GetCoiVolumeChart
         var volumes = coi.Transactions.Select(transaction => new ChartValue<DateOnly, int>
         {
             X = transaction.TransactionDate.ToDateOnly(),
-            Y = transaction.Volume
+            Y = (int)transaction.Amount / coi.NominalUnitValue
         });
 
         return new VolumeChart(volumes, coi.Symbol, coi.Currency);

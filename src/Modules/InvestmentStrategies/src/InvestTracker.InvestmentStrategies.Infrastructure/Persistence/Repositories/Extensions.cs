@@ -21,10 +21,7 @@ internal static class Extensions
     
     public static IQueryable<Portfolio> ApplyIncludes(this IQueryable<Portfolio> query)
     {
-        return query
-            .Include(portfolio => portfolio.Cash).ThenInclude(asset => asset.Transactions)
-            .Include(portfolio => portfolio.EdoTreasuryBonds).ThenInclude(asset => asset.Transactions)
-            .Include(portfolio => portfolio.CoiTreasuryBonds).ThenInclude(asset => asset.Transactions);
+        return query.Include(p => p.FinancialAssets).ThenInclude(a => a.Transactions);
     }
     
     public static IQueryable<T> ApplyAsNoTracking<T>(this IQueryable<T> query, bool asNoTracking) 

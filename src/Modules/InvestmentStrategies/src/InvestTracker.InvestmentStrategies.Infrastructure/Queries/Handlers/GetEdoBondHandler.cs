@@ -67,7 +67,7 @@ internal sealed class GetEdoBondHandler : IQueryHandler<GetEdoBond, EdoBondDto>
                Id = transaction.Id,
                Note = transaction.Note,
                Date = transaction.TransactionDate,
-               Value = transaction.Volume 
+               Amount = transaction.Amount 
            })
        };
     }

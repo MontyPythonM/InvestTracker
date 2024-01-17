@@ -6,10 +6,10 @@ using InvestTracker.Shared.Abstractions.Types;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Abstractions;
 
-public abstract class TreasuryBond
+public abstract class TreasuryBond : FinancialAsset
 {
-    protected abstract int InvestmentDurationYears { get; }
-    protected abstract int NominalUnitValue { get; }
+    public abstract int InvestmentDurationYears { get; }
+    public abstract int NominalUnitValue { get; }
     
     protected decimal GetInvestmentPeriodCompletion(DateOnly calculationDate, DateOnly purchaseDate, DateOnly redemptionDate)
     {

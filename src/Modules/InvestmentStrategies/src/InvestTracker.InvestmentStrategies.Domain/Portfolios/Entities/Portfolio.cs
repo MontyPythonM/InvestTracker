@@ -13,28 +13,17 @@ namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities;
 
 public class Portfolio : AggregateRoot<PortfolioId>
 {
-    private HashSet<Cash> _cash = new();
-    private HashSet<EdoTreasuryBond> _edoTreasuryBonds = new();
-    private HashSet<CoiTreasuryBond> _coiTreasuryBonds = new();
-    
+    private HashSet<FinancialAsset> _financialAssets;
+
     public Title Title { get; private set; }
     public Note Note { get; private set; }
     public Description Description { get; private set; }
     public InvestmentStrategyId InvestmentStrategyId { get; set; }
-    public IEnumerable<Cash> Cash
+
+    public IEnumerable<FinancialAsset> FinancialAssets
     {
-        get => _cash;
-        set => _cash = new HashSet<Cash>(value);
-    }
-    public IEnumerable<EdoTreasuryBond> EdoTreasuryBonds
-    {
-        get => _edoTreasuryBonds;
-        set => _edoTreasuryBonds = new HashSet<EdoTreasuryBond>(value);
-    }
-    public IEnumerable<CoiTreasuryBond> CoiTreasuryBonds
-    {
-        get => _coiTreasuryBonds;
-        set => _coiTreasuryBonds = new HashSet<CoiTreasuryBond>(value);
+        get => _financialAssets;
+        set => _financialAssets = new HashSet<FinancialAsset>(value);
     }
 
     private Portfolio()
@@ -80,7 +69,7 @@ public class Portfolio : AggregateRoot<PortfolioId>
             throw new AssetLimitExceedException(dto.Subscription);
         }
 
-        _edoTreasuryBonds.Add(edoBond);
+        _financialAssets.Add(edoBond);
         IncrementVersion();
 
         return edoBond;
@@ -96,7 +85,7 @@ public class Portfolio : AggregateRoot<PortfolioId>
             throw new AssetLimitExceedException(dto.Subscription);
         }
 
-        _coiTreasuryBonds.Add(coiBond);
+        _financialAssets.Add(coiBond);
         IncrementVersion();
 
         return coiBond;
@@ -111,23 +100,13 @@ public class Portfolio : AggregateRoot<PortfolioId>
             throw new AssetLimitExceedException(dto.Subscription);
         }
 
-        _cash.Add(cash);
+        _financialAssets.Add(cash);
         IncrementVersion();
         
         return cash;
     }
     
-    public IEnumerable<IFinancialAsset> GetFinancialAssets()
-    {
-        var assets = new List<IFinancialAsset>();
-        assets.AddRange(_edoTreasuryBonds);
-        assets.AddRange(_coiTreasuryBonds);
-        assets.AddRange(_cash);
-
-        return assets;
-    }
-    
-    private bool CanAddFinancialAsset(IFinancialAsset asset, AssetLimitPolicyDto dto)
+    private bool CanAddFinancialAsset(FinancialAsset asset, AssetLimitPolicyDto dto)
     {
         var policy = dto.Policies.SingleOrDefault(policy => policy.CanBeApplied(dto.Subscription));
 
@@ -136,6 +115,6 @@ public class Portfolio : AggregateRoot<PortfolioId>
             throw new AssetLimitPolicyNotFoundException(dto.Subscription);
         }
 
-        return policy.CanAddAsset(asset, GetFinancialAssets().ToList());
+        return policy.CanAddAsset(asset, _financialAssets.ToList());
     }
 }
