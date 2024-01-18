@@ -7,7 +7,9 @@
         "GetAllDaysRequestLimit": 90,
         "GetDaysRequestLimit": 360,
         "MaxErrorsNumber": 3,
-        "UpdateMissingFromDate": "2013-01-01"
+        "UpdateMissingFromDate": "2013-01-01",
+        "BaseUrl": "https://api.nbp.pl/api/exchangerates/",
+        "TimeoutSeconds": 20
       }
     },
     "InflationRate": {
@@ -21,7 +23,9 @@
         "PositionId2": 6656078,
         "PositionId3": 6902025,
         "ReferenceMeasure": 5,
-        "SelectorName": "Similar month of the previous year = 100"
+        "SelectorName": "Similar month of the previous year = 100",
+        "BaseUrl": "https://api-dbw.stat.gov.pl/api/1.1.0/",
+        "TimeoutSeconds": 20
       },
       "Seeder": {
         "Enabled": true,

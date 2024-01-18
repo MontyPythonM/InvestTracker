@@ -9,18 +9,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.BackgroundJobs;
+namespace InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.BackgroundTask;
 
-internal sealed class UpdateWithNewExchangeRatesJob : BackgroundService
+internal sealed class UpdateExchangeRatesTask : BackgroundService
 {
     private readonly IExchangeRateApiClient _exchangeRateApiClient;
     private readonly ITimeProvider _timeProvider;
     private readonly ExchangeRateApiOptions _exchangeRateApiOptions;
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<UpdateWithNewExchangeRatesJob> _logger;
+    private readonly ILogger<UpdateExchangeRatesTask> _logger;
     
-    public UpdateWithNewExchangeRatesJob(IExchangeRateApiClient exchangeRateApiClient, ITimeProvider timeProvider, 
-        ExchangeRateApiOptions exchangeRateApiOptions, IServiceProvider serviceProvider, ILogger<UpdateWithNewExchangeRatesJob> logger)
+    public UpdateExchangeRatesTask(IExchangeRateApiClient exchangeRateApiClient, ITimeProvider timeProvider, 
+        ExchangeRateApiOptions exchangeRateApiOptions, IServiceProvider serviceProvider, ILogger<UpdateExchangeRatesTask> logger)
     {
         _exchangeRateApiClient = exchangeRateApiClient;
         _timeProvider = timeProvider;
@@ -53,7 +53,7 @@ internal sealed class UpdateWithNewExchangeRatesJob : BackgroundService
             }
             catch (Exception ex)
             {
-                var message = $"Background job named '{nameof(UpdateWithNewExchangeRatesJob)}' failed. Message: {ex.Message}, details: {ex}";
+                var message = $"Background job named '{nameof(UpdateExchangeRatesTask)}' failed. Message: {ex.Message}, details: {ex}";
                 _logger.LogError(message);
 
                 errorsNumber++;

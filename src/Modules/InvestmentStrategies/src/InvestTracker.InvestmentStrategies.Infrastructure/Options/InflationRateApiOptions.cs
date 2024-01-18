@@ -12,4 +12,6 @@ public class InflationRateApiOptions
     public int PositionId3 { get; set; } = 6902025;
     public int ReferenceMeasure { get; set; } = 5;
     public string SelectorName { get; set; } = string.Empty;
+    public string BaseUrl { get; set; } = string.Empty;
+    public int TimeoutSeconds { get; set; } = 20;
 }
