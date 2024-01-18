@@ -1,5 +1,6 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Collaborations.Entities;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Abstractions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions;
@@ -25,8 +26,7 @@ internal class InvestmentStrategiesDbContext : DbContext
     public DbSet<EdoTreasuryBond> EdoTreasuryBonds { get; set; }
     public DbSet<CoiTreasuryBond> CoiTreasuryBonds { get; set; }
     public DbSet<Cash> Cash { get; set; }
-    public DbSet<AmountTransaction> AmountTransactions { get; set; }
-    public DbSet<VolumeTransaction> VolumeTransactions { get; set; }
+    public DbSet<Transaction> Transactions { get; set; }
     public DbSet<Collaboration> Collaborations { get; set; }
     public DbSet<Stakeholder> Stakeholders { get; set; }
     public DbSet<ExchangeRateEntity> ExchangeRates { get; set; }
@@ -57,6 +57,11 @@ internal class InvestmentStrategiesDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("investment-strategies");
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+
+        modelBuilder.Entity<FinancialAsset>().UseTpcMappingStrategy()
+            .Ignore(x => x.Currency)
+            .Ignore(x => x.Note)
+            .Ignore(x => x.AssetName);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

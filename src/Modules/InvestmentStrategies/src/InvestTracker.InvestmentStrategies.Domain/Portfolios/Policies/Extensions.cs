@@ -5,7 +5,7 @@ namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Policies;
 
 internal static class Extensions
 {
-    internal static bool IsAssetTypesNumberExceed(this IEnumerable<IFinancialAsset> existingAssets, int assetsLimit)
+    internal static bool IsAssetTypesNumberExceed(this IEnumerable<FinancialAsset> existingAssets, int assetsLimit)
     {
         var existingAssetTypes = existingAssets
             .Select(asset => asset.GetType())
@@ -14,7 +14,7 @@ internal static class Extensions
         return existingAssetTypes.Count() > assetsLimit;
     }
 
-    internal static bool IsConcreteCurrencyCashDuplicated(this IEnumerable<IFinancialAsset> existingAssets, IFinancialAsset newAsset)
+    internal static bool IsConcreteCurrencyCashDuplicated(this IEnumerable<FinancialAsset> existingAssets, FinancialAsset newAsset)
     {
         var existingCashCurrencies = existingAssets
             .OfType<Cash>()

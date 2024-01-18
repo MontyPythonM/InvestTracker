@@ -45,6 +45,7 @@ public class InvestmentStrategiesPermissionMatrix : IModulePermissionMatrix
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.GetCashChart.ToString()),
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.AddCashTransaction.ToString()),
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.DeductCashTransaction.ToString()),
+        new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.RemoveCashTransaction.ToString()),
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.GetCash.ToString()),
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.GetEdoBond.ToString()),
         new(SystemSubscription.StandardInvestor, InvestmentStrategiesPermission.GetEdoVolumeChart.ToString()),

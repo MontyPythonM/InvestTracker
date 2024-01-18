@@ -6,5 +6,5 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Services.Charts;
 
 public interface IChartService
 {
-    CashChart CalculateCashChart(IEnumerable<ExchangeRate> exchangeRates, IEnumerable<AmountTransaction> transactions);
+    CashChart CalculateCashChart(IEnumerable<ExchangeRate> exchangeRates, IEnumerable<Transaction> transactions);
 }

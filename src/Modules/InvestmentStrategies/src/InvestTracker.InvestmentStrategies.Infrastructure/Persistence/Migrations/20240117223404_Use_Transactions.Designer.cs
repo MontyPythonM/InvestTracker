@@ -3,6 +3,7 @@ using System;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(InvestmentStrategiesDbContext))]
-    partial class InvestmentStrategiesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240117223404_Use_Transactions")]
+    partial class Use_Transactions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -330,7 +333,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ToTable("FinancialAssets.Cash", "investment-strategies");
+                    b.ToTable("FinancialAsset.Cash", "investment-strategies");
                 });
 
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.CoiTreasuryBond", b =>
@@ -373,7 +376,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ToTable("FinancialAssets.CoiTreasuryBonds", "investment-strategies");
+                    b.ToTable("FinancialAsset.CoiTreasuryBond", "investment-strategies");
                 });
 
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.EdoTreasuryBond", b =>
@@ -416,7 +419,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ToTable("FinancialAssets.EdoTreasuryBonds", "investment-strategies");
+                    b.ToTable("FinancialAsset.EdoTreasuryBond", "investment-strategies");
                 });
 
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.IncomingTransaction", b =>

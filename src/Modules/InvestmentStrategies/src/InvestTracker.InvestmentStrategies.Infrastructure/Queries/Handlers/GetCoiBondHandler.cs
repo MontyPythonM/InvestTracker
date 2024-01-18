@@ -68,7 +68,7 @@ internal sealed class GetCoiBondHandler : IQueryHandler<GetCoiBond, CoiBondDto>
                 Id = transaction.Id,
                 Note = transaction.Note,
                 Date = transaction.TransactionDate,
-                Value = transaction.Volume 
+                Amount = transaction.Amount
             })
         };
     }

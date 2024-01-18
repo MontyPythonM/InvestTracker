@@ -3,6 +3,7 @@ using System;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(InvestmentStrategiesDbContext))]
-    partial class InvestmentStrategiesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240117220827_Use_FinancialAsset_In_Portfolio")]
+    partial class Use_FinancialAsset_In_Portfolio
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,7 +150,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                     b.ToTable("Portfolios", "investment-strategies");
                 });
 
-            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Transaction", b =>
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.AmountTransaction", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -155,7 +158,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid?>("FinancialAssetId")
+                    b.Property<Guid?>("CashId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Note")
@@ -171,11 +174,49 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FinancialAssetId");
+                    b.HasIndex("CashId");
 
-                    b.ToTable("Transactions", "investment-strategies");
+                    b.ToTable("Transactions.AmountTransaction", "investment-strategies");
 
-                    b.HasDiscriminator<string>("Type").HasValue("Transaction");
+                    b.HasDiscriminator<string>("Type").HasValue("AmountTransaction");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.VolumeTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CoiTreasuryBondId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("EdoTreasuryBondId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Volume")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CoiTreasuryBondId");
+
+                    b.HasIndex("EdoTreasuryBondId");
+
+                    b.ToTable("Transactions.VolumeTransaction", "investment-strategies");
+
+                    b.HasDiscriminator<string>("Type").HasValue("VolumeTransaction");
 
                     b.UseTphMappingStrategy();
                 });
@@ -330,7 +371,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ToTable("FinancialAssets.Cash", "investment-strategies");
+                    b.ToTable("FinancialAsset.Cash", "investment-strategies");
                 });
 
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.CoiTreasuryBond", b =>
@@ -373,7 +414,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ToTable("FinancialAssets.CoiTreasuryBonds", "investment-strategies");
+                    b.ToTable("FinancialAsset.CoiTreasuryBond", "investment-strategies");
                 });
 
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.EdoTreasuryBond", b =>
@@ -416,21 +457,35 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ToTable("FinancialAssets.EdoTreasuryBonds", "investment-strategies");
+                    b.ToTable("FinancialAsset.EdoTreasuryBond", "investment-strategies");
                 });
 
-            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.IncomingTransaction", b =>
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Amount.IncomingAmountTransaction", b =>
                 {
-                    b.HasBaseType("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Transaction");
+                    b.HasBaseType("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.AmountTransaction");
 
-                    b.HasDiscriminator().HasValue("IncomingTransaction");
+                    b.HasDiscriminator().HasValue("IncomingAmountTransaction");
                 });
 
-            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.OutgoingTransaction", b =>
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Amount.OutgoingAmountTransaction", b =>
                 {
-                    b.HasBaseType("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Transaction");
+                    b.HasBaseType("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.AmountTransaction");
 
-                    b.HasDiscriminator().HasValue("OutgoingTransaction");
+                    b.HasDiscriminator().HasValue("OutgoingAmountTransaction");
+                });
+
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Volume.IncomingVolumeTransaction", b =>
+                {
+                    b.HasBaseType("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.VolumeTransaction");
+
+                    b.HasDiscriminator().HasValue("IncomingVolumeTransaction");
+                });
+
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Volume.OutgoingVolumeTransaction", b =>
+                {
+                    b.HasBaseType("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.VolumeTransaction");
+
+                    b.HasDiscriminator().HasValue("OutgoingVolumeTransaction");
                 });
 
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities.InvestmentStrategy", b =>
@@ -493,21 +548,42 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Transaction", b =>
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.AmountTransaction", b =>
                 {
-                    b.HasOne("InvestTracker.InvestmentStrategies.Domain.Portfolios.Abstractions.FinancialAsset", null)
+                    b.HasOne("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.Cash", null)
                         .WithMany("Transactions")
-                        .HasForeignKey("FinancialAssetId");
+                        .HasForeignKey("CashId");
                 });
 
-            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Abstractions.FinancialAsset", b =>
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.VolumeTransaction", b =>
                 {
-                    b.Navigation("Transactions");
+                    b.HasOne("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.CoiTreasuryBond", null)
+                        .WithMany("Transactions")
+                        .HasForeignKey("CoiTreasuryBondId");
+
+                    b.HasOne("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.EdoTreasuryBond", null)
+                        .WithMany("Transactions")
+                        .HasForeignKey("EdoTreasuryBondId");
                 });
 
             modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Portfolio", b =>
                 {
                     b.Navigation("FinancialAssets");
+                });
+
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.Cash", b =>
+                {
+                    b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.CoiTreasuryBond", b =>
+                {
+                    b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets.EdoTreasuryBond", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,4 +1,5 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Common;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
 using InvestTracker.Shared.Abstractions.Commands;
@@ -30,7 +31,10 @@ internal sealed class DeductCashTransactionHandler : ICommandHandler<DeductCashT
 
         await _resourceAccessor.CheckAsync(portfolio.Id, token);
 
-        var cash = portfolio.Cash.SingleOrDefault(asset => asset.Id == command.FinancialAssetId);
+        var cash = portfolio.FinancialAssets
+            .OfType<Cash>()
+            .SingleOrDefault(asset => asset.Id == command.FinancialAssetId);
+
         if (cash is null)
         {
             throw new FinancialAssetNotFoundException(command.FinancialAssetId);

@@ -8,7 +8,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Services.Charts;
 
 internal sealed class ChartService : IChartService
 {
-    public CashChart CalculateCashChart(IEnumerable<ExchangeRate> exchangeRates, IEnumerable<AmountTransaction> transactions)
+    public CashChart CalculateCashChart(IEnumerable<ExchangeRate> exchangeRates, IEnumerable<Transaction> transactions)
     {
         var chartPoints = new List<ChartValue<DateOnly, decimal>>();
         var orderedTransactions = transactions.OrderBy(t => t.TransactionDate).ToList();
@@ -27,14 +27,18 @@ internal sealed class ChartService : IChartService
         return new CashChart(orderedExchangeRates.First().To, chartPoints);
     }
 
-    private static Amount GetLastTransactionAmount(IReadOnlyCollection<AmountTransaction> transactions, DateOnly date)
+    private static Amount GetLastTransactionAmount(IReadOnlyCollection<Transaction> transactions, DateOnly date)
     {
         if (!transactions.Any() || transactions.First().TransactionDate.ToDateOnly() > date)
         {
             return 0;
         }
         
-        var lastExistingTransaction = transactions.Last(t => t.TransactionDate.ToDateOnly() <= date);
-        return lastExistingTransaction.Amount;
+        var existingTransactions = transactions
+            .Where(t => t.TransactionDate.ToDateOnly() <= date)
+            .ToList();
+
+        return existingTransactions.OfType<IncomingTransaction>().Sum(x => x.Amount) -
+               existingTransactions.OfType<OutgoingTransaction>().Sum(x => x.Amount);
     }
 }

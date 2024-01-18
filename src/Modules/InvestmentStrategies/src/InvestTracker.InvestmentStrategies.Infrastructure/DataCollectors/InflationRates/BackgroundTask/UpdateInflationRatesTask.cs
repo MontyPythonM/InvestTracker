@@ -9,18 +9,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.InflationRates.BackgroundJobs;
+namespace InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.InflationRates.BackgroundTask;
 
-internal sealed class UpdateWithNewInflationRatesJob : BackgroundService
+internal sealed class UpdateInflationRatesTask : BackgroundService
 {
     private readonly IInflationRateApiClient _inflationRateApiClient;
     private readonly InflationRateApiOptions _options;
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<UpdateWithNewInflationRatesJob> _logger;
+    private readonly ILogger<UpdateInflationRatesTask> _logger;
     private readonly ITimeProvider _timeProvider;
     
-    public UpdateWithNewInflationRatesJob(IInflationRateApiClient inflationRateApiClient, InflationRateApiOptions options, 
-        IServiceProvider serviceProvider, ILogger<UpdateWithNewInflationRatesJob> logger, ITimeProvider timeProvider)
+    public UpdateInflationRatesTask(IInflationRateApiClient inflationRateApiClient, InflationRateApiOptions options, 
+        IServiceProvider serviceProvider, ILogger<UpdateInflationRatesTask> logger, ITimeProvider timeProvider)
     {
         _inflationRateApiClient = inflationRateApiClient;
         _options = options;
@@ -71,7 +71,7 @@ internal sealed class UpdateWithNewInflationRatesJob : BackgroundService
             }
             catch (Exception ex)
             {
-                var message = $"Background job named '{nameof(UpdateWithNewInflationRatesJob)}' failed. Message: {ex.Message}, details: {ex}";
+                var message = $"Background job named '{nameof(UpdateInflationRatesTask)}' failed. Message: {ex.Message}, details: {ex}";
                 _logger.LogError(message);
 
                 errorsNumber++;

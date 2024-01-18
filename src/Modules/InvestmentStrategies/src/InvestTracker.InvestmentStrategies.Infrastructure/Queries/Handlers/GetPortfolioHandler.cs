@@ -2,6 +2,7 @@
 using InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
 using InvestTracker.InvestmentStrategies.Domain.Common;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities;
+using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
@@ -60,26 +61,26 @@ internal sealed class GetPortfolioHandler : IQueryHandler<GetPortfolio, Portfoli
     {
         var financialAssets = new List<FinancialAssetDto>();
         
-        financialAssets.AddRange(portfolio.Cash.Select(asset => new FinancialAssetDto
+        financialAssets.AddRange(portfolio.FinancialAssets.OfType<Cash>().Select(asset => new FinancialAssetDto
         {
             Id = asset.Id,
-            Name = asset.GetAssetName(),
+            Name = asset.AssetName,
             Currency = asset.Currency,
             CurrentAmount = asset.GetCurrentAmount()
         }));
 
-        financialAssets.AddRange(portfolio.EdoTreasuryBonds.Select(asset => new FinancialAssetDto
+        financialAssets.AddRange(portfolio.FinancialAssets.OfType<EdoTreasuryBond>().Select(asset => new FinancialAssetDto
         {
             Id = asset.Id,
-            Name = asset.GetAssetName(),
+            Name = asset.AssetName,
             Currency = asset.Currency,
             CurrentAmount = asset.GetAmount(chronologicalInflationRates, _timeProvider.CurrentDate())
         }));
         
-        financialAssets.AddRange(portfolio.CoiTreasuryBonds.Select(asset => new FinancialAssetDto
+        financialAssets.AddRange(portfolio.FinancialAssets.OfType<CoiTreasuryBond>().Select(asset => new FinancialAssetDto
         {
             Id = asset.Id,
-            Name = asset.GetAssetName(),
+            Name = asset.AssetName,
             Currency = asset.Currency,
             CurrentAmount = asset.GetCumulativeAmount(chronologicalInflationRates, _timeProvider.CurrentDate())
         }));

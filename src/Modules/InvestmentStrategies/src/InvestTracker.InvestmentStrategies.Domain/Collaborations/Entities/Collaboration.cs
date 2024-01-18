@@ -11,7 +11,6 @@ public class Collaboration : AggregateRoot
 {
     public StakeholderId AdvisorId { get; }
     public StakeholderId PrincipalId { get; }   
-    public DateTime CreatedAt { get; set; }
 
     private Collaboration()
     {

@@ -11,7 +11,7 @@ internal class AdvisorFinancialAssetLimitPolicy : IFinancialAssetLimitPolicy
     public bool CanBeApplied(Subscription subscription) 
         => subscription == SystemSubscription.Advisor;
 
-    public bool CanAddAsset(IFinancialAsset newAsset, List<IFinancialAsset> existingAssets)
+    public bool CanAddAsset(FinancialAsset newAsset, List<FinancialAsset> existingAssets)
     {
         return !existingAssets.IsAssetTypesNumberExceed(AdvisorAssetLimit) && 
                !existingAssets.IsConcreteCurrencyCashDuplicated(newAsset);

@@ -1,7 +1,6 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.Abstractions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Consts;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions;
-using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions.Volume;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Extensions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
@@ -12,31 +11,21 @@ using InvestTracker.Shared.Abstractions.Types;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 
-public class CoiTreasuryBond : TreasuryBond, IFinancialAsset, IAuditable
+public class CoiTreasuryBond : TreasuryBond, IAuditable
 {
-    private HashSet<VolumeTransaction> _transactions = new();
-
-    public FinancialAssetId Id { get; private set; }
     public string Symbol { get; private set; }
     public InterestRate FirstYearInterestRate { get; private set; }
     public Margin Margin { get; private set; }
-    public DateOnly PurchaseDate { get; set; }
-    public Currency Currency { get; private set; }
-    public Note Note { get; private set; }
+    public DateOnly PurchaseDate { get; private set; }
     public bool IsActive { get; private set; } = true;
-    public PortfolioId PortfolioId { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public Guid CreatedBy { get; private set; }
     public DateTime? ModifiedAt { get; private set; }
     public Guid? ModifiedBy { get; private set; }
-    public IEnumerable<VolumeTransaction> Transactions
-    {
-        get => _transactions;
-        set => _transactions = new HashSet<VolumeTransaction>(value);
-    }
 
-    protected sealed override int InvestmentDurationYears => 4;
-    protected sealed override int NominalUnitValue => 100;
+    public sealed override int InvestmentDurationYears => 4;
+    public sealed override int NominalUnitValue => 100;
+    public override string AssetName => $"{Symbol} Treasury Bond";
 
     private CoiTreasuryBond()
     {
@@ -52,7 +41,7 @@ public class CoiTreasuryBond : TreasuryBond, IFinancialAsset, IAuditable
         Currency = Currencies.PLN;
         Note = note;
 
-        _transactions.Add(new IncomingVolumeTransaction(Guid.NewGuid(), volume, purchaseDate.ToDateTime(), note));
+        _transactions.Add(new IncomingTransaction(Guid.NewGuid(), new Amount(volume * NominalUnitValue), purchaseDate.ToDateTime(), note));
     }
     
     public Amount GetAmount(ChronologicalInflationRates chronologicalInflationRates, DateOnly calculationDate)
@@ -89,19 +78,19 @@ public class CoiTreasuryBond : TreasuryBond, IFinancialAsset, IAuditable
             throw new DateOutOfInvestmentPeriodRangeException(calculationDate);
         }
 
-        var outgoingTransactions = _transactions
-            .OfType<OutgoingVolumeTransaction>()
+        var outgoingTransactions = (int)_transactions
+            .OfType<OutgoingTransaction>()
             .Where(t => t.TransactionDate <= calculationDate.ToDateTime())
-            .Sum(t => t.Volume);
+            .Sum(t => t.Amount / NominalUnitValue);
 
         return GetNominalVolume() - outgoingTransactions;
     }
 
     public Volume GetCurrentVolume() 
-        => GetNominalVolume() - _transactions.OfType<OutgoingVolumeTransaction>().Sum(t => t.Volume);
+        => GetNominalVolume() - _transactions.OfType<OutgoingTransaction>().Sum(t => (int)t.Amount / NominalUnitValue);
     
     private Volume GetNominalVolume() 
-        => _transactions.OfType<IncomingVolumeTransaction>().Single().Volume;
+        => (int)_transactions.OfType<IncomingTransaction>().Single().Amount / NominalUnitValue;
     
     public DateOnly GetRedemptionDate() => PurchaseDate.AddYears(InvestmentDurationYears);
     
@@ -109,8 +98,6 @@ public class CoiTreasuryBond : TreasuryBond, IFinancialAsset, IAuditable
     
     public IEnumerable<DateRange> GetInvestmentPeriods() =>  GetInvestmentDateRange().DividePerYears(1);
     
-    public string GetAssetName() => $"{Symbol} Treasury Bond";
-
     public IEnumerable<InterestRate> CalculateInterestRates(ChronologicalInflationRates chronologicalInflationRates, DateOnly calculationDate)
     {
         var reducedInflationRates = chronologicalInflationRates
