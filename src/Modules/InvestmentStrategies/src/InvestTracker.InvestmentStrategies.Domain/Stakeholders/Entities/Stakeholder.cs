@@ -25,8 +25,7 @@ public class Stakeholder : AggregateRoot<StakeholderId>
         Email = email;
         Subscription = subscription;
         IsActive = true;
-        CreatedAt = createdAt;
-        CreatedBy = id;
+        SetCreation(createdAt, id);
     }
 
     public void SetRole(Role role, DateTime modifiedAt, Guid modifiedBy)
@@ -37,9 +36,7 @@ public class Stakeholder : AggregateRoot<StakeholderId>
         }
 
         Role = role;
-        ModifiedAt = modifiedAt;
-        ModifiedBy = modifiedBy;
-        
+        SetModification(modifiedAt, modifiedBy);
         IncrementVersion();
     }
 
@@ -51,21 +48,21 @@ public class Stakeholder : AggregateRoot<StakeholderId>
         }
         
         Subscription = subscription;
-        ModifiedAt = modifiedAt;
-        ModifiedBy = modifiedBy;
-        
+        SetModification(modifiedAt, modifiedBy);
         IncrementVersion();
     }
 
-    public void Lock()
+    public void Lock(DateTime modifiedAt, Guid modifiedBy)
     {
         IsActive = false;
+        SetModification(modifiedAt, modifiedBy);
         IncrementVersion();
     }
 
-    public void Unlock()
+    public void Unlock(DateTime modifiedAt, Guid modifiedBy)
     {
         IsActive = true;
+        SetModification(modifiedAt, modifiedBy);
         IncrementVersion();
     }
 }

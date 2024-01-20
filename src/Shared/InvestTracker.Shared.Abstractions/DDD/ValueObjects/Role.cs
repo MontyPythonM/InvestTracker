@@ -23,5 +23,5 @@ public record Role
     public static implicit operator Role(string role) => new(role);
     
     private static bool IsValidRole(string value) 
-        => SystemRole.Roles.Contains(value) && string.IsNullOrEmpty(value);
+        => SystemRole.Roles.Contains(value) && !string.IsNullOrEmpty(value);
 }

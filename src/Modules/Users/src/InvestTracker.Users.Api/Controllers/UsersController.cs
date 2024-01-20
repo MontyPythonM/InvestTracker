@@ -65,4 +65,22 @@ internal class UsersController : ApiControllerBase
         await _userService.SetSubscriptionAsync(id, dto, token);
         return Ok();
     }
+    
+    [HttpPatch("{id:guid}/activate")]
+    [HasPermission(UsersPermission.ActivateUserAccount)]
+    [SwaggerOperation("Activate selected user account")]
+    public async Task<ActionResult> ActivateUserAccount(Guid id, CancellationToken token)
+    {
+        await _userService.SetUserAccountActivationAsync(id, true, token);
+        return Ok();
+    }
+    
+    [HttpPatch("{id:guid}/deactivate")]
+    [HasPermission(UsersPermission.DeactivateUserAccount)]
+    [SwaggerOperation("Deactivate selected user account")]
+    public async Task<ActionResult> DeactivateUserAccount(Guid id, CancellationToken token)
+    {
+        await _userService.SetUserAccountActivationAsync(id, false, token);
+        return Ok();
+    }
 }
