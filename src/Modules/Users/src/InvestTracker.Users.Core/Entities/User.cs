@@ -1,15 +1,16 @@
-﻿namespace InvestTracker.Users.Core.Entities;
+﻿using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
+
+namespace InvestTracker.Users.Core.Entities;
 
 public class User
 {
     public Guid Id { get; set; }
-    public string FullName { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string? Phone { get; set; }
+    public FullName FullName { get; set; }
+    public Email Email { get; set; }
+    public PhoneNumber Phone { get; set; }
     public string Password { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public bool IsActive { get; set; }
     public Role Role { get; set; }
     public Subscription Subscription { get; set; }
-    public string? ConfirmationKey { get; set; }
 }

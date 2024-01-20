@@ -19,5 +19,5 @@ public record Title
     public static implicit operator string(Title title) => title.Value;
     public static implicit operator Title(string title) => new(title);
 
-    private static bool IsValidTitle(string value) => !string.IsNullOrWhiteSpace(value) || value.Length < 100;
+    private static bool IsValidTitle(string value) => !string.IsNullOrWhiteSpace(value) && value.Length < 100;
 }

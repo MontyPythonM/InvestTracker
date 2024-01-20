@@ -1,4 +1,5 @@
-﻿using InvestTracker.Users.Core.Entities;
+﻿using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
+using InvestTracker.Users.Core.Entities;
 using InvestTracker.Users.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,11 +20,11 @@ internal class UserRepository : IUserRepository
             .Include(user => user.Subscription)
             .SingleOrDefaultAsync(user => user.Id == id, token);
 
-    public async Task<User?> GetAsync(string email, CancellationToken token)
+    public async Task<User?> GetAsync(Email email, CancellationToken token)
         => await _context.Users
             .Include(user => user.Role)
             .Include(user => user.Subscription)
-            .SingleOrDefaultAsync(user => user.Email.ToLower() == email.ToLower(), token);
+            .SingleOrDefaultAsync(user => user.Email == email, token);
 
     public async Task CreateAsync(User user, CancellationToken token)
     {

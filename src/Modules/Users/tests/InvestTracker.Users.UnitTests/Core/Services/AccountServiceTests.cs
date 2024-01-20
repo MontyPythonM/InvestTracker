@@ -1,5 +1,6 @@
 ﻿using InvestTracker.Shared.Abstractions.Authentication;
 using InvestTracker.Shared.Abstractions.Authorization;
+using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using InvestTracker.Shared.Abstractions.Messages;
 using InvestTracker.Shared.Abstractions.Time;
 using InvestTracker.Shared.Abstractions.Types;
@@ -40,7 +41,7 @@ public class AccountServiceTests
     public async Task SignInAsync_ShouldThrowUserNotFoundException_WhenUserNotExist()
     {
         // arrange
-        _userRepository.GetAsync(Arg.Any<string>(), CancellationToken.None).ReturnsNull();
+        _userRepository.GetAsync(Arg.Any<Email>(), CancellationToken.None).ReturnsNull();
 
         var dto = new SignInDto("email@email.com", "password");
         
@@ -167,7 +168,6 @@ public class AccountServiceTests
         await _accountService.SignUpAsync(dto, CancellationToken.None);
 
         // assert
-        
         await _messageBroker.Received(1).PublishAsync(Arg.Is<InvestorCreated>(e =>
             e.FullName == dto.FullName && 
             e.Email == dto.Email));

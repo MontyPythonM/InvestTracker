@@ -40,7 +40,7 @@ internal sealed class AccountService : IAccountService
         {
             Id = Guid.NewGuid(),
             FullName = dto.FullName,
-            Email = dto.Email.ToLowerInvariant(),
+            Email = dto.Email,
             Phone = dto.Phone,
             Password = _passwordManager.Secure(dto.Password),
             CreatedAt = _timeProvider.Current(),
@@ -49,7 +49,8 @@ internal sealed class AccountService : IAccountService
             Subscription = new Subscription
             {
                 Value = SystemSubscription.StandardInvestor,
-                GrantedAt = _timeProvider.Current()
+                GrantedAt = _timeProvider.Current(),
+                ExpiredAt = null
             }
         };
 
