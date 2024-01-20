@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using InvestTracker.Notifications.Api.Controllers.Base;
+using Microsoft.AspNetCore.Mvc;
 
 namespace InvestTracker.Notifications.Api.Controllers;
 

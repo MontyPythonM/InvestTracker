@@ -9,5 +9,11 @@
     <ItemGroup>
         <ProjectReference Include="..\..\..\..\Shared\InvestTracker.Shared.Infrastructure\InvestTracker.Shared.Infrastructure.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Events\External\" />
+      <Folder Include="Persistence\Configurations\" />
+      <Folder Include="Persistence\Migrations\" />
+    </ItemGroup>
     
 </Project>

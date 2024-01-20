@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace InvestTracker.Notifications.Api.Controllers;
+namespace InvestTracker.Notifications.Api.Controllers.Base;
 
 [ApiController]
 [ApiExplorerSettings(GroupName = NotificationsModule.BasePath)]
