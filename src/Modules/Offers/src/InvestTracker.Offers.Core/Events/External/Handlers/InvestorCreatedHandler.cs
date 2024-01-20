@@ -25,7 +25,7 @@ internal sealed class InvestorCreatedHandler : IEventHandler<InvestorCreated>
         {
             Id = @event.Id,
             Email = @event.Email,
-            FullName = @event.FullName,
+            FullName = @event.FullName
         };
 
         await _investorRepository.CreateAsync(investor, CancellationToken.None);

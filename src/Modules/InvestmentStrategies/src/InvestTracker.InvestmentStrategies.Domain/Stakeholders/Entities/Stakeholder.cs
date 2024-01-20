@@ -18,16 +18,18 @@ public class Stakeholder : AggregateRoot<StakeholderId>
     {
     }
 
-    public Stakeholder(StakeholderId id, FullName fullName, Email email, Subscription subscription)
+    public Stakeholder(StakeholderId id, FullName fullName, Email email, Subscription subscription, DateTime createdAt)
     {
         Id = id;
         FullName = fullName;
         Email = email;
         Subscription = subscription;
         IsActive = true;
+        CreatedAt = createdAt;
+        CreatedBy = id;
     }
 
-    public void SetRole(Role role)
+    public void SetRole(Role role, DateTime modifiedAt, Guid modifiedBy)
     {
         if (!IsActive)
         {
@@ -35,10 +37,13 @@ public class Stakeholder : AggregateRoot<StakeholderId>
         }
 
         Role = role;
+        ModifiedAt = modifiedAt;
+        ModifiedBy = modifiedBy;
+        
         IncrementVersion();
     }
 
-    public void SetSubscription(Subscription subscription)
+    public void SetSubscription(Subscription subscription, DateTime modifiedAt, Guid modifiedBy)
     {
         if (!IsActive)
         {
@@ -46,6 +51,9 @@ public class Stakeholder : AggregateRoot<StakeholderId>
         }
         
         Subscription = subscription;
+        ModifiedAt = modifiedAt;
+        ModifiedBy = modifiedBy;
+        
         IncrementVersion();
     }
 

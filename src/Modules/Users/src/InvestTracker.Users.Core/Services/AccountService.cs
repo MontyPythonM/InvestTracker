@@ -36,6 +36,8 @@ internal sealed class AccountService : IAccountService
             throw new EmailAlreadyInUseException(dto.Email);
         }
 
+        var now = _timeProvider.Current();
+        
         user = new User
         {
             Id = Guid.NewGuid(),
@@ -43,13 +45,13 @@ internal sealed class AccountService : IAccountService
             Email = dto.Email,
             Phone = dto.Phone,
             Password = _passwordManager.Secure(dto.Password),
-            CreatedAt = _timeProvider.Current(),
+            CreatedAt = now,
             IsActive = true,
             Role = new Role(),
             Subscription = new Subscription
             {
                 Value = SystemSubscription.StandardInvestor,
-                GrantedAt = _timeProvider.Current(),
+                GrantedAt = now,
                 ExpiredAt = null
             }
         };

@@ -2,4 +2,4 @@
 
 namespace InvestTracker.Users.Core.Events;
 
-public record UserRoleRemoved(Guid Id) : IEvent;
+public record UserRoleRemoved(Guid Id, Guid ModifiedBy) : IEvent;
