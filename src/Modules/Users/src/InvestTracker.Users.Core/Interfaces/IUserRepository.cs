@@ -9,4 +9,5 @@ public interface IUserRepository
     Task<User?> GetAsync(Email email, CancellationToken token);
     Task CreateAsync(User user, CancellationToken token);
     Task UpdateAsync(User user, CancellationToken token);
+    Task DeleteAsync(User user, CancellationToken token);
 }

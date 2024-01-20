@@ -1,5 +1,6 @@
 ﻿using InvestTracker.Shared.Abstractions.Authentication;
 using InvestTracker.Shared.Abstractions.Authorization;
+using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.Messages;
 using InvestTracker.Shared.Abstractions.Time;
 using InvestTracker.Users.Core.Dtos;
@@ -17,15 +18,17 @@ internal sealed class AccountService : IAccountService
     private readonly IPasswordManager _passwordManager;
     private readonly ITimeProvider _timeProvider;
     private readonly IMessageBroker _messageBroker;
+    private readonly IRequestContext _requestContext;
 
-    public AccountService(IUserRepository userRepository, IAuthenticator authenticator, 
-        IPasswordManager passwordManager, ITimeProvider timeProvider, IMessageBroker messageBroker)
+    public AccountService(IUserRepository userRepository, IAuthenticator authenticator, IPasswordManager passwordManager, 
+        ITimeProvider timeProvider, IMessageBroker messageBroker, IRequestContext requestContext)
     {
         _userRepository = userRepository;
         _authenticator = authenticator;
         _passwordManager = passwordManager;
         _timeProvider = timeProvider;
         _messageBroker = messageBroker;
+        _requestContext = requestContext;
     }
     
     public async Task SignUpAsync(SignUpDto dto, CancellationToken token)
@@ -87,5 +90,29 @@ internal sealed class AccountService : IAccountService
         accessToken.Email = user.Email;
         
         return accessToken;
+    }
+    
+    public async Task DeleteCurrentUserAccount(DeleteAccountDto dto, CancellationToken token)
+    {
+        var currentUser = _requestContext.Identity.UserId;
+        var user = await _userRepository.GetAsync(currentUser, token);
+
+        if (user is null)
+        {
+            throw new UserNotFoundException(currentUser);
+        }
+
+        if (user.IsActive is false)
+        {
+            throw new UserNotActiveException(user.Id);
+        }
+
+        if (!_passwordManager.Validate(dto.Password, user.Password))
+        {
+            throw new InvalidPasswordException();
+        }
+        
+        await _userRepository.DeleteAsync(user, token);
+        await _messageBroker.PublishAsync(new UserAccountDeleted(currentUser));
     }
 }

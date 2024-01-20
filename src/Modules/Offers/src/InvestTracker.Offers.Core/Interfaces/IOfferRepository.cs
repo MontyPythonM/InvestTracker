@@ -8,4 +8,5 @@ internal interface IOfferRepository
     Task CreateAsync(Offer offer, CancellationToken token);
     Task UpdateAsync(Offer offer, CancellationToken token);
     Task DeleteAsync(Offer offer, CancellationToken token);
+    Task DeleteAsync(IEnumerable<Offer> offers, CancellationToken token);
 }

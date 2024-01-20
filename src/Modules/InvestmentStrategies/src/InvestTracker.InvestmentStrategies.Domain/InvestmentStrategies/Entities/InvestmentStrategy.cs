@@ -104,4 +104,6 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         Portfolios.Remove(new RelatedPortfolios(portfolioId));
         IncrementVersion();
     }
+
+    public void Lock() => IsShareEnabled = false;
 }
