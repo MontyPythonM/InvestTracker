@@ -10,4 +10,5 @@ public interface IUserService
     Task SetRoleAsync(Guid userId, SetRoleDto dto, CancellationToken token);
     Task RemoveRoleAsync(Guid id, CancellationToken token);
     Task SetSubscriptionAsync(Guid userId, SetSubscriptionDto dto, CancellationToken token);
+    Task SetUserAccountActivationAsync(Guid userId, bool isActive, CancellationToken token);
 }

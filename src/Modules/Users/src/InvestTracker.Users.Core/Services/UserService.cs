@@ -58,7 +58,8 @@ internal sealed class UserService : IUserService
                 Id = user.Id,
                 FullName = user.FullName,
                 Email = user.Email,
-                Phone = user.Phone ?? string.Empty,
+                Phone = user.Phone,
+                IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt,
                 Subscription = user.Subscription.Value,
                 Role = user.Role.Value
@@ -75,7 +76,8 @@ internal sealed class UserService : IUserService
                 Id = user.Id,
                 FullName = user.FullName,
                 Email = user.Email,
-                Phone = user.Phone ?? string.Empty,
+                Phone = user.Phone,
+                IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt,
                 Subscription = new SubscriptionDto
                 {
@@ -107,15 +109,18 @@ internal sealed class UserService : IUserService
             throw new UserNotFoundException(userId);
         }
 
+        var modifiedAt = _timeProvider.Current();
+        var modifiedBy = _requestContext.Identity.UserId;
+        
         user.Role = new Role
         {
             Value = dto.Role,
-            GrantedAt = _timeProvider.Current(),
-            GrantedBy = _requestContext.Identity.UserId
+            GrantedAt = modifiedAt,
+            GrantedBy = modifiedBy
         };
         
         await _userRepository.UpdateAsync(user, token);
-        await _messageBroker.PublishAsync(new UserRoleGranted(user.Id, user.Role.Value));
+        await _messageBroker.PublishAsync(new UserRoleGranted(user.Id, user.Role.Value, modifiedBy));
     }
 
     public async Task RemoveRoleAsync(Guid id, CancellationToken token)
@@ -125,16 +130,19 @@ internal sealed class UserService : IUserService
         {
             throw new UserNotFoundException(id);
         }
+
+        var modifiedAt = _timeProvider.Current();
+        var modifiedBy = _requestContext.Identity.UserId;
         
         user.Role = new Role
         {
             Value = SystemRole.None,
-            GrantedAt = _timeProvider.Current(),
-            GrantedBy = _requestContext.Identity.UserId
+            GrantedAt = modifiedAt,
+            GrantedBy = modifiedBy
         };
         
         await _userRepository.UpdateAsync(user, token);
-        await _messageBroker.PublishAsync(new UserRoleRemoved(user.Id));
+        await _messageBroker.PublishAsync(new UserRoleRemoved(user.Id, modifiedBy));
     }
 
     public async Task SetSubscriptionAsync(Guid userId, SetSubscriptionDto dto, CancellationToken token)
@@ -155,16 +163,40 @@ internal sealed class UserService : IUserService
             throw new UserNotFoundException(userId);
         }
 
+        var modifiedAt = _timeProvider.Current();
+        var modifiedBy = _requestContext.Identity.UserId;
+        
         user.Subscription = new Subscription
         {
             Value = dto.Subscription,
             ExpiredAt = dto.ExpiredAt,
-            GrantedAt = _timeProvider.Current(),
-            GrantedBy = _requestContext.Identity.UserId,
+            GrantedAt = modifiedAt,
+            GrantedBy = modifiedBy,
             ChangeSource = SubscriptionChangeSource.FromAdministrator
         };
         
         await _userRepository.UpdateAsync(user, token);
-        await _messageBroker.PublishAsync(new UserSubscriptionChanged(user.Id, user.FullName, user.Email, user.Subscription.Value));
+        await _messageBroker.PublishAsync(new UserSubscriptionChanged(user.Id, user.FullName, user.Email, user.Subscription.Value, modifiedBy));
+    }
+
+    public async Task SetUserAccountActivationAsync(Guid userId, bool isActive, CancellationToken token)
+    {
+        var user = await _userRepository.GetAsync(userId, token);
+        if (user is null)
+        {
+            throw new UserNotFoundException(userId);
+        }
+        
+        user.IsActive = isActive;
+        await _userRepository.UpdateAsync(user, token);
+        
+        if (isActive)
+        {
+            await _messageBroker.PublishAsync(new UserAccountActivated(user.Id, _requestContext.Identity.UserId));
+        }
+        else
+        {
+            await _messageBroker.PublishAsync(new UserAccountDeactivated(user.Id, _requestContext.Identity.UserId));
+        }
     }
 }

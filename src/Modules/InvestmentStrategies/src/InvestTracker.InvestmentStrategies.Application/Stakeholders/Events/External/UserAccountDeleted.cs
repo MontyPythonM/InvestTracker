@@ -2,4 +2,4 @@
 
 namespace InvestTracker.InvestmentStrategies.Application.Stakeholders.Events.External;
 
-public record UserRoleGranted(Guid Id, string Role, Guid ModifiedBy) : IEvent;
+public record UserAccountDeleted(Guid Id) : IEvent;

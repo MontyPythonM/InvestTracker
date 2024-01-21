@@ -31,4 +31,13 @@ internal class AccountsController : ApiControllerBase
     [SwaggerOperation("Allows registered users enter into system")]
     public async Task<ActionResult<JsonWebToken>> SignIn(SignInDto dto, CancellationToken token)
         => await _accountService.SignInAsync(dto, token);
+
+    [HttpDelete]
+    [Authorize]
+    [SwaggerOperation("Delete own account")]
+    public async Task<ActionResult> DeleteCurrentUserAccount(DeleteAccountDto dto, CancellationToken token)
+    {
+        await _accountService.DeleteCurrentUserAccount(dto, token);
+        return NoContent();
+    }
 }

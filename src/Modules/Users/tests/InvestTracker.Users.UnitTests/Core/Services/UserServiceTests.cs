@@ -66,10 +66,12 @@ public class UserServiceTests
         };
         
         var dto = GetSetRoleDto(SystemRole.SystemAdministrator);
+        var currentUserId = Guid.NewGuid();
+        var now = DateTime.Now;
         
         _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
-        _timeProvider.Current().Returns(DateTime.Now);
-        _requestContext.Identity.UserId.Returns(Guid.NewGuid());
+        _timeProvider.Current().Returns(now);
+        _requestContext.Identity.UserId.Returns(currentUserId);
         
         // act
         await _userService.SetRoleAsync(user.Id, dto, CancellationToken.None);
@@ -78,7 +80,8 @@ public class UserServiceTests
         await _messageBroker.Received(1)
             .PublishAsync(Arg.Is<UserRoleGranted>(e => 
                 e.Id == user.Id &&
-                e.Role == user.Role.Value));
+                e.Role == user.Role.Value &&
+                e.ModifiedBy == currentUserId));
 
         await _userRepository.Received(1)
             .UpdateAsync(user, CancellationToken.None);

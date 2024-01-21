@@ -10,7 +10,7 @@ public class User
     public PhoneNumber Phone { get; set; }
     public string Password { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
-    public bool IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
     public Role Role { get; set; }
     public Subscription Subscription { get; set; }
 }
