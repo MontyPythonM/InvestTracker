@@ -14,11 +14,11 @@ using InvestTracker.Shared.Infrastructure.Messages;
 using InvestTracker.Shared.Infrastructure.Modules;
 using InvestTracker.Shared.Infrastructure.Queries;
 using InvestTracker.Shared.Infrastructure.Swagger;
-using InvestTracker.Shared.Infrastructure.Time;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TimeProvider = InvestTracker.Shared.Infrastructure.Time.TimeProvider;
 
 [assembly: InternalsVisibleTo("InvestTracker.Bootstrapper")]
 namespace InvestTracker.Shared.Infrastructure;
