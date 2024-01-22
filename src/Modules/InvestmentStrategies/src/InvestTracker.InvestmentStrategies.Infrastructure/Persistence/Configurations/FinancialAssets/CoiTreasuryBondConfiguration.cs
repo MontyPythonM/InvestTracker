@@ -1,7 +1,4 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
-using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
-using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
-using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,21 +10,17 @@ internal class CoiTreasuryBondConfiguration : IEntityTypeConfiguration<CoiTreasu
     {
         builder.ToTable("FinancialAssets.CoiTreasuryBonds");
         
-        builder.Property(asset => asset.Id)
-            .HasConversion(a => a.Value, a => new FinancialAssetId(a));
+        builder.ComplexProperty(asset => asset.Id)
+            .IsRequired();
         
-        builder.Property(asset => asset.Note)
-            .HasConversion(a => a.Value, a => new Note(a));
+        builder.ComplexProperty(asset => asset.Note);
         
-        builder.Property(asset => asset.Currency)
-            .IsRequired()
-            .HasConversion(a => a.Value, a => new Currency(a));
+        builder.ComplexProperty(asset => asset.Currency)
+            .IsRequired();
         
-        builder.Property(asset => asset.FirstYearInterestRate)
-            .HasConversion(a => a.Value, a => new InterestRate(a));
+        builder.ComplexProperty(asset => asset.FirstYearInterestRate);
         
-        builder.Property(asset => asset.Margin)
-            .HasConversion(a => a.Value, a => new Margin(a));
+        builder.ComplexProperty(asset => asset.Margin);
 
         builder.HasMany(asset => asset.Transactions).WithOne();
     }

@@ -20,8 +20,7 @@ public class OfferConfiguration : IEntityTypeConfiguration<Offer>
                 tag => JsonConvert.SerializeObject(tag),
                 tag => JsonConvert.DeserializeObject<List<string>>(tag)!
             );
-            
-        
+
         builder.Property(offer => offer.Price)
             .HasPrecision(18, 2);
 

@@ -26,7 +26,8 @@ internal sealed class InflationRateRepository : IInflationRateRepository
         CancellationToken token = default)
     {
         return await _context.InflationRates
-            .Where(rate => rate.MonthlyDate >= dateRange.From && rate.MonthlyDate <= dateRange.To)
+            .Where(rate => rate.MonthlyDate.ToDateOnly() >= dateRange.From.AsFirstDayOfMonth() && 
+                           rate.MonthlyDate.ToDateOnly() <= dateRange.To.AsFirstDayOfMonth())
             .Select(rate => new InflationRate(rate.Value, rate.Currency, rate.MonthlyDate.Year, rate.MonthlyDate.Month))
             .ToListAsync(token);
     }
@@ -35,7 +36,8 @@ internal sealed class InflationRateRepository : IInflationRateRepository
         CancellationToken token = default)
     {
         var rates = await _context.InflationRates
-            .Where(rate => rate.MonthlyDate >= dateRange.From.AsFirstDayOfMonth() && rate.MonthlyDate <= dateRange.To.AsFirstDayOfMonth())
+            .Where(rate => rate.MonthlyDate.ToDateOnly() >= dateRange.From.AsFirstDayOfMonth() && 
+                           rate.MonthlyDate.ToDateOnly() <= dateRange.To.AsFirstDayOfMonth())
             .OrderBy(rate => rate.MonthlyDate.Year)
             .ThenBy(rate => rate.MonthlyDate.Month)
             .Select(rate => new InflationRate(rate.Value, rate.Currency, rate.MonthlyDate.Year, rate.MonthlyDate.Month))

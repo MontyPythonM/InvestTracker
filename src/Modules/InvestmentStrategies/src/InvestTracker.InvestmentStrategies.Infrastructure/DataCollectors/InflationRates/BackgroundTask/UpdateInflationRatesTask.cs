@@ -50,7 +50,7 @@ internal sealed class UpdateInflationRatesTask : BackgroundService
                     .OrderBy(rate => rate.MonthlyDate)
                     .LastOrDefaultAsync(stoppingToken);
 
-                var lastInflationRateDate = lastInflationRate?.MonthlyDate ?? new DateOnly(_options.UpdateMissingFromYear, 01, 01);
+                var lastInflationRateDate = lastInflationRate?.MonthlyDate.ToDateOnly() ?? new DateOnly(_options.UpdateMissingFromYear, 01, 01);
                 
                 var missingMonths = GetMissingMonths(lastInflationRateDate, _timeProvider.CurrentDate());
                 var inflationRates = new List<InflationRateEntity>();

@@ -30,7 +30,7 @@ public record PhoneNumber
     public static implicit operator PhoneNumber(string email) => new(email);
     
     private static bool IsValidPhoneNumber(string value) 
-        => !string.IsNullOrEmpty(value) && value.Length < 12 && new PhoneAttribute().IsValid(value); 
+        => !string.IsNullOrEmpty(value) && value.Length < 20 && new PhoneAttribute().IsValid(value); 
     
     private static string FormatPhoneNumber(string input)
     {

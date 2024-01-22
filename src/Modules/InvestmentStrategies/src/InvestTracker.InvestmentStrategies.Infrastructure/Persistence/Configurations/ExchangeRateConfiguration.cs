@@ -1,6 +1,4 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
-using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.Entities;
-using InvestTracker.InvestmentStrategies.Infrastructure.ValueObjects;
+﻿using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,23 +11,18 @@ internal class ExchangeRateConfiguration : IEntityTypeConfiguration<ExchangeRate
         builder.HasIndex(exchangeRate => exchangeRate.Date);
         builder.HasIndex(exchangeRate => exchangeRate.To);
 
-        builder.Property(exchangeRate => exchangeRate.From)
-            .IsRequired()
-            .HasConversion(e => e.Value, e => new Currency(e));
+        builder.ComplexProperty(asset => asset.From)
+            .IsRequired();
         
-        builder.Property(exchangeRate => exchangeRate.To)
-            .IsRequired()
-            .HasConversion(e => e.Value, e => new Currency(e));
+        builder.ComplexProperty(asset => asset.To)
+            .IsRequired();
 
         builder.Property(exchangeRate => exchangeRate.Date)
-            .IsRequired()
-            .HasConversion(dateOnly => dateOnly.ToDateTime(TimeOnly.MinValue), 
-                dateTime => DateOnly.FromDateTime(dateTime));
+            .IsRequired();
 
         builder.Property(exchangeRate => exchangeRate.Value)
             .IsRequired()
-            .HasPrecision(12, 4)
-            .HasConversion(e => e.Value, e => new ExchangeRateValue(e));
+            .HasPrecision(12, 4);
 
         builder.Property(exchangeRate => exchangeRate.Metadata)
             .HasMaxLength(1500);

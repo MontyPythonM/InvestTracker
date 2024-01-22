@@ -1,6 +1,4 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Entities;
-using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
-using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,24 +8,19 @@ internal class StakeholderConfiguration : IEntityTypeConfiguration<Stakeholder>
 {
     public void Configure(EntityTypeBuilder<Stakeholder> builder)
     {
-        builder.Property(stakeholder => stakeholder.Id)
-            .IsRequired()
-            .HasConversion(s => s.Value, s => new StakeholderId(s));
-
-        builder.Property(stakeholder => stakeholder.FullName)
-            .IsRequired()
-            .HasConversion(s => s.Value, s => new FullName(s));
+        builder.ComplexProperty(asset => asset.Id)
+            .IsRequired();
         
-        builder.Property(stakeholder => stakeholder.Email)
-            .IsRequired()
-            .HasConversion(s => s.Value, s => new Email(s));
+        builder.ComplexProperty(asset => asset.FullName)
+            .IsRequired();
         
-        builder.Property(stakeholder => stakeholder.Subscription)
-            .IsRequired()
-            .HasConversion(s => s.Value, s => new Subscription(s));
+        builder.ComplexProperty(asset => asset.Email)
+            .IsRequired();
         
-        builder.Property(stakeholder => stakeholder.Role)
-            .IsRequired()
-            .HasConversion(s => s.Value, s => new Role(s));
+        builder.ComplexProperty(asset => asset.Subscription)
+            .IsRequired();
+        
+        builder.ComplexProperty(asset => asset.Role)
+            .IsRequired();
     }
 }

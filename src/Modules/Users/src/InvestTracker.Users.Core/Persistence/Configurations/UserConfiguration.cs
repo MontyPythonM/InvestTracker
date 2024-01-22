@@ -1,5 +1,4 @@
-﻿using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
-using InvestTracker.Users.Core.Entities;
+﻿using InvestTracker.Users.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Role = InvestTracker.Users.Core.Entities.Role;
@@ -11,23 +10,21 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.OwnsOne<Role>(user => user.Role);
-        builder.OwnsOne<Subscription>(user => user.Subscription);
-
         builder.Property(u => u.Email)
             .HasMaxLength(100)
-            .IsRequired()
-            .HasConversion(u => u.Value, u => new Email(u));
+            .IsRequired();
         
         builder.Property(u => u.Password)
             .IsRequired();
 
         builder.Property(u => u.FullName)
             .HasMaxLength(100)
-            .IsRequired()
-            .HasConversion(u => u.Value, u => new FullName(u));
+            .IsRequired();
         
         builder.Property(u => u.Phone)
-            .HasConversion(u => u.Value, u => new PhoneNumber(u));
+            .HasMaxLength(20);
+        
+        builder.OwnsOne<Role>(user => user.Role);
+        builder.OwnsOne<Subscription>(user => user.Subscription);
     }
 }

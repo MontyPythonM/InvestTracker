@@ -8,7 +8,7 @@ public sealed class InflationRateEntity
 {
     public Guid Id { get; private set; }
     public Currency Currency { get; }
-    public DateOnly MonthlyDate { get; set; }
+    public MonthlyDate MonthlyDate { get; set; }
     public DateTime ImportedAt { get; private set; }
     public DateTime? ModifiedAt { get; private set; }
     public Guid? ModifiedBy { get; private set; }
@@ -24,7 +24,7 @@ public sealed class InflationRateEntity
     {
         Id = id;
         Currency = currency;
-        MonthlyDate = new DateOnly(monthlyDate.Year, monthlyDate.Month, 01);
+        MonthlyDate = monthlyDate;
         ImportedAt = importedAt;
         Value = value;
         Metadata = metadata;

@@ -1,7 +1,4 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
-using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,20 +8,17 @@ internal class InvestmentStrategyConfiguration : IEntityTypeConfiguration<Invest
 {
     public void Configure(EntityTypeBuilder<InvestmentStrategy> builder)
     {
-        builder.Property(strategy => strategy.Id)
-            .IsRequired()
-            .HasConversion(s => s.Value, s => new InvestmentStrategyId(s));
+        builder.ComplexProperty(asset => asset.Id)
+            .IsRequired();
         
-        builder.Property(strategy => strategy.Title)
-            .IsRequired()
-            .HasConversion(s => s.Value, s => new Title(s));
+        builder.ComplexProperty(asset => asset.Title)
+            .IsRequired();
         
-        builder.Property(strategy => strategy.Note)
-            .HasConversion(s => s.Value, s => new Note(s));
+        builder.ComplexProperty(asset => asset.Note)
+            .IsRequired();
         
-        builder.Property(strategy => strategy.Owner)
-            .IsRequired()
-            .HasConversion(s => s.Value, s => new StakeholderId(s));
+        builder.ComplexProperty(asset => asset.Owner)
+            .IsRequired();
 
         builder.OwnsMany(strategy => strategy.Portfolios);
         

@@ -1,5 +1,4 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Collaborations.Entities;
-using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,12 +10,10 @@ internal class CollaborationConfiguration : IEntityTypeConfiguration<Collaborati
     {
         builder.HasKey(collaboration => new { collaboration.PrincipalId, collaboration.AdvisorId });
         
-        builder.Property(collaboration => collaboration.PrincipalId)
-            .IsRequired()
-            .HasConversion(c => c.Value, c => new StakeholderId(c));
-
-        builder.Property(collaboration => collaboration.AdvisorId)
-            .IsRequired()
-            .HasConversion(c => c.Value, c => new StakeholderId(c));
+        builder.ComplexProperty(asset => asset.PrincipalId)
+            .IsRequired();
+        
+        builder.ComplexProperty(asset => asset.AdvisorId)
+            .IsRequired();
     }
 }

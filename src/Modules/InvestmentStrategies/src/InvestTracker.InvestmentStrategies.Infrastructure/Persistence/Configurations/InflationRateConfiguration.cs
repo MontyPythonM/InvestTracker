@@ -1,5 +1,4 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
-using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.InflationRates.Entities;
+﻿using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.InflationRates.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,15 +8,14 @@ internal class InflationRateConfiguration : IEntityTypeConfiguration<InflationRa
 {
     public void Configure(EntityTypeBuilder<InflationRateEntity> builder)
     {
-        builder.Property(rate => rate.Currency)
-            .IsRequired()
-            .HasConversion(e => e.Value, e => new Currency(e));
+        builder.ComplexProperty(asset => asset.Currency)
+            .IsRequired();
 
         builder.Property(rate => rate.Value)
             .IsRequired()
             .HasPrecision(12, 4);
 
-        builder.Property(rate => rate.MonthlyDate)
+        builder.ComplexProperty(rate => rate.MonthlyDate)
             .IsRequired();
         
         builder.Property(rate => rate.Metadata)
