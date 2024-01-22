@@ -52,7 +52,7 @@ public static class Extensions
         return services;
     }
 
-    internal static IApplicationBuilder UseSharedInfrastructure(this IApplicationBuilder app, IList<IModule> modules)
+    internal static WebApplication UseSharedInfrastructure(this WebApplication app, IList<IModule> modules)
     {
         app.UseExceptionHandling();
         app.UseOpenApiDocumentation(modules);

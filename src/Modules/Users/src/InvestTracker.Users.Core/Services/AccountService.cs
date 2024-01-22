@@ -60,7 +60,7 @@ internal sealed class AccountService : IAccountService
         };
 
         await _userRepository.CreateAsync(user, token);
-        await _messageBroker.PublishAsync(new InvestorCreated(user.Id, user.FullName, user.Email));
+        await _messageBroker.PublishAsync(new InvestorCreated(user.Id, user.FullName, user.Email, user.Phone));
     }
 
     public async Task<JsonWebToken> SignInAsync(SignInDto dto, CancellationToken token)

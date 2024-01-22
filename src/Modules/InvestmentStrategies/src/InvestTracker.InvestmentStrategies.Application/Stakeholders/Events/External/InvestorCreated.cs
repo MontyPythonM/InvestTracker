@@ -2,4 +2,4 @@
 
 namespace InvestTracker.InvestmentStrategies.Application.Stakeholders.Events.External;
 
-public record InvestorCreated(Guid Id, string FullName, string Email) : IEvent;
+public record InvestorCreated(Guid Id, string FullName, string Email, string PhoneNumber) : IEvent;

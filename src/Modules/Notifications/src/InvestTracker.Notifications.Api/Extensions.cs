@@ -1,5 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using InvestTracker.Notifications.Core;
+using InvestTracker.Notifications.Core.Hubs;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: InternalsVisibleTo("InvestTracker.Bootstrapper")]
@@ -12,5 +14,13 @@ internal static class Extensions
         services.AddCore();
         
         return services;
+    }
+    
+    internal static WebApplication UseNotificationsModule(this WebApplication app)
+    {
+        var method = nameof(AdministratorHub.SendPushNotification);
+        app.MapHub<AdministratorHub>("administrator");
+
+        return app;
     }
 }

@@ -12,9 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Events\External\" />
-      <Folder Include="Persistence\Configurations\" />
       <Folder Include="Persistence\Migrations\" />
+      <Folder Include="Services\" />
     </ItemGroup>
     
 </Project>
