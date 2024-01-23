@@ -13,9 +13,8 @@ public class Offer
     public ICollection<string> Tags { get; private set; } = new List<string>();
     public virtual ICollection<Invitation> Invitations { get; private set; } = new List<Invitation>();
 
-    public Offer()
+    private Offer()
     {
-        // for EF
     }
 
     public Offer(Guid id, string title, string? description, decimal? price, DateTime now, 
