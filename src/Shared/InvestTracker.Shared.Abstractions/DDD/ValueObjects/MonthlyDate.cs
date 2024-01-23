@@ -36,6 +36,8 @@ public sealed record MonthlyDate
 
     public override string ToString() => $"{Month}/{Year}";
 
+    public DateOnly ToDateOnly() => new(Year, Month, 01);
+    
     private static bool IsYearValid(int year)
         => year is > 1900 and <= 2100;
     

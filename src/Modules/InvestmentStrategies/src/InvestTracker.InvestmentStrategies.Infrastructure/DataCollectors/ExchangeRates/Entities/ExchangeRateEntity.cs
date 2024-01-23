@@ -1,6 +1,5 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Infrastructure.ValueObjects;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.Entities;
 
@@ -13,14 +12,14 @@ public sealed class ExchangeRateEntity
     public DateTime ImportedAt { get; private set; }
     public DateTime? ModifiedAt { get; private set; }
     public Guid? ModifiedBy { get; private set; }
-    public ExchangeRateValue Value { get; private set; }
-    public string? Metadata { get; set; }
+    public decimal Value { get; private set; }
+    public string? Metadata { get; private set; }
     
     private ExchangeRateEntity()
     {
     }
     
-    public ExchangeRateEntity(Guid id, Currency from, Currency to, DateOnly date, DateTime importedAt, ExchangeRateValue value, 
+    public ExchangeRateEntity(Guid id, Currency from, Currency to, DateOnly date, DateTime importedAt, decimal value, 
         string? metadata = null)
     {
         Id = id;
@@ -32,7 +31,7 @@ public sealed class ExchangeRateEntity
         Metadata = metadata;
     }
 
-    public void Update(ExchangeRateValue value, string? metadata, DateTime modifiedAt, StakeholderId modifiedBy)
+    public void Update(decimal value, string? metadata, DateTime modifiedAt, StakeholderId modifiedBy)
     {
         Value = value;
         Metadata = metadata;
