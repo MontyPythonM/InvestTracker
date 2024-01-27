@@ -20,7 +20,7 @@ public class Collaboration : AggregateRoot
     {
         AdvisorId = advisorId;
         PrincipalId = principalId;
-        CreatedAt = now;
+        SetCreation(now, advisorId);
     }
 
     public static Collaboration Create(Stakeholder advisor, Stakeholder principal, DateTime now)

@@ -3,4 +3,4 @@
 namespace InvestTracker.Offers.Core.Events;
 
 public record CollaborationInvitationSent(string SenderEmail, string SenderFullName, string ReceiverEmail, 
-    string ReceiverFullName, string OfferTitle, string message) : IEvent;
+    string ReceiverFullName, string OfferTitle, string Message) : IEvent;

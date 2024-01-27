@@ -33,4 +33,10 @@ internal class OfferRepository : IOfferRepository
         _context.Offers.Remove(offer);
         await _context.SaveChangesAsync(token);
     }
+
+    public async Task DeleteAsync(IEnumerable<Offer> offers, CancellationToken token)
+    {
+        _context.Offers.RemoveRange(offers);
+        await _context.SaveChangesAsync(token);
+    }
 }

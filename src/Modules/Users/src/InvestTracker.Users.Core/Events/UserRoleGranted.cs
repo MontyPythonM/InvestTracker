@@ -2,4 +2,4 @@
 
 namespace InvestTracker.Users.Core.Events;
 
-public record UserRoleGranted(Guid Id, string Role) : IEvent;
+public record UserRoleGranted(Guid Id, string Role, Guid ModifiedBy) : IEvent;

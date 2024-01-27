@@ -12,7 +12,7 @@ public class Advisor
     public virtual ICollection<Offer> Offers { get; set; } = new List<Offer>();
     public virtual ICollection<Collaboration> Collaborations { get; set; } = new List<Collaboration>();
     
-    public Advisor()
+    private Advisor()
     {
     }
 

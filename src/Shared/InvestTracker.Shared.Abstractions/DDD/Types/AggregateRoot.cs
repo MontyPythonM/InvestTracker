@@ -4,16 +4,16 @@ namespace InvestTracker.Shared.Abstractions.DDD.Types;
 
 public abstract class AggregateRoot : IAuditable
 {
-    public int Version { get; private set; }
-    public DateTime CreatedAt { get; set; }
-    public Guid CreatedBy { get; set; }
-    public DateTime? ModifiedAt { get; set; }
-    public Guid? ModifiedBy { get; set; }
-    public IEnumerable<IDomainEvent> Events => _events;
-    
     private List<IDomainEvent> _events = new();
     private bool _versionIncremented;
     
+    public int Version { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public Guid CreatedBy { get; private set; }
+    public DateTime? ModifiedAt { get; private set; }
+    public Guid? ModifiedBy { get; private set; }
+    public IEnumerable<IDomainEvent> Events => _events;
+
     protected void AddEvent(IDomainEvent @event)
     {
         if (!_events.Any())
@@ -35,6 +35,18 @@ public abstract class AggregateRoot : IAuditable
 
         Version++;
         _versionIncremented = true;
+    }
+
+    protected void SetModification(DateTime modifiedAt, Guid modifiedBy)
+    {
+        ModifiedAt = modifiedAt;
+        ModifiedBy = modifiedBy;
+    }
+    
+    protected void SetCreation(DateTime createdAt, Guid createdBy)
+    {
+        CreatedAt = createdAt;
+        CreatedBy = createdBy;
     }
 }
 

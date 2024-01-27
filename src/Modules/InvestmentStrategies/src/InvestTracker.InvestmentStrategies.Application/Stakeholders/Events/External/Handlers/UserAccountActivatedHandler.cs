@@ -4,18 +4,18 @@ using InvestTracker.Shared.Abstractions.Time;
 
 namespace InvestTracker.InvestmentStrategies.Application.Stakeholders.Events.External.Handlers;
 
-internal sealed class UserRoleGrantedHandler : IEventHandler<UserRoleGranted>
+internal sealed class UserAccountActivatedHandler : IEventHandler<UserAccountActivated>
 {
     private readonly IStakeholderRepository _stakeholderRepository;
     private readonly ITimeProvider _timeProvider;
 
-    public UserRoleGrantedHandler(IStakeholderRepository stakeholderRepository, ITimeProvider timeProvider)
+    public UserAccountActivatedHandler(IStakeholderRepository stakeholderRepository, ITimeProvider timeProvider)
     {
         _stakeholderRepository = stakeholderRepository;
         _timeProvider = timeProvider;
     }
-
-    public async Task HandleAsync(UserRoleGranted @event)
+    
+    public async Task HandleAsync(UserAccountActivated @event)
     {
         var stakeholder = await _stakeholderRepository.GetAsync(@event.Id);
         if (stakeholder is null)
@@ -23,7 +23,7 @@ internal sealed class UserRoleGrantedHandler : IEventHandler<UserRoleGranted>
             return;
         }
 
-        stakeholder.SetRole(@event.Role, _timeProvider.Current(), @event.ModifiedBy);
+        stakeholder.Unlock(_timeProvider.Current(), @event.ModifiedBy);
         await _stakeholderRepository.UpdateAsync(stakeholder);
     }
 }

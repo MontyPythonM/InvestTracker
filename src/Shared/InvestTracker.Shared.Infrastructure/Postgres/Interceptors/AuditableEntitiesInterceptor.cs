@@ -33,16 +33,23 @@ internal sealed class AuditableEntitiesInterceptor : SaveChangesInterceptor
         {
             if (entityEntry.State == EntityState.Added)
             {
-                entityEntry.Property(nameof(IAuditable.CreatedAt)).CurrentValue = now;
-                entityEntry.Property(nameof(IAuditable.CreatedBy)).CurrentValue = author;
+                var createdAtProperty = entityEntry.Property(nameof(IAuditable.CreatedAt));
+                var createdByProperty = entityEntry.Property(nameof(IAuditable.CreatedBy));
+                
+                createdByProperty.CurrentValue = author == Guid.Empty ? createdByProperty.CurrentValue : author;
+                createdAtProperty.CurrentValue = now;
             }
 
             if (entityEntry.State == EntityState.Modified)
             {
-                entityEntry.Property(nameof(IAuditable.ModifiedAt)).CurrentValue = now;
-                entityEntry.Property(nameof(IAuditable.ModifiedBy)).CurrentValue = author;
+                var modifiedAtProperty = entityEntry.Property(nameof(IAuditable.ModifiedAt));
+                var modifiedByProperty = entityEntry.Property(nameof(IAuditable.ModifiedBy));
+
+                modifiedByProperty.CurrentValue = author == Guid.Empty ? modifiedByProperty.CurrentValue : author;
+                modifiedAtProperty.CurrentValue = now;
             }
-        }   
+        }
+        
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 }

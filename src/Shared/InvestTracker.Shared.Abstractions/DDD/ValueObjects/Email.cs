@@ -6,7 +6,7 @@ namespace InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 public record Email
 {
     public string Value { get; }
-    
+
     public Email(string value)
     {
         if (!IsValidEmail(value))
@@ -21,5 +21,5 @@ public record Email
     public static implicit operator Email(string email) => new(email);
     
     private static bool IsValidEmail(string value) => 
-        !string.IsNullOrWhiteSpace(value) || value.Length < 100 || new EmailAddressAttribute().IsValid(value);
+        !string.IsNullOrWhiteSpace(value) && value.Length < 100 && new EmailAddressAttribute().IsValid(value);
 }

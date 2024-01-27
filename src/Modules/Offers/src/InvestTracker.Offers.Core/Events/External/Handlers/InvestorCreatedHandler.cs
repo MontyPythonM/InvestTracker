@@ -1,5 +1,4 @@
 ﻿using InvestTracker.Offers.Core.Entities;
-using InvestTracker.Offers.Core.Exceptions;
 using InvestTracker.Offers.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.IntegrationEvents;
 
@@ -18,15 +17,10 @@ internal sealed class InvestorCreatedHandler : IEventHandler<InvestorCreated>
     {
         if (await _investorRepository.ExistsAsync(@event.Id, CancellationToken.None))
         {
-            throw new InvestorAlreadyExistsException(@event.Id);
+            return;
         }
         
-        var investor = new Investor
-        {
-            Id = @event.Id,
-            Email = @event.Email,
-            FullName = @event.FullName,
-        };
+        var investor = new Investor(@event.Id, @event.FullName, @event.Email);
 
         await _investorRepository.CreateAsync(investor, CancellationToken.None);
     }
