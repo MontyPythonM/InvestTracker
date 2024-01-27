@@ -55,3 +55,4 @@ Then, you can start the application under src/Bootstrapper/Confab.Bootstrapper/ 
 cd .\src\Bootstrapper\InvestTracker.Bootstrapper
 dotnet run
 ```
+Once the application is up and running, the API documentation is available at ```http://localhost:5200/swagger/index.html```.
