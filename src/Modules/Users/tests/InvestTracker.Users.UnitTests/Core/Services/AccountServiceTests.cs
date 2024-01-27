@@ -1,5 +1,6 @@
 ﻿using InvestTracker.Shared.Abstractions.Authentication;
 using InvestTracker.Shared.Abstractions.Authorization;
+using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using InvestTracker.Shared.Abstractions.Messages;
 using InvestTracker.Shared.Abstractions.Time;
@@ -181,6 +182,7 @@ public class AccountServiceTests
     private readonly ITimeProvider _timeProvider;
     private readonly IMessageBroker _messageBroker;
     private readonly IAccountService _accountService;
+    private readonly IRequestContext _requestContext;
     
     public AccountServiceTests()
     {
@@ -189,13 +191,15 @@ public class AccountServiceTests
         _passwordManager = Substitute.For<IPasswordManager>();
         _timeProvider = Substitute.For<ITimeProvider>();
         _messageBroker = Substitute.For<IMessageBroker>();
+        _requestContext = Substitute.For<IRequestContext>();
         
         _accountService = new AccountService(
             _userRepository,
             _authenticator,
             _passwordManager,
             _timeProvider,
-            _messageBroker);
+            _messageBroker,
+            _requestContext);
     }
     
     private static User GetUser() => new()
