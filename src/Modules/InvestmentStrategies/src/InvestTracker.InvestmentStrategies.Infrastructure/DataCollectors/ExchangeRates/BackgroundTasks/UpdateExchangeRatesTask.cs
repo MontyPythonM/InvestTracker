@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.BackgroundTask;
+namespace InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.BackgroundTasks;
 
 internal sealed class UpdateExchangeRatesTask : BackgroundService
 {

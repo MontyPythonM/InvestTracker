@@ -25,7 +25,7 @@ internal sealed class PermissionInjectorMiddleware : IMiddleware
             return;
         }
 
-        if (!IsPermissionInjectorApplies(endpoint))
+        if (IsPermissionInjectorApplies(endpoint) is false)
         {
             await next.Invoke(context);
         }

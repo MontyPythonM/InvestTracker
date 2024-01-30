@@ -15,7 +15,6 @@ using InvestTracker.Shared.Infrastructure.Modules;
 using InvestTracker.Shared.Infrastructure.Queries;
 using InvestTracker.Shared.Infrastructure.Swagger;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TimeProvider = InvestTracker.Shared.Infrastructure.Time.TimeProvider;
@@ -41,7 +40,7 @@ public static class Extensions
             .AddAppAuthentication()
             .AddPermissionAuthorization()
             .AddCorsPolicy();
-            
+        
         services
             .AddControllers()
             .ConfigureApplicationPartManager(manager =>
@@ -56,6 +55,7 @@ public static class Extensions
     {
         app.UseExceptionHandling();
         app.UseOpenApiDocumentation(modules);
+        app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseRouting();
         app.UsePermissionsInjector();

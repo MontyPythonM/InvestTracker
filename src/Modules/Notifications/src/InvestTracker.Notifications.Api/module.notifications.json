@@ -1,2 +1,9 @@
 {
+  "Notifications": {
+    "NotificationService": {
+      "Enabled": true,
+      "MethodName": "Notify",
+      "EnableDetailedErrorsSignalR": true
+    }
+  }
 }

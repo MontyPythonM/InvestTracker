@@ -2,5 +2,6 @@
 
 public enum NotificationsPermission
 {
-
+    SendNotification,
+    GetRecipientsGroups
 }

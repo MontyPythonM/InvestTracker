@@ -36,9 +36,9 @@ internal sealed class InvestorCreatedHandler : IEventHandler<InvestorCreated>
             NotificationSetup = new PersonalNotificationSetup
             {
                 Id = Guid.NewGuid(),
-                Push = true,
-                Email = true,
-                Administrative = true,
+                EnableNotification = true,
+                EnableEmail = true,
+                EnableAdministrative = true,
                 CreatedAt = _timeProvider.Current(),
                 ModifiedAt = null
             }

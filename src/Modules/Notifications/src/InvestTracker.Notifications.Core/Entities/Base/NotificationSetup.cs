@@ -3,7 +3,7 @@
 public abstract class NotificationSetup
 {
     public Guid Id { get; set; }
-    public bool Push { get; set; }
-    public bool Email { get; set; }
-    public bool Administrative { get; set; }
+    public bool EnableNotification { get; set; }
+    public bool EnableEmail { get; set; }
+    public bool EnableAdministrative { get; set; }
 }
