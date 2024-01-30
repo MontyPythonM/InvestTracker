@@ -10,5 +10,7 @@ public static class SystemRole
     {
         None, SystemAdministrator, BusinessAdministrator
     };
+    
+    public static bool IsAdministrator(string? role) => role is SystemAdministrator or BusinessAdministrator;
 }
 

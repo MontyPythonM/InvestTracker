@@ -86,7 +86,7 @@ internal sealed class AccountService : IAccountService
             throw new InvalidCredentialsException();
         }
 
-        var accessToken = _authenticator.CreateToken(user.Id.ToString(), user.Role.Value, user.Subscription?.Value);
+        var accessToken = _authenticator.CreateToken(user.Id.ToString(), user.Role.Value, user.Subscription.Value);
         accessToken.Email = user.Email;
         
         return accessToken;

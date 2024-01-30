@@ -1,5 +1,6 @@
 ﻿using InvestTracker.Offers.Core.Exceptions;
 using InvestTracker.Offers.Core.Interfaces;
+using InvestTracker.Shared.Abstractions.Authorization;
 using InvestTracker.Shared.Abstractions.Commands;
 using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.Time;
@@ -27,9 +28,10 @@ internal sealed class UpdateOfferHandler : ICommandHandler<UpdateOffer>
             throw new OfferNotFoundException(command.Id);
         }
 
-        if (offer.AdvisorId != _requestContext.Identity.UserId)
+        var currentUser = _requestContext.Identity;
+        if (!offer.IsOwner(currentUser.UserId) && !SystemRole.IsAdministrator(currentUser.Role))
         {
-            throw new IncorrectOfferOwnerException(command.Id);
+            throw new OfferAccessException(offer.Id);
         }
 
         offer.Update(command.Title, command.Description, command.Price, _timeProvider.Current(), command.Tags);

@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using InvestTracker.Shared.Abstractions.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace InvestTracker.Calculators.Api.Controllers;
 
 [ApiController]
 [ApiExplorerSettings(GroupName = CalculatorsModule.BasePath)]
 [Route(CalculatorsModule.BasePath + "/[controller]")]
-internal class ApiControllerBase : ControllerBase
+internal class ApiControllerBase : ControllerBase, IPermissionInjectable
 {
     protected ActionResult<T> OkOrNotFound<T>(T model)
     {

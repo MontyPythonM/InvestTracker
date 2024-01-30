@@ -60,11 +60,7 @@ public static class Extensions
         app.UseRouting();
         app.UsePermissionsInjector();
         app.UseAuthorization();
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-            endpoints.MapGet("/", context => context.Response.WriteAsync("InvestTracker API"));
-        });
+        app.MapControllers();
         app.UseCorsPolicy();
 
         return app;
