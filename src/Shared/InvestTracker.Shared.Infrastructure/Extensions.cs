@@ -14,11 +14,10 @@ using InvestTracker.Shared.Infrastructure.Messages;
 using InvestTracker.Shared.Infrastructure.Modules;
 using InvestTracker.Shared.Infrastructure.Queries;
 using InvestTracker.Shared.Infrastructure.Swagger;
-using InvestTracker.Shared.Infrastructure.Time;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TimeProvider = InvestTracker.Shared.Infrastructure.Time.TimeProvider;
 
 [assembly: InternalsVisibleTo("InvestTracker.Bootstrapper")]
 namespace InvestTracker.Shared.Infrastructure;
@@ -41,7 +40,7 @@ public static class Extensions
             .AddAppAuthentication()
             .AddPermissionAuthorization()
             .AddCorsPolicy();
-            
+        
         services
             .AddControllers()
             .ConfigureApplicationPartManager(manager =>
@@ -52,19 +51,16 @@ public static class Extensions
         return services;
     }
 
-    internal static IApplicationBuilder UseSharedInfrastructure(this IApplicationBuilder app, IList<IModule> modules)
+    internal static WebApplication UseSharedInfrastructure(this WebApplication app, IList<IModule> modules)
     {
         app.UseExceptionHandling();
         app.UseOpenApiDocumentation(modules);
+        app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseRouting();
         app.UsePermissionsInjector();
         app.UseAuthorization();
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-            endpoints.MapGet("/", context => context.Response.WriteAsync("InvestTracker API"));
-        });
+        app.MapControllers();
         app.UseCorsPolicy();
 
         return app;

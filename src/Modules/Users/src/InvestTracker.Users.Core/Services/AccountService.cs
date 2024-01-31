@@ -60,7 +60,7 @@ internal sealed class AccountService : IAccountService
         };
 
         await _userRepository.CreateAsync(user, token);
-        await _messageBroker.PublishAsync(new InvestorCreated(user.Id, user.FullName, user.Email));
+        await _messageBroker.PublishAsync(new AccountCreated(user.Id, user.FullName, user.Email, user.Role.Value, user.Subscription.Value, user.Phone));
     }
 
     public async Task<JsonWebToken> SignInAsync(SignInDto dto, CancellationToken token)
@@ -86,7 +86,7 @@ internal sealed class AccountService : IAccountService
             throw new InvalidCredentialsException();
         }
 
-        var accessToken = _authenticator.CreateToken(user.Id.ToString(), user.Role.Value, user.Subscription?.Value);
+        var accessToken = _authenticator.CreateToken(user.Id.ToString(), user.Role.Value, user.Subscription.Value);
         accessToken.Email = user.Email;
         
         return accessToken;
@@ -113,6 +113,6 @@ internal sealed class AccountService : IAccountService
         }
         
         await _userRepository.DeleteAsync(user, token);
-        await _messageBroker.PublishAsync(new UserAccountDeleted(currentUser));
+        await _messageBroker.PublishAsync(new AccountDeleted(currentUser));
     }
 }

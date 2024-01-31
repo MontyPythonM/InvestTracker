@@ -18,7 +18,7 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("investment-strategies")
-                .HasAnnotation("ProductVersion", "7.0.8")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -61,6 +61,9 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("IsLocked")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsShareEnabled")
                         .HasColumnType("boolean");
@@ -179,7 +182,8 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Migratio
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(21)
+                        .HasColumnType("character varying(21)");
 
                     b.HasKey("Id");
 

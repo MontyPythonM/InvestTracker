@@ -1,6 +1,6 @@
-﻿using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.BackgroundTask;
+﻿using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.BackgroundTasks;
 using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.Clients;
-using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.InflationRates.BackgroundTask;
+using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.InflationRates.BackgroundTasks;
 using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.InflationRates.Clients;
 using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.InflationRates.Seeders;
 using InvestTracker.InvestmentStrategies.Infrastructure.Options;

@@ -3,6 +3,7 @@ using InvestTracker.Shared.Abstractions.Authorization;
 using InvestTracker.Shared.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InvestTracker.Shared.Infrastructure.Authorization;
@@ -18,7 +19,18 @@ internal sealed class PermissionInjectorMiddleware : IMiddleware
     
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        var actionDescriptor = context.GetEndpoint()?.Metadata.GetMetadata<ControllerActionDescriptor>();
+        var endpoint = context.GetEndpoint();
+        if (endpoint is null)
+        {
+            return;
+        }
+
+        if (IsPermissionInjectorApplies(endpoint) is false)
+        {
+            await next.Invoke(context);
+        }
+
+        var actionDescriptor = endpoint.Metadata.GetMetadata<ControllerActionDescriptor>();
         if (actionDescriptor is null)
         {
             return;
@@ -44,5 +56,18 @@ internal sealed class PermissionInjectorMiddleware : IMiddleware
         
         context.Items.Add(CustomClaim.Permissions, currentUserPermissions);
         await next.Invoke(context);
+    }
+
+    private static bool IsPermissionInjectorApplies(Endpoint endpoint)
+    {
+        if (endpoint is not RouteEndpoint routeEndpoint) return false;
+        
+        var controllerType = routeEndpoint.Metadata
+            .OfType<ControllerActionDescriptor>()
+            .FirstOrDefault()?
+            .ControllerTypeInfo
+            .AsType();
+
+        return controllerType?.GetInterfaces().Any(i => i == typeof(IPermissionInjectable)) ?? false;
     }
 }
