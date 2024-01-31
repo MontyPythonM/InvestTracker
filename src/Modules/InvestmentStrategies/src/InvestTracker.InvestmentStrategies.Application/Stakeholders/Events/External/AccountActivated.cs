@@ -2,4 +2,4 @@
 
 namespace InvestTracker.InvestmentStrategies.Application.Stakeholders.Events.External;
 
-public record UserAccountDeactivated(Guid Id, Guid ModifiedBy) : IEvent;
+public record AccountActivated(Guid Id, Guid ModifiedBy) : IEvent;

@@ -179,7 +179,7 @@ internal sealed class UserService : IUserService
         await _messageBroker.PublishAsync(new UserSubscriptionChanged(user.Id, user.FullName, user.Email, user.Subscription.Value, modifiedBy));
     }
 
-    public async Task SetUserAccountActivationAsync(Guid userId, bool isActive, CancellationToken token)
+    public async Task SetAccountActivationAsync(Guid userId, bool isActive, CancellationToken token)
     {
         var user = await _userRepository.GetAsync(userId, token);
         if (user is null)
@@ -192,11 +192,11 @@ internal sealed class UserService : IUserService
         
         if (isActive)
         {
-            await _messageBroker.PublishAsync(new UserAccountActivated(user.Id, _requestContext.Identity.UserId));
+            await _messageBroker.PublishAsync(new AccountActivated(user.Id, _requestContext.Identity.UserId));
         }
         else
         {
-            await _messageBroker.PublishAsync(new UserAccountDeactivated(user.Id, _requestContext.Identity.UserId));
+            await _messageBroker.PublishAsync(new AccountDeactivated(user.Id, _requestContext.Identity.UserId));
         }
     }
 }

@@ -2,4 +2,4 @@
 
 namespace InvestTracker.Notifications.Core.Events.External;
 
-public record UserAccountActivated(Guid Id, Guid ModifiedBy) : IEvent;
+public record AccountDeleted(Guid Id) : IEvent;

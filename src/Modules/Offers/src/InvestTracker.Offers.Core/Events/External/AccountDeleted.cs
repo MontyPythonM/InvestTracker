@@ -2,4 +2,4 @@
 
 namespace InvestTracker.Offers.Core.Events.External;
 
-public record InvestorCreated(Guid Id, string FullName, string Email, string PhoneNumber) : IEvent;
+public record AccountDeleted(Guid Id) : IEvent;

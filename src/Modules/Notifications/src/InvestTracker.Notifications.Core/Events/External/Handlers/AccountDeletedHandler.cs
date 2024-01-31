@@ -2,9 +2,9 @@
 
 namespace InvestTracker.Notifications.Core.Events.External.Handlers;
 
-internal sealed class UserAccountActivatedHandler : IEventHandler<UserAccountActivated>
+internal sealed class AccountDeletedHandler : IEventHandler<AccountDeleted>
 {
-    public async Task HandleAsync(UserAccountActivated @event)
+    public async Task HandleAsync(AccountDeleted @event)
     {
         throw new NotImplementedException();
     }

@@ -169,7 +169,7 @@ public class AccountServiceTests
         await _accountService.SignUpAsync(dto, CancellationToken.None);
 
         // assert
-        await _messageBroker.Received(1).PublishAsync(Arg.Is<InvestorCreated>(e =>
+        await _messageBroker.Received(1).PublishAsync(Arg.Is<AccountCreated>(e =>
             e.FullName == dto.FullName && 
             e.Email == dto.Email));
     }

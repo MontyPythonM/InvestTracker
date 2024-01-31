@@ -5,13 +5,13 @@ using InvestTracker.Shared.Abstractions.Time;
 
 namespace InvestTracker.InvestmentStrategies.Application.Stakeholders.Events.External.Handlers;
 
-internal sealed class UserAccountDeletedHandler : IEventHandler<UserAccountDeleted>
+internal sealed class AccountDeletedHandler : IEventHandler<AccountDeleted>
 {
     private readonly IStakeholderRepository _stakeholderRepository;
     private readonly ITimeProvider _timeProvider;
     private readonly IInvestmentStrategyRepository _strategyRepository;
     
-    public UserAccountDeletedHandler(IStakeholderRepository stakeholderRepository, ITimeProvider timeProvider, 
+    public AccountDeletedHandler(IStakeholderRepository stakeholderRepository, ITimeProvider timeProvider, 
         IInvestmentStrategyRepository strategyRepository)
     {
         _stakeholderRepository = stakeholderRepository;
@@ -19,7 +19,7 @@ internal sealed class UserAccountDeletedHandler : IEventHandler<UserAccountDelet
         _strategyRepository = strategyRepository;
     }
 
-    public async Task HandleAsync(UserAccountDeleted @event)
+    public async Task HandleAsync(AccountDeleted @event)
     {
         var stakeholder = await _stakeholderRepository.GetAsync(@event.Id);
         if (stakeholder is null)
