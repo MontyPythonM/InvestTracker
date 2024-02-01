@@ -19,15 +19,15 @@ internal static class Extensions
             .GetOptions<NotificationServiceOptions>("Notifications:NotificationService");
         
         services
-            .AddSingleton<INotificationPublisher, NotificationService>()
-            .AddHostedService(sp => (NotificationService)sp.GetService<INotificationPublisher>()!)
-            .AddSingleton(notificationServiceOptions)
-            .AddSignalR(s => s.EnableDetailedErrors = notificationServiceOptions.EnableDetailedErrorsSignalR);
-
-        services
             .AddPostgres<NotificationsDbContext>()
             .AddScoped<IReceiverRepository, ReceiverRepository>()
-            .AddScoped<IGlobalNotificationSetupRepository, GlobalNotificationSetupRepository>();
+            .AddScoped<IReceiverSynchronizer, ReceiverSynchronizer>()
+            .AddScoped<INotificationPublisher, NotificationPublisher>()
+            .AddScoped<IGlobalNotificationSetupRepository, GlobalNotificationSetupRepository>()
+            .AddSingleton<INotificationSender, NotificationSender>()
+            .AddHostedService(sp => (NotificationSender)sp.GetService<INotificationSender>()!)
+            .AddSingleton(notificationServiceOptions)
+            .AddSignalR(s => s.EnableDetailedErrors = notificationServiceOptions.EnableDetailedErrorsSignalR);
 
         return services;
     }

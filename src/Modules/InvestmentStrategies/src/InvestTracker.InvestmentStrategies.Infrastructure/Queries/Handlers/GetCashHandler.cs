@@ -2,7 +2,7 @@
 using InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
 using InvestTracker.InvestmentStrategies.Domain.Common;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions;
-using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
+using InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using InvestTracker.Shared.Abstractions.Queries;
 using Microsoft.EntityFrameworkCore;

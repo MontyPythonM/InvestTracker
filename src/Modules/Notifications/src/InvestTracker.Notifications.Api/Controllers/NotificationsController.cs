@@ -13,16 +13,18 @@ namespace InvestTracker.Notifications.Api.Controllers;
 internal class NotificationsController : ApiControllerBase
 {
     private readonly INotificationPublisher _notificationPublisher;
+    private readonly INotificationSender _notificationSender;
 
-    public NotificationsController(INotificationPublisher notificationPublisher)
+    public NotificationsController(INotificationPublisher notificationPublisher, INotificationSender notificationSender)
     {
         _notificationPublisher = notificationPublisher;
+        _notificationSender = notificationSender;
     }
 
     [HttpGet("recipient-groups")]
     [HasPermission(NotificationsPermission.GetRecipientsGroups)]
-    [SwaggerOperation("")]
-    public async Task<ActionResult<IEnumerable<ReceiverGroupsDto>>> GetRecipientsGroups()
+    [SwaggerOperation("Returns recipients groups used by notifications module")]
+    public ActionResult<IEnumerable<ReceiverGroupsDto>> GetRecipientsGroups()
     {
         var results = new List<ReceiverGroupsDto>();
         foreach (var group in Enum.GetValues(typeof(RecipientGroup)))
@@ -39,10 +41,28 @@ internal class NotificationsController : ApiControllerBase
     
     [HttpPost("send-notification")]
     [HasPermission(NotificationsPermission.SendNotification)]
-    [SwaggerOperation("Send notifications to a selected recipients who are currently connected")]
-    public async Task<ActionResult> SendNotification(SendMessageDto dto)
+    [SwaggerOperation("Send notifications to a selected recipients who are currently connected and have enabled settings")]
+    public async Task<ActionResult> SendNotification(SendMessageDto dto, CancellationToken token)
     {
-        await _notificationPublisher.PublishAsync(new Notification(dto.Message, dto.RecipientIds.ToHashSet()));
+        await _notificationPublisher.PublishAsync(dto.Message, dto.RecipientIds, token);
+        return Ok();
+    }
+    
+    [HttpPost("send-notification-to-group")]
+    [HasPermission(NotificationsPermission.SendNotificationToGroup)]
+    [SwaggerOperation("Send notifications to a selected group of recipients who are currently connected and have enabled settings")]
+    public async Task<ActionResult> SendNotificationToGroup(SendMessageToGroupDto dto, CancellationToken token)
+    {
+        await _notificationPublisher.PublishAsync(dto.Message, dto.RecipientGroup, token);
+        return Ok();
+    }
+    
+    [HttpPost("send-force-notification")]
+    [HasPermission(NotificationsPermission.SendForceNotification)]
+    [SwaggerOperation("Send notifications to a selected recipients who are currently connected (ignores their settings)")]
+    public async Task<ActionResult> SendForceNotification(SendMessageDto dto, CancellationToken token)
+    {
+        await _notificationSender.SendAsync(new Notification(dto.Message, dto.RecipientIds.ToHashSet()), token);
         return Ok();
     }
 }

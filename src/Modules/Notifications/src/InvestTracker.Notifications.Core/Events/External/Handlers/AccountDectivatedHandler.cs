@@ -4,18 +4,18 @@ using InvestTracker.Shared.Abstractions.IntegrationEvents;
 
 namespace InvestTracker.Notifications.Core.Events.External.Handlers;
 
-internal sealed class AccountActivatedHandler : IEventHandler<AccountActivated>
+internal sealed class AccountDeactivatedHandler : IEventHandler<AccountDeactivated>
 {
     private readonly IReceiverRepository _receiverRepository;
     private readonly INotificationPublisher _notificationPublisher;
 
-    public AccountActivatedHandler(IReceiverRepository receiverRepository, INotificationPublisher notificationPublisher)
+    public AccountDeactivatedHandler(IReceiverRepository receiverRepository, INotificationPublisher notificationPublisher)
     {
         _receiverRepository = receiverRepository;
         _notificationPublisher = notificationPublisher;
     }
-
-    public async Task HandleAsync(AccountActivated @event)
+    
+    public async Task HandleAsync(AccountDeactivated @event)
     {
         var user = await _receiverRepository.GetAsync(@event.Id, true);
         var modifiedBy = await _receiverRepository.GetAsync(@event.ModifiedBy, true);
@@ -23,7 +23,7 @@ internal sealed class AccountActivatedHandler : IEventHandler<AccountActivated>
         var userName = user?.FullName ?? "-";
         var modifiedByName = modifiedBy?.FullName ?? "-";
         
-        var message = $"User {userName} [ID: {@event.Id}] account was activated by {modifiedByName} [ID: {@event.ModifiedBy}]";
+        var message = $"User {userName} [ID: {@event.Id}] account was deactivated by {modifiedByName} [ID: {@event.ModifiedBy}]";
         
         await _notificationPublisher.PublishAsync(message, RecipientGroup.SystemAdministrators);
     }

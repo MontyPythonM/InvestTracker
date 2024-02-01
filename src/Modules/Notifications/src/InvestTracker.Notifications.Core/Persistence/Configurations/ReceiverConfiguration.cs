@@ -9,6 +9,9 @@ internal class ReceiverConfiguration : IEntityTypeConfiguration<Receiver>
 {
     public void Configure(EntityTypeBuilder<Receiver> builder)
     {
+        builder.Property(n => n.FullName)
+            .HasConversion(n => n.Value, u => new FullName(u));
+        
         builder.Property(n => n.Email)
             .HasMaxLength(100)
             .IsRequired()
@@ -23,6 +26,6 @@ internal class ReceiverConfiguration : IEntityTypeConfiguration<Receiver>
         builder.Property(n => n.Role)
             .HasConversion(n => n.Value, n => new Role(n));
 
-        builder.HasOne(n => n.NotificationSetup).WithOne();
+        builder.OwnsOne(n => n.NotificationSetup);
     }
 }

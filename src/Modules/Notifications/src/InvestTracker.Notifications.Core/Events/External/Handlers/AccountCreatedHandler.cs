@@ -28,6 +28,7 @@ internal sealed class AccountCreatedHandler : IEventHandler<AccountCreated>
         var receiver = new Receiver
         {
             Id = @event.Id,
+            FullName = @event.FullName,
             Email = @event.Email,
             PhoneNumber = @event.PhoneNumber,
             Role = @event.Role,
@@ -35,11 +36,7 @@ internal sealed class AccountCreatedHandler : IEventHandler<AccountCreated>
             NotificationSetup = new PersonalNotificationSetup
             {
                 Id = Guid.NewGuid(),
-                EnableNotification = true,
-                EnableEmail = true,
-                EnableAdministrative = true,
                 CreatedAt = _timeProvider.Current(),
-                ModifiedAt = null
             }
         };
 

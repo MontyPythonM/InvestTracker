@@ -3,5 +3,8 @@
 public enum NotificationsPermission
 {
     SendNotification,
-    GetRecipientsGroups
+    GetRecipientsGroups,
+    SendNotificationToGroup,
+    SendForceNotification,
+    SynchronizeReceivers
 }

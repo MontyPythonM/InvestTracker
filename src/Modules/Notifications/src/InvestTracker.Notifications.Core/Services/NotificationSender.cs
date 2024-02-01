@@ -10,14 +10,14 @@ using Microsoft.Extensions.Logging;
 
 namespace InvestTracker.Notifications.Core.Services;
 
-public class NotificationService : BackgroundService, INotificationPublisher
+internal sealed class NotificationSender : BackgroundService, INotificationSender
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<NotificationService> _logger;
+    private readonly ILogger<NotificationSender> _logger;
     private readonly NotificationServiceOptions _options;
     private readonly Channel<Notification> _channel;
 
-    public NotificationService(IServiceProvider serviceProvider, ILogger<NotificationService> logger, NotificationServiceOptions options)
+    public NotificationSender(IServiceProvider serviceProvider, ILogger<NotificationSender> logger, NotificationServiceOptions options)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -25,22 +25,19 @@ public class NotificationService : BackgroundService, INotificationPublisher
         _channel = Channel.CreateUnbounded<Notification>();
     }
 
-    public ValueTask PublishAsync(Notification notification) => _channel.Writer.WriteAsync(notification);
+    public ValueTask SendAsync(Notification notification, CancellationToken token = default) 
+        => _channel.Writer.WriteAsync(notification, token);
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (_options.Enabled is false) return;
-        
-        do
+        await foreach (var notification in _channel.Reader.ReadAllAsync(stoppingToken))
         {
+            if (_options.Enabled is false) return;
+            
             try
             {
-                var notification = await _channel.Reader.ReadAsync(stoppingToken);
-                
                 using var scope = _serviceProvider.CreateScope();
                 var hub = scope.ServiceProvider.GetRequiredService<IHubContext<NotificationHub>>();
-                
-                var payload = new { Message = notification.Message };
                 var recipients = notification.Recipients.Select(r => r.ToString()).ToList();
                 
                 _logger.LogInformation($"Sending channel notification '{notification.Message}' to {string.Join(", ", recipients)}. Method: '{_options.MethodName}'.");
@@ -49,8 +46,8 @@ public class NotificationService : BackgroundService, INotificationPublisher
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in notification service.");
+                _logger.LogError(ex, ex.Message);
             }
-        } while (!stoppingToken.IsCancellationRequested);
+        }
     }
 }

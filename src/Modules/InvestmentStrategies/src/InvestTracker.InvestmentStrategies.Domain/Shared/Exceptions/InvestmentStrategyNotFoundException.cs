@@ -2,7 +2,7 @@
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.Shared.Abstractions.Exceptions;
 
-namespace InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
+namespace InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;
 
 public sealed class InvestmentStrategyNotFoundException : InvestTrackerException
 {

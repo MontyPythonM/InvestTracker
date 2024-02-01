@@ -1,13 +1,13 @@
 ﻿namespace InvestTracker.Notifications.Core.Dto;
 
-public class Notification
+public sealed class Notification
 {
-    public string Message { get; init; }
-    public ISet<Guid> Recipients { get; init; }
+    public string Message { get; }
+    public ISet<Guid> Recipients { get; }
 
-    public Notification(string message, ISet<Guid> recipients)
+    public Notification(string message, IEnumerable<Guid> recipients)
     {
         Message = message;
-        Recipients = recipients;
+        Recipients = recipients.ToHashSet();
     }
 }

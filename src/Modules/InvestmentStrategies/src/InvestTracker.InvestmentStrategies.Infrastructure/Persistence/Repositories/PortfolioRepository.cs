@@ -3,6 +3,7 @@ using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
+using InvestTracker.Shared.Infrastructure.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Repositories;
@@ -19,7 +20,7 @@ internal sealed class PortfolioRepository : IPortfolioRepository
     public async Task<Portfolio?> GetAsync(PortfolioId id, CancellationToken token = default)
     {
         return await _context.Portfolios
-            .ApplyIncludes()
+            .ApplyPortfolioIncludes()
             .SingleOrDefaultAsync(portfolio => portfolio!.Id == id, token);
     }
     
@@ -27,7 +28,7 @@ internal sealed class PortfolioRepository : IPortfolioRepository
     {
         return await _context.Portfolios
             .ApplyAsNoTracking(asNoTracking)
-            .ApplyIncludes()
+            .ApplyPortfolioIncludes()
             .SingleOrDefaultAsync(portfolio => portfolio!.Id == id, token);
     }
     
@@ -36,7 +37,7 @@ internal sealed class PortfolioRepository : IPortfolioRepository
     {
         return await _context.Portfolios
             .ApplyAsNoTracking(asNoTracking)
-            .ApplyIncludes()
+            .ApplyPortfolioIncludes()
             .Where(portfolio => portfolio.InvestmentStrategyId == investmentStrategyId)
             .ToListAsync(token);
     }

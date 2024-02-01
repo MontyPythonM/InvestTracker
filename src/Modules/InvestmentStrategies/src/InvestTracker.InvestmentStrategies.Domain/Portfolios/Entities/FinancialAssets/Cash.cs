@@ -3,7 +3,7 @@ using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.Transactions
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
+using InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;
 using InvestTracker.Shared.Abstractions.Auditable;
 using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 

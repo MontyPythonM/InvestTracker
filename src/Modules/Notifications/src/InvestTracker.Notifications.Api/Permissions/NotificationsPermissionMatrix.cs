@@ -11,5 +11,10 @@ internal sealed class NotificationsPermissionMatrix : IModulePermissionMatrix
     {
         new(SystemRole.SystemAdministrator, NotificationsPermission.SendNotification.ToString()),
         new(SystemRole.SystemAdministrator, NotificationsPermission.GetRecipientsGroups.ToString()),
+        new(SystemRole.SystemAdministrator, NotificationsPermission.SendNotificationToGroup.ToString()),
+        new(SystemRole.SystemAdministrator, NotificationsPermission.SendForceNotification.ToString()),
+        new(SystemRole.SystemAdministrator, NotificationsPermission.SynchronizeReceivers.ToString()),
+        
+        new(SystemRole.BusinessAdministrator, NotificationsPermission.SynchronizeReceivers.ToString()),
     };
 }

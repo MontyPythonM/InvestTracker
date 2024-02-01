@@ -12,9 +12,6 @@ public class GlobalNotificationSetup : NotificationSetup
         {
             Id = Guid.NewGuid(),
             EffectiveFrom = DateTime.MinValue,
-            EnableNotification = true,
-            EnableEmail = false,
-            EnableAdministrative = true
         };
     }
 }

@@ -5,7 +5,7 @@ using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
-using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
+using InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Repositories;
 using InvestTracker.Shared.Abstractions.Queries;
@@ -34,7 +34,7 @@ internal sealed class GetPortfolioHandler : IQueryHandler<GetPortfolio, Portfoli
     {
         var portfolio = await _context.Portfolios
             .AsNoTracking()
-            .ApplyIncludes()
+            .ApplyPortfolioIncludes()
             .SingleOrDefaultAsync(portfolio => portfolio.Id == query.PortfolioId, token);
 
         if (portfolio is null)

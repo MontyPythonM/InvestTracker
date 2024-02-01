@@ -1,7 +1,7 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Stakeholders.ValueObjects.Types;
 using InvestTracker.Shared.Abstractions.Exceptions;
 
-namespace InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
+namespace InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;
 
 public sealed class IncorrectInvestmentStrategyOwnerException : InvestTrackerException
 {
