@@ -1,7 +1,7 @@
 # InvestTracker
 ## About application
 
-**InvestTracker** is the financial assets monitor application built as **Modular Monolith**, written in .NET 7.0.
+**InvestTracker** is the financial assets monitor application built as **Modular Monolith**, written in .NET 8.0.
 The application allows you to enter selected financial assets and track changes in their value over time. 
 
 ## Modules
@@ -37,7 +37,10 @@ The module responsible for the registration and login and management of applicat
 A module containing calculators for estimating investment returns, such as government bond yields under certain assumptions.
 
 ### Notifications
-The module responsible for sending notifications to users.
+The module responsible for sending notifications to users. 
+The notifications use the **SignalR** library. 
+
+A test client has been created in the form of a console application.
 
 ### Shared features
 Shared project with cross-cutting classes and abstractions.
