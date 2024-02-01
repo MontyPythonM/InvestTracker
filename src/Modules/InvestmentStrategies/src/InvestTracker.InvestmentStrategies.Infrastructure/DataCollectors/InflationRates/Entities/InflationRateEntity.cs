@@ -7,13 +7,13 @@ namespace InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.Infla
 public sealed class InflationRateEntity
 {
     public Guid Id { get; private set; }
-    public Currency Currency { get; }
-    public DateOnly MonthlyDate { get; set; }
+    public Currency Currency { get; private set; }
+    public DateOnly MonthlyDate { get; private set; }
     public DateTime ImportedAt { get; private set; }
     public DateTime? ModifiedAt { get; private set; }
     public Guid? ModifiedBy { get; private set; }
     public decimal Value { get; private set; }
-    public string? Metadata { get; set; }
+    public string? Metadata { get; private set; }
     
     private InflationRateEntity()
     {

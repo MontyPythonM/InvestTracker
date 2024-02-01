@@ -4,7 +4,7 @@ using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Repositorie
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
-using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
+using InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;
 using InvestTracker.Shared.Abstractions.Context;
 
 namespace InvestTracker.InvestmentStrategies.Infrastructure.Authorization;

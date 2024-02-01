@@ -19,12 +19,8 @@ internal static class Extensions
             .AddScoped<IExchangeRateRepository, ExchangeRateRepository>()
             .AddScoped<IInflationRateRepository, InflationRateRepository>();
     
-    public static IQueryable<Portfolio> ApplyIncludes(this IQueryable<Portfolio> query)
+    public static IQueryable<Portfolio> ApplyPortfolioIncludes(this IQueryable<Portfolio> query)
     {
         return query.Include(p => p.FinancialAssets).ThenInclude(a => a.Transactions);
     }
-    
-    public static IQueryable<T> ApplyAsNoTracking<T>(this IQueryable<T> query, bool asNoTracking) 
-        where T : class 
-        => asNoTracking ? query.AsNoTracking() : query;
 }

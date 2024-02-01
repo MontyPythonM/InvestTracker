@@ -14,6 +14,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
     public Title Title { get; private set; }
     public Note Note { get; private set; }
     public bool IsShareEnabled { get; private set; }
+    public bool IsLocked { get; private set; }
     public StakeholderId Owner { get; private set; }
     public ICollection<RelatedCollaborators> Collaborators { get; set; } = new List<RelatedCollaborators>();
     public ICollection<RelatedPortfolios> Portfolios { get; set; } = new List<RelatedPortfolios>();
@@ -28,6 +29,7 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         Title = title;
         Note = note;
         IsShareEnabled = false;
+        IsLocked = false;
         Owner = owner;
     }
 
@@ -55,6 +57,11 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
 
     public void AssignCollaborator(StakeholderId advisorId, StakeholderId principalId)
     {
+        if (IsLocked)
+        {
+            throw new InvestmentStrategyLockedException(Id);
+        }
+        
         if (IsShareEnabled is false)
         {
             throw new InvestmentStrategySharedException(Id);
@@ -85,25 +92,46 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         IncrementVersion();
     }
 
-    public bool IsOwner(StakeholderId stakeholderId) => Owner == stakeholderId;
-
-    public bool IsCollaborator(StakeholderId stakeholderId)
-        => Collaborators.Select(c => c.CollaboratorId).Contains(stakeholderId.Value);
-    
     public bool IsStakeholderHaveAccess(StakeholderId stakeholderId)
-        => IsOwner(stakeholderId) || (IsCollaborator(stakeholderId) && IsShareEnabled);
+        => !IsLocked && (IsOwner(stakeholderId) || (IsCollaborator(stakeholderId) && IsShareEnabled));
+    
+    internal bool IsOwner(StakeholderId stakeholderId) => Owner == stakeholderId;
+
+    internal bool IsCollaborator(StakeholderId stakeholderId)
+        => Collaborators.Select(c => c.CollaboratorId).Contains(stakeholderId.Value);
     
     internal void AddPortfolio(PortfolioId portfolioId)
     {
+        if (IsLocked)
+        {
+            throw new InvestmentStrategyLockedException(Id);
+        }
+        
         Portfolios.Add(new RelatedPortfolios(portfolioId));
         IncrementVersion();
     }
     
     internal void RemovePortfolio(PortfolioId portfolioId)
     {
+        if (IsLocked)
+        {
+            throw new InvestmentStrategyLockedException(Id);
+        }
+        
         Portfolios.Remove(new RelatedPortfolios(portfolioId));
         IncrementVersion();
     }
 
-    public void Lock() => IsShareEnabled = false;
+    public void Lock()
+    {
+        IsLocked = true;
+        IsShareEnabled = false;
+        IncrementVersion();
+    }
+
+    public void Unlock()
+    {
+        IsLocked = false;
+        IncrementVersion();
+    }
 }

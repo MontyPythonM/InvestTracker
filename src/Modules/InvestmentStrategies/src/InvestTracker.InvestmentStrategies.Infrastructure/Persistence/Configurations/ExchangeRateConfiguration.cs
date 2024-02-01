@@ -1,6 +1,5 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 using InvestTracker.InvestmentStrategies.Infrastructure.DataCollectors.ExchangeRates.Entities;
-using InvestTracker.InvestmentStrategies.Infrastructure.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -28,8 +27,7 @@ internal class ExchangeRateConfiguration : IEntityTypeConfiguration<ExchangeRate
 
         builder.Property(exchangeRate => exchangeRate.Value)
             .IsRequired()
-            .HasPrecision(12, 4)
-            .HasConversion(e => e.Value, e => new ExchangeRateValue(e));
+            .HasPrecision(12, 4);
 
         builder.Property(exchangeRate => exchangeRate.Metadata)
             .HasMaxLength(1500);

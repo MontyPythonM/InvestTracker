@@ -39,6 +39,8 @@ public class Offer
         AddTags(tags);
     }
 
+    public bool IsOwner(Guid userId) => AdvisorId == userId;
+    
     private void AddTags(IEnumerable<string> tags)
     {
         Tags.Clear();

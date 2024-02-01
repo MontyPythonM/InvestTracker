@@ -1,6 +1,6 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.Consts;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Exceptions;
-using InvestTracker.InvestmentStrategies.Domain.SharedExceptions;
+using InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;
 
 namespace InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
 

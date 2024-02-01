@@ -69,18 +69,18 @@ internal class UsersController : ApiControllerBase
     [HttpPatch("{id:guid}/activate")]
     [HasPermission(UsersPermission.ActivateUserAccount)]
     [SwaggerOperation("Activate selected user account")]
-    public async Task<ActionResult> ActivateUserAccount(Guid id, CancellationToken token)
+    public async Task<ActionResult> ActivateAccount(Guid id, CancellationToken token)
     {
-        await _userService.SetUserAccountActivationAsync(id, true, token);
+        await _userService.SetAccountActivationAsync(id, true, token);
         return Ok();
     }
     
     [HttpPatch("{id:guid}/deactivate")]
     [HasPermission(UsersPermission.DeactivateUserAccount)]
     [SwaggerOperation("Deactivate selected user account")]
-    public async Task<ActionResult> DeactivateUserAccount(Guid id, CancellationToken token)
+    public async Task<ActionResult> DeactivateAccount(Guid id, CancellationToken token)
     {
-        await _userService.SetUserAccountActivationAsync(id, false, token);
+        await _userService.SetAccountActivationAsync(id, false, token);
         return Ok();
     }
 }

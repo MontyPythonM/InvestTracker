@@ -1,5 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
+using InvestTracker.Notifications.Api.Permissions;
 using InvestTracker.Notifications.Core;
+using InvestTracker.Notifications.Core.Hubs;
+using InvestTracker.Shared.Abstractions.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: InternalsVisibleTo("InvestTracker.Bootstrapper")]
@@ -9,8 +13,17 @@ internal static class Extensions
 {
     public static IServiceCollection AddNotificationsModule(this IServiceCollection services)
     {
-        services.AddCore();
-        
+        services
+            .AddCore()
+            .AddSingleton<IModulePermissionMatrix, NotificationsPermissionMatrix>();
+
         return services;
+    }
+    
+    public static WebApplication UseNotificationsModule(this WebApplication app)
+    {
+        app.MapHub<NotificationHub>("/notification-hub");
+
+        return app;
     }
 }
