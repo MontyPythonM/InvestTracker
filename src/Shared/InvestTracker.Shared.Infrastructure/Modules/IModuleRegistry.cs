@@ -11,9 +11,17 @@ public interface IModuleRegistry
     void AddBroadcastAction(Type requestType, Func<object, Task> action);
 
     /// <summary>
+    /// Add new action registration with unique path for internal modules synchronous communication
+    /// </summary>
+    void AddRequestAction(string path, Type requestType, Type responseType, Func<object, Task<object>> action);
+    
+    /// <summary>
     /// Gets all registrations for the indicated key
     /// </summary>
-    /// <param name="key">Action path</param>
-    /// <returns></returns>
     IEnumerable<ModuleBroadcastRegistration> GetBroadcastRegistrations(string key);
+    
+    /// <summary>
+    /// Returns request registration
+    /// </summary>
+    ModuleRequestRegistration? GetRequestRegistration(string path);
 }
