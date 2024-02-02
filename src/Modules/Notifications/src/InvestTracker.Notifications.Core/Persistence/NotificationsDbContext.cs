@@ -8,7 +8,7 @@ namespace InvestTracker.Notifications.Core.Persistence;
 internal class NotificationsDbContext : DbContext
 {
     public DbSet<Receiver> Receivers { get; set; }
-    public DbSet<GlobalNotificationSetup> GlobalNotificationSetup { get; set; }
+    public DbSet<GlobalSettings> GlobalSettings { get; set; }
     
     public NotificationsDbContext(DbContextOptions<NotificationsDbContext> options) : base(options)
     {

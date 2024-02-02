@@ -20,7 +20,7 @@ internal sealed class ReceiverRepository : IReceiverRepository
     {
         return await _dbContext.Receivers
             .ApplyAsNoTracking(asNoTracking)
-            .Include(r => r.NotificationSetup)
+            .Include(r => r.PersonalSettings)
             .SingleOrDefaultAsync(r => r.Id == id, token);
     }
 
@@ -28,7 +28,7 @@ internal sealed class ReceiverRepository : IReceiverRepository
     {
         return await _dbContext.Receivers
             .ApplyAsNoTracking(asNoTracking)
-            .Include(r => r.NotificationSetup)
+            .Include(r => r.PersonalSettings)
             .Where(r => receiversIds.Contains(r.Id))
             .ToListAsync(token);
     }
@@ -37,7 +37,7 @@ internal sealed class ReceiverRepository : IReceiverRepository
     {
         var query = _dbContext.Receivers
             .ApplyAsNoTracking(asNoTracking)
-            .Include(r => r.NotificationSetup)
+            .Include(r => r.PersonalSettings)
             .AsQueryable();
 
         var filteredQuery = recipientGroup switch

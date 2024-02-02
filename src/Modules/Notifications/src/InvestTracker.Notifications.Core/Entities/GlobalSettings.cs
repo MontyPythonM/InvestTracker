@@ -2,13 +2,13 @@
 
 namespace InvestTracker.Notifications.Core.Entities;
 
-public class GlobalNotificationSetup : NotificationSetup
+public class GlobalSettings : NotificationSettings
 {
     public DateTime EffectiveFrom { get; set; }
 
-    public static GlobalNotificationSetup CreateInitialSetup()
+    public static GlobalSettings CreateInitialSetup()
     {
-        return new GlobalNotificationSetup
+        return new GlobalSettings
         {
             Id = Guid.NewGuid(),
             EffectiveFrom = DateTime.MinValue,

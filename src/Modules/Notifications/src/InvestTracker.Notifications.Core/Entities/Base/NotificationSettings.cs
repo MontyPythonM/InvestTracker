@@ -1,6 +1,6 @@
 ﻿namespace InvestTracker.Notifications.Core.Entities.Base;
 
-public abstract class NotificationSetup
+public abstract class NotificationSettings
 {
     public Guid Id { get; set; }
     public bool EnableNotifications { get; set; } = true;

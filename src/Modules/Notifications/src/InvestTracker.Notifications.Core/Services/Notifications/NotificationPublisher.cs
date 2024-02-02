@@ -2,7 +2,7 @@
 using InvestTracker.Notifications.Core.Enums;
 using InvestTracker.Notifications.Core.Interfaces;
 
-namespace InvestTracker.Notifications.Core.Services;
+namespace InvestTracker.Notifications.Core.Services.Notifications;
 
 internal sealed class NotificationPublisher : INotificationPublisher
 {
@@ -18,7 +18,7 @@ internal sealed class NotificationPublisher : INotificationPublisher
     public async Task PublishAsync(string message, IEnumerable<Guid> recipientIds, CancellationToken token = default)
     {
         var recipients = (await _receiverRepository.GetAsync(recipientIds, true, token))
-            .Where(r => r.NotificationSetup.EnableNotifications)
+            .Where(r => r.PersonalSettings.EnableNotifications)
             .Select(r => r.Id)
             .ToHashSet();
         
@@ -33,7 +33,7 @@ internal sealed class NotificationPublisher : INotificationPublisher
     public async Task PublishAsync(string message, RecipientGroup recipientGroup, CancellationToken token = default)
     {
         var recipients = (await _receiverRepository.GetAsync(recipientGroup, true, token))
-            .Where(r => r.NotificationSetup.EnableNotifications)
+            .Where(r => r.PersonalSettings.EnableNotifications)
             .Select(r => r.Id)
             .ToHashSet();
         
@@ -44,7 +44,7 @@ internal sealed class NotificationPublisher : INotificationPublisher
         CancellationToken token = default)
     {
         var recipients = (await _receiverRepository.GetAsync(recipientGroup, true, token))
-            .Where(r => r.NotificationSetup.EnableNotifications)
+            .Where(r => r.PersonalSettings.EnableNotifications)
             .Select(r => r.Id)
             .Except(excludedRecipientIds)
             .ToHashSet();

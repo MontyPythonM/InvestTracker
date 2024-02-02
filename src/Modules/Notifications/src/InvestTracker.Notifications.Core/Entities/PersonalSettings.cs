@@ -2,7 +2,7 @@
 
 namespace InvestTracker.Notifications.Core.Entities;
 
-public class PersonalNotificationSetup : NotificationSetup
+public class PersonalSettings : NotificationSettings
 {
     public DateTime CreatedAt { get; set; }
     public DateTime? ModifiedAt { get; set; }

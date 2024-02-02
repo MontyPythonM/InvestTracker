@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace InvestTracker.Notifications.Core.Services;
+namespace InvestTracker.Notifications.Core.Services.Notifications;
 
 internal sealed class NotificationSender : BackgroundService, INotificationSender
 {

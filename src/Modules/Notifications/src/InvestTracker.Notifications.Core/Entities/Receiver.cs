@@ -10,5 +10,5 @@ public class Receiver
     public PhoneNumber PhoneNumber { get; set; }
     public Subscription Subscription { get; set; }
     public Role Role { get; set; }
-    public PersonalNotificationSetup NotificationSetup { get; set; }
+    public PersonalSettings PersonalSettings { get; set; }
 }

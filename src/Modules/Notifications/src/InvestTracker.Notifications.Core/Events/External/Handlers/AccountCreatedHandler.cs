@@ -33,7 +33,7 @@ internal sealed class AccountCreatedHandler : IEventHandler<AccountCreated>
             PhoneNumber = @event.PhoneNumber,
             Role = @event.Role,
             Subscription = @event.Subscription,
-            NotificationSetup = new PersonalNotificationSetup
+            PersonalSettings = new PersonalSettings
             {
                 Id = Guid.NewGuid(),
                 CreatedAt = _timeProvider.Current(),

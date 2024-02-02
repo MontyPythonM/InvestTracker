@@ -6,5 +6,9 @@ public enum NotificationsPermission
     GetRecipientsGroups,
     SendNotificationToGroup,
     SendForceNotification,
-    SynchronizeReceivers
+    GetGlobalSettings,
+    SetGlobalSettings,
+    GetPersonalSettings,
+    SetPersonalSettings,
+    GetReceivers
 }
