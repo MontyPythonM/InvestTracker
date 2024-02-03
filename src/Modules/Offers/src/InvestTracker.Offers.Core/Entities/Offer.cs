@@ -13,7 +13,7 @@ public class Offer
     public ICollection<string> Tags { get; private set; } = new List<string>();
     public virtual ICollection<Invitation> Invitations { get; private set; } = new List<Invitation>();
 
-    private Offer()
+    public Offer()
     {
     }
 

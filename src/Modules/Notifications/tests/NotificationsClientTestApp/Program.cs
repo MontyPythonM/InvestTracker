@@ -3,15 +3,16 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 
 // arrange
-var jwt = await GetJsonWebTokenAsync("http://localhost:5200/users-module/accounts/sign-in", 
-    "investor@test.com", "test");
+const string email = "investor@test.com";
+const string password = "test";
+const string methodName = "Notify";
+const string uri = "http://localhost:5200/notification-hub";
+
+var jwt = await GetJsonWebTokenAsync("http://localhost:5200/users-module/accounts/sign-in", email, password);
 
 Console.WriteLine($"Response from API: {JsonConvert.SerializeObject(jwt)}");
 
 // act
-const string methodName = "Notify";
-const string uri = "http://localhost:5200/notification-hub";
-
 var connection = new HubConnectionBuilder()
     .WithUrl(uri, options =>
     {

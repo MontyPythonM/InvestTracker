@@ -23,7 +23,7 @@ internal sealed class AccountActivatedHandler : IEventHandler<AccountActivated>
         var userName = user?.FullName ?? "-";
         var modifiedByName = modifiedBy?.FullName ?? "-";
         
-        var message = $"User {userName} [ID: {@event.Id}] account was activated by {modifiedByName} [ID: {@event.ModifiedBy}]";
+        var message = $"{userName.Value} account was activated by {modifiedByName.Value}";
         
         await _notificationPublisher.PublishAsync(message, RecipientGroup.SystemAdministrators);
     }

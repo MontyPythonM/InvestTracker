@@ -29,8 +29,10 @@ internal sealed class UserRoleRemovedHandler : IEventHandler<UserRoleRemoved>
         var modifiedBy = await _receiverRepository.GetAsync(@event.ModifiedBy, true);
         
         var excludeRecipients = new List<Guid> { user.Id };
-        var administratorsMessage = $"User {user.FullName} [ID: {@event.Id}] role was set to '{SystemRole.None}' by {modifiedBy?.FullName ?? "-"} [ID: {@event.ModifiedBy}]";
+        var administratorsMessage = $"{user.FullName} role was set to '{SystemRole.None}' by {modifiedBy?.FullName ?? "-"}";
         
+        user.Role = SystemRole.None;
+        await _receiverRepository.UpdateAsync(user);
         await _notificationPublisher.PublishAsync(administratorsMessage, RecipientGroup.SystemAdministrators, excludeRecipients);
     }
 }

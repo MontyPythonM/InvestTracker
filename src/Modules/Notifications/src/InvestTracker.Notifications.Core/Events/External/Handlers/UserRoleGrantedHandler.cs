@@ -28,8 +28,10 @@ internal sealed class UserRoleGrantedHandler : IEventHandler<UserRoleGranted>
         var modifiedBy = await _receiverRepository.GetAsync(@event.ModifiedBy, true);
         
         var excludeRecipients = new List<Guid> { user.Id };
-        var administratorsMessage = $"User {user.FullName.Value} [ID: {user.Id}] role was set to '{@event.Role}' by {modifiedBy?.FullName.Value ?? "-"} [ID: {@event.ModifiedBy}]";
-        
+        var administratorsMessage = $"{user.FullName.Value} role was set to '{@event.Role}' by {modifiedBy?.FullName.Value ?? "-"}";
+
+        user.Role = @event.Role;
+        await _receiverRepository.UpdateAsync(user);
         await _notificationPublisher.PublishAsync(administratorsMessage, RecipientGroup.SystemAdministrators, excludeRecipients);
     }
 }

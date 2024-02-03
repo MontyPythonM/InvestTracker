@@ -23,7 +23,7 @@ internal sealed class AccountDeactivatedHandler : IEventHandler<AccountDeactivat
         var userName = user?.FullName ?? "-";
         var modifiedByName = modifiedBy?.FullName ?? "-";
         
-        var message = $"User {userName} [ID: {@event.Id}] account was deactivated by {modifiedByName} [ID: {@event.ModifiedBy}]";
+        var message = $"{userName.Value} account was deactivated by {modifiedByName.Value}";
         
         await _notificationPublisher.PublishAsync(message, RecipientGroup.SystemAdministrators);
     }
