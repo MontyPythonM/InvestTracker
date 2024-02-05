@@ -1,7 +1,8 @@
-﻿using InvestTracker.Notifications.Core.Interfaces;
+﻿using InvestTracker.Notifications.Core.Dto;
+using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.IntegrationEvents;
 
-namespace InvestTracker.Notifications.Core.Events.External.Handlers;
+namespace InvestTracker.Notifications.Core.ExternalEvents.Users.Handlers;
 
 internal sealed class UserSubscriptionChangedHandler : IEventHandler<UserSubscriptionChanged>
 {    
@@ -24,7 +25,11 @@ internal sealed class UserSubscriptionChangedHandler : IEventHandler<UserSubscri
         
         user.Subscription = @event.Subscription;
         
+        var notification = new PersonalNotification(
+            $"Your subscription was changed to '{@event.Subscription}'", 
+            @event.Id);
+        
         await _receiverRepository.UpdateAsync(user);
-        await _notificationPublisher.PublishAsync($"Your subscription was changed to '{@event.Subscription}'", @event.Id);
+        await _notificationPublisher.NotifyAsync(notification);
     }
 }

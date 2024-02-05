@@ -27,7 +27,7 @@ internal sealed class NotificationSender : BackgroundService, INotificationSende
 
     public ValueTask SendAsync(Notification notification, CancellationToken token = default) 
         => _channel.Writer.WriteAsync(notification, token);
-    
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await foreach (var notification in _channel.Reader.ReadAllAsync(stoppingToken))

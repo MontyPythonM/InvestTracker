@@ -1,6 +1,6 @@
 ﻿namespace InvestTracker.Notifications.Core.Dto;
 
-public sealed class Notification
+public sealed record Notification
 {
     public string Message { get; }
     public ISet<Guid> Recipients { get; }
@@ -9,5 +9,11 @@ public sealed class Notification
     {
         Message = message;
         Recipients = recipients.ToHashSet();
+    }
+
+    public Notification(string message, Guid recipient)
+    {
+        Message = message;
+        Recipients = new HashSet<Guid> { recipient };        
     }
 }

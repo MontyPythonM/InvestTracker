@@ -3,6 +3,7 @@ using InvestTracker.Notifications.Core.Entities.Base;
 using InvestTracker.Notifications.Core.Enums;
 using InvestTracker.Notifications.Core.Exceptions;
 using InvestTracker.Notifications.Core.Interfaces;
+using InvestTracker.Shared.Abstractions.Authorization;
 using InvestTracker.Shared.Abstractions.Context;
 
 namespace InvestTracker.Notifications.Core.Services.Receivers;
@@ -21,7 +22,7 @@ public class ReceiverService : IReceiverService
     public async Task<PersonalSettingsDto> GetPersonalSettingsAsync(CancellationToken token)
     {
         var currentUserId = _requestContext.Identity.UserId;
-        var receiver = await _receiverRepository.GetAsync(currentUserId, true, token);
+        var receiver = await _receiverRepository.GetAsync(currentUserId, null, true, token);
 
         if (receiver is null)
         {
@@ -42,7 +43,7 @@ public class ReceiverService : IReceiverService
 
     public async Task<IEnumerable<ReceiverDto>> GetReceiversAsync(RecipientGroup recipientGroup, CancellationToken token)
     {
-        var receivers = await _receiverRepository.GetAsync(recipientGroup, true, token);
+        var receivers = await _receiverRepository.GetAsync(recipientGroup, null, true, token);
 
         return receivers.Select(receiver => new ReceiverDto
         {
@@ -59,7 +60,7 @@ public class ReceiverService : IReceiverService
     public async Task SetPersonalSettingsAsync(SetPersonalSettingsDto dto, CancellationToken token)
     {
         var currentUserId = _requestContext.Identity.UserId;
-        var receiver = await _receiverRepository.GetAsync(currentUserId, false, token);
+        var receiver = await _receiverRepository.GetAsync(currentUserId, null, false, token);
         
         if (receiver is null)
         {
@@ -73,7 +74,8 @@ public class ReceiverService : IReceiverService
         receiver.PersonalSettings.AssetActivity = dto.AssetActivity;
         receiver.PersonalSettings.ExistingCollaborationsActivity = dto.ExistingCollaborationsActivity;
         receiver.PersonalSettings.NewCollaborationsActivity = dto.NewCollaborationsActivity;
-
+        receiver.PersonalSettings.AdministratorsActivity = SystemRole.IsAdministrator(receiver.Role) && dto.AdministratorsActivity;
+        
         await _receiverRepository.UpdateAsync(receiver, token);
     }
     
@@ -85,6 +87,7 @@ public class ReceiverService : IReceiverService
         PortfoliosActivity = settings.PortfoliosActivity,
         AssetActivity = settings.AssetActivity,
         ExistingCollaborationsActivity = settings.ExistingCollaborationsActivity,
-        NewCollaborationsActivity = settings.NewCollaborationsActivity
+        NewCollaborationsActivity = settings.NewCollaborationsActivity,
+        AdministratorsActivity = settings.AdministratorsActivity
     };
 }

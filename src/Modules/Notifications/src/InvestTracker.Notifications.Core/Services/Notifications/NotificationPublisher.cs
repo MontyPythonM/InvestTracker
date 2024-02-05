@@ -1,5 +1,4 @@
 ﻿using InvestTracker.Notifications.Core.Dto;
-using InvestTracker.Notifications.Core.Enums;
 using InvestTracker.Notifications.Core.Interfaces;
 
 namespace InvestTracker.Notifications.Core.Services.Notifications;
@@ -15,40 +14,33 @@ internal sealed class NotificationPublisher : INotificationPublisher
         _notificationSender = notificationSender;
     }
 
-    public async Task PublishAsync(string message, IEnumerable<Guid> recipientIds, CancellationToken token = default)
+    public async Task NotifyAsync(PersonalNotification notification, CancellationToken token = default)
     {
-        var recipients = (await _receiverRepository.GetAsync(recipientIds, true, token))
+        var recipients = await _receiverRepository.GetAsync(notification.Recipients, notification.FilterBySetting, true, token);
+        
+        var filteredRecipients = recipients
             .Where(r => r.PersonalSettings.EnableNotifications)
             .Select(r => r.Id)
             .ToHashSet();
-        
-        await _notificationSender.SendAsync(new Notification(message, recipients), token);
+
+        await _notificationSender.SendAsync(new Notification(notification.Message, filteredRecipients), token);
     }
 
-    public async Task PublishAsync(string message, Guid recipientId, CancellationToken token = default)
-    { 
-        await PublishAsync(message, new List<Guid> { recipientId }, token);
-    }
-
-    public async Task PublishAsync(string message, RecipientGroup recipientGroup, CancellationToken token = default)
+    public async Task NotifyAsync(GroupNotification notification, CancellationToken token = default)
     {
-        var recipients = (await _receiverRepository.GetAsync(recipientGroup, true, token))
-            .Where(r => r.PersonalSettings.EnableNotifications)
-            .Select(r => r.Id)
-            .ToHashSet();
-        
-        await _notificationSender.SendAsync(new Notification(message, recipients), token);
-    }
+        var recipients = await _receiverRepository.GetAsync(notification.RecipientGroup, notification.FilterBySetting, true, token);
 
-    public async Task PublishAsync(string message, RecipientGroup recipientGroup, IEnumerable<Guid> excludedRecipientIds,
-        CancellationToken token = default)
-    {
-        var recipients = (await _receiverRepository.GetAsync(recipientGroup, true, token))
+        var query = recipients
             .Where(r => r.PersonalSettings.EnableNotifications)
-            .Select(r => r.Id)
-            .Except(excludedRecipientIds)
-            .ToHashSet();
+            .AsQueryable();
         
-        await _notificationSender.SendAsync(new Notification(message, recipients), token);
+        if (notification.ExcludedReceiverIds is not null)
+        {
+            query = query.ExceptBy(notification.ExcludedReceiverIds, x => x.Id);
+        }
+
+        var filteredRecipients = query.Select(r => r.Id).ToHashSet();
+        
+        await _notificationSender.SendAsync(new Notification(notification.Message, filteredRecipients), token);
     }
 }

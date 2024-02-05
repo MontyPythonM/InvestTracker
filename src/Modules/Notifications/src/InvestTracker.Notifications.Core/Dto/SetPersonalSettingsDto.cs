@@ -4,6 +4,7 @@ public class SetPersonalSettingsDto
 {
     public bool EnableNotifications { get; set; }
     public bool EnableEmails { get; set; }
+    public bool AdministratorsActivity { get; set; }
     public bool InvestmentStrategiesActivity { get; set; }
     public bool PortfoliosActivity { get; set; }
     public bool AssetActivity { get; set; }

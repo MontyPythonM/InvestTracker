@@ -3,6 +3,7 @@ using InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Repositories;
 using InvestTracker.Shared.Abstractions.Commands;
 using InvestTracker.Shared.Abstractions.Context;
+using InvestTracker.Shared.Abstractions.Messages;
 
 namespace InvestTracker.InvestmentStrategies.Application.InvestmentStrategies.Commands.Handlers;
 
@@ -11,13 +12,15 @@ internal sealed class ShareInvestmentStrategyHandler : ICommandHandler<ShareInve
     private readonly IInvestmentStrategyRepository _investmentStrategyRepository;
     private readonly IRequestContext _requestContext;
     private readonly IStakeholderRepository _stakeholderRepository;
-
+    private readonly IMessageBroker _messageBroker;
+    
     public ShareInvestmentStrategyHandler(IInvestmentStrategyRepository investmentStrategyRepository, 
-        IRequestContext requestContext, IStakeholderRepository stakeholderRepository)
+        IRequestContext requestContext, IStakeholderRepository stakeholderRepository, IMessageBroker messageBroker)
     {
         _investmentStrategyRepository = investmentStrategyRepository;
         _requestContext = requestContext;
         _stakeholderRepository = stakeholderRepository;
+        _messageBroker = messageBroker;
     }
     
     public async Task HandleAsync(ShareInvestmentStrategy command, CancellationToken token)
@@ -38,5 +41,6 @@ internal sealed class ShareInvestmentStrategyHandler : ICommandHandler<ShareInve
 
         strategy.AssignCollaborator(advisor.Id, currentUser);
         await _investmentStrategyRepository.UpdateAsync(strategy, token);
+        await _messageBroker.PublishAsync(new Events.InvestmentStrategyShared(strategy.Id, strategy.Title, currentUser, advisor.Id));
     }
 }

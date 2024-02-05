@@ -3,7 +3,7 @@ using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.IntegrationEvents;
 using InvestTracker.Shared.Abstractions.Time;
 
-namespace InvestTracker.Notifications.Core.Events.External.Handlers;
+namespace InvestTracker.Notifications.Core.ExternalEvents.Users.Handlers;
 
 internal sealed class AccountCreatedHandler : IEventHandler<AccountCreated>
 {

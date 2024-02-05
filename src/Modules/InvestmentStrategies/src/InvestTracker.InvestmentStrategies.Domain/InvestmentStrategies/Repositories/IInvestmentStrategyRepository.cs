@@ -16,4 +16,5 @@ public interface IInvestmentStrategyRepository
     Task UpdateAsync(InvestmentStrategy strategy, CancellationToken token = default);
     Task UpdateRangeAsync(IEnumerable<InvestmentStrategy> strategies, CancellationToken token = default);
     Task<bool> HasAccessAsync(InvestmentStrategyId strategyId, StakeholderId stakeholderId, CancellationToken token = default);
+    Task<IEnumerable<StakeholderId>> GetCollaboratorsAsync(InvestmentStrategyId id, CancellationToken token);
 }

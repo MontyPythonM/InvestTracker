@@ -1,11 +1,9 @@
-﻿using InvestTracker.Notifications.Core.Enums;
+﻿using InvestTracker.Notifications.Core.Dto;
 
 namespace InvestTracker.Notifications.Core.Interfaces;
 
 public interface INotificationPublisher
 {
-    Task PublishAsync(string message, IEnumerable<Guid> recipientIds, CancellationToken token = default);
-    Task PublishAsync(string message, Guid recipientId, CancellationToken token = default);
-    Task PublishAsync(string message, RecipientGroup recipientGroup, CancellationToken token = default);
-    Task PublishAsync(string message, RecipientGroup recipientGroup, IEnumerable<Guid> excludedRecipientIds, CancellationToken token = default);
+    Task NotifyAsync(PersonalNotification notification, CancellationToken token = default);
+    Task NotifyAsync(GroupNotification notification, CancellationToken token = default);
 }

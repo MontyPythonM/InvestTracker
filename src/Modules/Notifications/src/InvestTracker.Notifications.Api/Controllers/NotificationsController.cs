@@ -44,7 +44,8 @@ internal class NotificationsController : ApiControllerBase
     [SwaggerOperation("Send notifications to a selected recipients who are currently connected and have enabled settings")]
     public async Task<ActionResult> SendNotification(SendMessageDto dto, CancellationToken token)
     {
-        await _notificationPublisher.PublishAsync(dto.Message, dto.RecipientIds, token);
+        var notification = new PersonalNotification(dto.Message, dto.RecipientIds);
+        await _notificationPublisher.NotifyAsync(notification, token);
         return Ok();
     }
     
@@ -53,7 +54,8 @@ internal class NotificationsController : ApiControllerBase
     [SwaggerOperation("Send notifications to a selected group of recipients who are currently connected and have enabled settings")]
     public async Task<ActionResult> SendNotificationToGroup(SendMessageToGroupDto dto, CancellationToken token)
     {
-        await _notificationPublisher.PublishAsync(dto.Message, dto.RecipientGroup, token);
+        var notification = new GroupNotification(dto.Message, dto.RecipientGroup);
+        await _notificationPublisher.NotifyAsync(notification, token);
         return Ok();
     }
     

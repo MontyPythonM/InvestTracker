@@ -1,7 +1,7 @@
 ﻿using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.IntegrationEvents;
 
-namespace InvestTracker.Notifications.Core.Events.External.Handlers;
+namespace InvestTracker.Notifications.Core.ExternalEvents.Users.Handlers;
 
 internal sealed class AccountDeletedHandler : IEventHandler<AccountDeleted>
 {
