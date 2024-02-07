@@ -3,7 +3,9 @@ using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Notifications.Core.Options;
 using InvestTracker.Notifications.Core.Persistence;
 using InvestTracker.Notifications.Core.Persistence.Repositories;
-using InvestTracker.Notifications.Core.Services;
+using InvestTracker.Notifications.Core.Services.GlobalSettings;
+using InvestTracker.Notifications.Core.Services.Notifications;
+using InvestTracker.Notifications.Core.Services.Receivers;
 using InvestTracker.Shared.Infrastructure;
 using InvestTracker.Shared.Infrastructure.Postgres;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,9 +23,10 @@ internal static class Extensions
         services
             .AddPostgres<NotificationsDbContext>()
             .AddScoped<IReceiverRepository, ReceiverRepository>()
-            .AddScoped<IReceiverSynchronizer, ReceiverSynchronizer>()
+            .AddScoped<IReceiverService, ReceiverService>()
             .AddScoped<INotificationPublisher, NotificationPublisher>()
-            .AddScoped<IGlobalNotificationSetupRepository, GlobalNotificationSetupRepository>()
+            .AddScoped<IGlobalSettingsRepository, GlobalSettingsRepository>()
+            .AddScoped<IGlobalSettingsService, GlobalSettingsService>()
             .AddSingleton<INotificationSender, NotificationSender>()
             .AddHostedService(sp => (NotificationSender)sp.GetService<INotificationSender>()!)
             .AddSingleton(notificationServiceOptions)

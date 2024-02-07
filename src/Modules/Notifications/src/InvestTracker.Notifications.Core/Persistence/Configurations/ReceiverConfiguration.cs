@@ -26,6 +26,6 @@ internal class ReceiverConfiguration : IEntityTypeConfiguration<Receiver>
         builder.Property(n => n.Role)
             .HasConversion(n => n.Value, n => new Role(n));
 
-        builder.OwnsOne(n => n.NotificationSetup);
+        builder.OwnsOne(n => n.PersonalSettings);
     }
 }

@@ -32,7 +32,7 @@ internal class UsersController : ApiControllerBase
     [SwaggerOperation("Returns list of application users")]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers(CancellationToken token)
         => OkOrNotFound(await _userService.GetUsersAsync(token));
-    
+
     [HttpGet("{id:guid}/details")]
     [HasPermission(UsersPermission.GetUserDetails)]
     [SwaggerOperation("Returns selected user details")]

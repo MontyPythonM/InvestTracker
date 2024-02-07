@@ -1,4 +1,5 @@
-﻿using InvestTracker.Notifications.Core.Entities;
+﻿using System.Linq.Expressions;
+using InvestTracker.Notifications.Core.Entities;
 using InvestTracker.Notifications.Core.Enums;
 using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.Authorization;
@@ -16,30 +17,52 @@ internal sealed class ReceiverRepository : IReceiverRepository
         _dbContext = dbContext;
     }
 
-    public async Task<Receiver?> GetAsync(Guid id, bool asNoTracking = true, CancellationToken token = default)
-    {
-        return await _dbContext.Receivers
-            .ApplyAsNoTracking(asNoTracking)
-            .Include(r => r.NotificationSetup)
-            .SingleOrDefaultAsync(r => r.Id == id, token);
-    }
-
-    public async Task<IEnumerable<Receiver>> GetAsync(IEnumerable<Guid> receiversIds, bool asNoTracking = true, CancellationToken token = default)
-    {
-        return await _dbContext.Receivers
-            .ApplyAsNoTracking(asNoTracking)
-            .Include(r => r.NotificationSetup)
-            .Where(r => receiversIds.Contains(r.Id))
-            .ToListAsync(token);
-    }
-
-    public async Task<IEnumerable<Receiver>> GetAsync(RecipientGroup recipientGroup, bool asNoTracking = true, CancellationToken token = default)
+    public async Task<Receiver?> GetAsync(Guid id, Expression<Func<Receiver, bool>>? filterBy = null, 
+        bool asNoTracking = true, CancellationToken token = default)
     {
         var query = _dbContext.Receivers
             .ApplyAsNoTracking(asNoTracking)
-            .Include(r => r.NotificationSetup)
+            .Include(r => r.PersonalSettings)
             .AsQueryable();
 
+        if (filterBy is not null)
+        {
+            query = query.Where(filterBy);
+        }
+
+        return await query.SingleOrDefaultAsync(r => r.Id == id, token);
+    }
+
+    public async Task<IEnumerable<Receiver>> GetAsync(IEnumerable<Guid> receiversIds, Expression<Func<Receiver, bool>>? filterBy = null, 
+        bool asNoTracking = true, CancellationToken token = default)
+    {
+        var query = _dbContext.Receivers
+            .ApplyAsNoTracking(asNoTracking)
+            .Include(r => r.PersonalSettings)
+            .Where(r => receiversIds.Contains(r.Id))
+            .AsQueryable();
+
+        if (filterBy is not null)
+        {
+            query = query.Where(filterBy);
+        }
+        
+        return await query.ToListAsync(token);
+    }
+
+    public async Task<IEnumerable<Receiver>> GetAsync(RecipientGroup recipientGroup, Expression<Func<Receiver, bool>>? filterBy = null, 
+        bool asNoTracking = true, CancellationToken token = default)
+    {
+        var query = _dbContext.Receivers
+            .ApplyAsNoTracking(asNoTracking)
+            .Include(r => r.PersonalSettings)
+            .AsQueryable();
+
+        if (filterBy is not null)
+        {
+            query = query.Where(filterBy);
+        }
+        
         var filteredQuery = recipientGroup switch
         {
             RecipientGroup.None 
@@ -63,7 +86,7 @@ internal sealed class ReceiverRepository : IReceiverRepository
             RecipientGroup.All => query,
             _ => throw new ArgumentOutOfRangeException(nameof(recipientGroup), recipientGroup, null)
         };
-
+        
         return filteredQuery is null 
             ? new List<Receiver>() 
             : await filteredQuery.ToListAsync(token);

@@ -8,6 +8,7 @@ using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Repositories;
 using InvestTracker.Shared.Abstractions.Commands;
+using InvestTracker.Shared.Abstractions.Messages;
 
 namespace InvestTracker.InvestmentStrategies.Application.InvestmentStrategies.Commands.Handlers;
 
@@ -18,16 +19,18 @@ internal sealed class AddPortfolioHandler : ICommandHandler<AddPortfolio>
     private readonly IPortfolioRepository _portfolioRepository;
     private readonly IStakeholderRepository _stakeholderRepository;
     private readonly IResourceAccessor _resourceAccessor;
+    private readonly IMessageBroker _messageBroker;
     
     public AddPortfolioHandler(IInvestmentStrategyRepository investmentStrategyRepository, 
         IEnumerable<IPortfolioLimitPolicy> policies, IPortfolioRepository portfolioRepository, 
-        IStakeholderRepository stakeholderRepository, IResourceAccessor resourceAccessor)
+        IStakeholderRepository stakeholderRepository, IResourceAccessor resourceAccessor, IMessageBroker messageBroker)
     {
         _investmentStrategyRepository = investmentStrategyRepository;
         _policies = policies;
         _portfolioRepository = portfolioRepository;
         _stakeholderRepository = stakeholderRepository;
         _resourceAccessor = resourceAccessor;
+        _messageBroker = messageBroker;
     }
 
     public async Task HandleAsync(AddPortfolio command, CancellationToken token)
@@ -56,5 +59,7 @@ internal sealed class AddPortfolioHandler : ICommandHandler<AddPortfolio>
             strategyId, portfolioPolicyLimitDto);
 
         await _portfolioRepository.AddAsync(portfolio, token);
+        await _messageBroker.PublishAsync(new Events.PortfolioCreated(portfolio.Id, portfolio.Title, strategy.Owner, 
+            strategy.Collaborators.Select(c => c.CollaboratorId)));
     }
 }

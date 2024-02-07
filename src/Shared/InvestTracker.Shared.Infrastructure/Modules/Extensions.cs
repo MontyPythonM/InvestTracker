@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using InvestTracker.Shared.Abstractions.IntegrationEvents;
 using InvestTracker.Shared.Abstractions.Modules;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,16 +29,19 @@ public static class Extensions
         });
     
         
-    internal static IServiceCollection AddModuleRequests(this IServiceCollection services, 
-        IList<Assembly> assemblies)
+    internal static IServiceCollection AddModuleRequests(this IServiceCollection services, IList<Assembly> assemblies)
     {
         services.AddModuleRegistry(assemblies);
         services.AddSingleton<IModuleSerializer, JsonModuleSerializer>();
-        services.AddSingleton<IModuleClient, ModuleClient>(); 
+        services.AddSingleton<IModuleClient, ModuleClient>();
+        services.AddSingleton<IModuleSubscriber, ModuleSubscriber>();
 
         return services;
     }
 
+    public static IModuleSubscriber UseModuleRequests(this IApplicationBuilder app)
+        => app.ApplicationServices.GetRequiredService<IModuleSubscriber>();
+    
     private static void AddModuleRegistry(this IServiceCollection services, IEnumerable<Assembly> assemblies)
     {
         var registry = new ModuleRegistry();

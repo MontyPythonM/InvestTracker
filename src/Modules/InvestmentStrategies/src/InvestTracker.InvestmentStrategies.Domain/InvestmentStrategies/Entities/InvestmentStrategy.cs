@@ -51,7 +51,6 @@ public class InvestmentStrategy : AggregateRoot<InvestmentStrategyId>
         var strategyId = new InvestmentStrategyId(Guid.NewGuid());
         var investmentStrategy = new InvestmentStrategy(strategyId, title, owner, note);
 
-        investmentStrategy.AddEvent(new InvestmentStrategyCreated(strategyId));
         return investmentStrategy;
     }
 

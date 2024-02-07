@@ -23,7 +23,7 @@ namespace InvestTracker.Notifications.Core.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("InvestTracker.Notifications.Core.Entities.GlobalNotificationSetup", b =>
+            modelBuilder.Entity("InvestTracker.Notifications.Core.Entities.GlobalSettings", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,12 +58,12 @@ namespace InvestTracker.Notifications.Core.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalNotificationSetup", "notifications");
+                    b.ToTable("GlobalSettings", "notifications");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f195c206-a475-4bdb-8a70-2575f0ab35b6"),
+                            Id = new Guid("b00faf32-301f-45da-8109-f389463b1a42"),
                             AdministratorsActivity = false,
                             AssetActivity = true,
                             EffectiveFrom = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -110,7 +110,7 @@ namespace InvestTracker.Notifications.Core.Persistence.Migrations
 
             modelBuilder.Entity("InvestTracker.Notifications.Core.Entities.Receiver", b =>
                 {
-                    b.OwnsOne("InvestTracker.Notifications.Core.Entities.PersonalNotificationSetup", "NotificationSetup", b1 =>
+                    b.OwnsOne("InvestTracker.Notifications.Core.Entities.PersonalSettings", "PersonalSettings", b1 =>
                         {
                             b1.Property<Guid>("ReceiverId")
                                 .HasColumnType("uuid");
@@ -156,7 +156,7 @@ namespace InvestTracker.Notifications.Core.Persistence.Migrations
                                 .HasForeignKey("ReceiverId");
                         });
 
-                    b.Navigation("NotificationSetup")
+                    b.Navigation("PersonalSettings")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

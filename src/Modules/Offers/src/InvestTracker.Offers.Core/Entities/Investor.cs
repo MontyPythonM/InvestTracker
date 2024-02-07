@@ -8,7 +8,7 @@ public class Investor
     public virtual ICollection<Collaboration> Collaborations { get; set; } = new List<Collaboration>();
     public virtual ICollection<Invitation> Invitations { get; set; } = new List<Invitation>();
 
-    private Investor()
+    public Investor()
     {
     }
 

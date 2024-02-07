@@ -1,5 +1,7 @@
 ﻿using InvestTracker.Notifications.Api.Controllers.Base;
 using InvestTracker.Notifications.Api.Permissions;
+using InvestTracker.Notifications.Core.Dto;
+using InvestTracker.Notifications.Core.Enums;
 using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Shared.Infrastructure.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,19 +11,18 @@ namespace InvestTracker.Notifications.Api.Controllers;
 
 internal class ReceiversController : ApiControllerBase
 {
-    private readonly IReceiverSynchronizer _receiverSynchronizer;
+    private readonly IReceiverService _receiverService;
 
-    public ReceiversController(IReceiverSynchronizer receiverSynchronizer)
+    public ReceiversController(IReceiverService receiverService)
     {
-        _receiverSynchronizer = receiverSynchronizer;
+        _receiverService = receiverService;
     }
-
-    [HttpPost("synchronize")]
-    [HasPermission(NotificationsPermission.SynchronizeReceivers)]
-    [SwaggerOperation("Synchronize receivers with users module")]
-    public async Task<ActionResult> SynchronizeReceivers(CancellationToken token)
+    
+    [HttpGet("group")]
+    [HasPermission(NotificationsPermission.GetReceivers)]
+    [SwaggerOperation("Returns receivers with their personal notification settings from selected recipient group")]
+    public async Task<ActionResult<IEnumerable<PersonalSettingsDto>>> GetReceivers(RecipientGroup group, CancellationToken token)
     {
-        await _receiverSynchronizer.Synchronize(token);
-        return Ok();
+        return Ok(await _receiverService.GetReceiversAsync(group, token));
     }
 }

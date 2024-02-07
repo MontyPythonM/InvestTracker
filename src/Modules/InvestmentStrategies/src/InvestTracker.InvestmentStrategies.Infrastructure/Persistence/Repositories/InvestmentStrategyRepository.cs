@@ -19,12 +19,17 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
 
     public async Task<InvestmentStrategy?> GetAsync(InvestmentStrategyId id, CancellationToken token = default)
     {
-        return await _context.InvestmentStrategies.SingleOrDefaultAsync(strategy => strategy.Id == id, token);
+        return await _context.InvestmentStrategies
+            .Include(strategy => strategy.Portfolios)
+            .Include(strategy => strategy.Collaborators)
+            .SingleOrDefaultAsync(strategy => strategy.Id == id, token);
     }
     
     public async Task<IEnumerable<InvestmentStrategy>> GetOwnerStrategiesAsync(StakeholderId ownerId, CancellationToken token = default)
     {
         return await _context.InvestmentStrategies
+            .Include(strategy => strategy.Portfolios)
+            .Include(strategy => strategy.Collaborators)
             .Where(strategy => strategy.Owner.Equals(ownerId))
             .ToListAsync(token);
     }
@@ -34,6 +39,8 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
     {
         var strategies = await _context.InvestmentStrategies
             .ApplyAsNoTracking(asNoTracking)
+            .Include(strategy => strategy.Portfolios)
+            .Include(strategy => strategy.Collaborators)
             .Where(strategy => strategy.Owner.Equals(ownerId))
             .ToListAsync(token);
 
@@ -49,6 +56,8 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
     {
         return await _context.InvestmentStrategies
             .ApplyAsNoTracking(asNoTracking)
+            .Include(strategy => strategy.Portfolios)
+            .Include(strategy => strategy.Collaborators)
             .SingleOrDefaultAsync(strategy => strategy.Portfolios.Select(p => p.PortfolioId).Contains(portfolioId.Value), token);
     }
 
@@ -56,6 +65,8 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
         StakeholderId principalId, CancellationToken token = default)
     {
         return await _context.InvestmentStrategies
+            .Include(strategy => strategy.Portfolios)
+            .Include(strategy => strategy.Collaborators)
             .Where(strategy => strategy.Owner == principalId && strategy.Collaborators.Select(c => c.CollaboratorId).Contains(advisorId))
             .ToListAsync(token);
     }
@@ -82,9 +93,21 @@ internal sealed class InvestmentStrategyRepository : IInvestmentStrategyReposito
     {
         return await _context.InvestmentStrategies
             .AsNoTracking()
+            .Include(strategy => strategy.Portfolios)
+            .Include(strategy => strategy.Collaborators)
             .AnyAsync(strategy => strategy.Id == strategyId && 
                                   (strategy.Owner == stakeholderId || 
                                    strategy.IsShareEnabled && 
                                    strategy.Collaborators.Select(c => c.CollaboratorId).Contains(stakeholderId.Value)), token);
+    }
+
+    public async Task<IEnumerable<StakeholderId>> GetCollaboratorsAsync(InvestmentStrategyId id, CancellationToken token)
+    {
+        var strategy = await _context.InvestmentStrategies
+            .AsNoTracking()
+            .Include(strategy => strategy.Collaborators)
+            .SingleOrDefaultAsync(strategy => strategy.Id == id, token);
+
+        return strategy?.Collaborators.Select(collaborator => new StakeholderId(collaborator.CollaboratorId)) ?? new List<StakeholderId>();
     }
 }
