@@ -1,4 +1,4 @@
-﻿using InvestTracker.Notifications.Core.Dto;
+﻿using InvestTracker.Notifications.Core.Dto.Notifications;
 
 namespace InvestTracker.Notifications.Core.Interfaces;
 

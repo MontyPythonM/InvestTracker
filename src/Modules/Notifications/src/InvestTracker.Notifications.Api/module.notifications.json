@@ -4,6 +4,20 @@
       "Enabled": true,
       "MethodName": "Notify",
       "EnableDetailedErrorsSignalR": true
+    },
+    "Emails": {
+      "Sender": {
+        "Enabled": true,
+        "Server": "",
+        "Port": 587,
+        "Username": "",
+        "Password": "",
+        "SenderName": "",
+        "SenderEmail": "",
+        "UseSsl": true,
+        "UseRedirectTo": false,
+        "RedirectTo": []
+      }
     }
   }
 }

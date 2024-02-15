@@ -1,9 +1,9 @@
-﻿using InvestTracker.Notifications.Core.Dto;
+﻿using InvestTracker.Notifications.Core.Dto.Notifications;
 
 namespace InvestTracker.Notifications.Core.Interfaces;
 
 public interface INotificationPublisher
 {
-    Task NotifyAsync(PersonalNotification notification, CancellationToken token = default);
-    Task NotifyAsync(GroupNotification notification, CancellationToken token = default);
+    Task PublishAsync(PersonalNotification notification, CancellationToken token = default);
+    Task PublishAsync(GroupNotification notification, CancellationToken token = default);
 }

@@ -1,7 +1,7 @@
 ﻿using InvestTracker.Notifications.Api.Controllers.Base;
 using InvestTracker.Notifications.Api.Dto;
 using InvestTracker.Notifications.Api.Permissions;
-using InvestTracker.Notifications.Core.Dto;
+using InvestTracker.Notifications.Core.Dto.Notifications;
 using InvestTracker.Notifications.Core.Enums;
 using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Shared.Infrastructure.Authorization;
@@ -45,7 +45,7 @@ internal class NotificationsController : ApiControllerBase
     public async Task<ActionResult> SendNotification(SendMessageDto dto, CancellationToken token)
     {
         var notification = new PersonalNotification(dto.Message, dto.RecipientIds);
-        await _notificationPublisher.NotifyAsync(notification, token);
+        await _notificationPublisher.PublishAsync(notification, token);
         return Ok();
     }
     
@@ -55,7 +55,7 @@ internal class NotificationsController : ApiControllerBase
     public async Task<ActionResult> SendNotificationToGroup(SendMessageToGroupDto dto, CancellationToken token)
     {
         var notification = new GroupNotification(dto.Message, dto.RecipientGroup);
-        await _notificationPublisher.NotifyAsync(notification, token);
+        await _notificationPublisher.PublishAsync(notification, token);
         return Ok();
     }
     

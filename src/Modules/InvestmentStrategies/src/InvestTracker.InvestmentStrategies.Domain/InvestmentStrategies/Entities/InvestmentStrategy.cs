@@ -1,5 +1,4 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Events;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Exceptions;
+﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Policies.StrategyLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
