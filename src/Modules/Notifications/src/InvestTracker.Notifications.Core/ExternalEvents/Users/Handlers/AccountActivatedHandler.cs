@@ -1,4 +1,4 @@
-﻿using InvestTracker.Notifications.Core.Dto;
+﻿using InvestTracker.Notifications.Core.Dto.Notifications;
 using InvestTracker.Notifications.Core.Enums;
 using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.IntegrationEvents;
@@ -26,6 +26,6 @@ internal sealed class AccountActivatedHandler : IEventHandler<AccountActivated>
             RecipientGroup.SystemAdministrators,
             r => r.PersonalSettings.AdministratorsActivity);
         
-        await _notificationPublisher.NotifyAsync(groupNotification);
+        await _notificationPublisher.PublishAsync(groupNotification);
     }
 }

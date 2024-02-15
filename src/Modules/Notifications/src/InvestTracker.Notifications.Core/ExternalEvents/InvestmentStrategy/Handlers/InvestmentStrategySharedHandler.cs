@@ -1,5 +1,4 @@
-﻿using InvestTracker.Notifications.Core.Dto;
-using InvestTracker.Notifications.Core.Enums;
+﻿using InvestTracker.Notifications.Core.Dto.Notifications;
 using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.IntegrationEvents;
 
@@ -36,7 +35,7 @@ public class InvestmentStrategySharedHandler : IEventHandler<InvestmentStrategyS
             @event.CollaboratorId,
             r => r.PersonalSettings.InvestmentStrategiesActivity);
 
-        await _notificationPublisher.NotifyAsync(ownerNotification);
-        await _notificationPublisher.NotifyAsync(collaboratorNotification);
+        await _notificationPublisher.PublishAsync(ownerNotification);
+        await _notificationPublisher.PublishAsync(collaboratorNotification);
     }
 }

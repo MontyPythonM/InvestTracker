@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using InvestTracker.Notifications.Core.Entities;
 
-namespace InvestTracker.Notifications.Core.Dto;
+namespace InvestTracker.Notifications.Core.Dto.Notifications;
 
 public sealed record PersonalNotification
 {

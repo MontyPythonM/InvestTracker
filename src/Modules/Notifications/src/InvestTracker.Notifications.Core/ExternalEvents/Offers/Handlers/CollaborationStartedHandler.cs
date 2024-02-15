@@ -1,4 +1,4 @@
-﻿using InvestTracker.Notifications.Core.Dto;
+﻿using InvestTracker.Notifications.Core.Dto.Notifications;
 using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.IntegrationEvents;
 
@@ -25,6 +25,6 @@ public class CollaborationStartedHandler : IEventHandler<CollaborationStarted>
             new List<Guid> { @event.AdvisorId, @event.InvestorId },
             r => r.PersonalSettings.NewCollaborationsActivity);
 
-        await _notificationPublisher.NotifyAsync(notification);
+        await _notificationPublisher.PublishAsync(notification);
     }
 }

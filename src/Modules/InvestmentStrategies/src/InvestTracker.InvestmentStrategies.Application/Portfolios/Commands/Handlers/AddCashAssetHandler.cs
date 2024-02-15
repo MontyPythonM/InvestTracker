@@ -1,7 +1,6 @@
 ﻿using InvestTracker.InvestmentStrategies.Domain.Common;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Dto;
-using InvestTracker.InvestmentStrategies.Domain.Portfolios.Events;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Policies.AssetTypeLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;

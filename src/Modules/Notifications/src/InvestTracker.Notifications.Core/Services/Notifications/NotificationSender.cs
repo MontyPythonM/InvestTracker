@@ -1,5 +1,5 @@
 ﻿using System.Threading.Channels;
-using InvestTracker.Notifications.Core.Dto;
+using InvestTracker.Notifications.Core.Dto.Notifications;
 using InvestTracker.Notifications.Core.Hubs;
 using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Notifications.Core.Options;

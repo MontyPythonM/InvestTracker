@@ -1,4 +1,4 @@
-﻿namespace InvestTracker.Notifications.Core.Dto;
+﻿namespace InvestTracker.Notifications.Core.Dto.Notifications;
 
 public sealed record Notification
 {
