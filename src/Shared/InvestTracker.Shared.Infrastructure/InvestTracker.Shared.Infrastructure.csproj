@@ -27,10 +27,5 @@
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Modules\AsynchronousCommunication\" />
-      <Folder Include="Modules\SynchronousCommunication\" />
-    </ItemGroup>
     
 </Project>

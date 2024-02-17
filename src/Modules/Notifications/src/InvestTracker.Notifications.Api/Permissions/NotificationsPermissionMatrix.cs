@@ -18,6 +18,7 @@ internal sealed class NotificationsPermissionMatrix : IModulePermissionMatrix
         new(SystemRole.SystemAdministrator, NotificationsPermission.GetPersonalSettings.ToString()),
         new(SystemRole.SystemAdministrator, NotificationsPermission.SetPersonalSettings.ToString()),
         new(SystemRole.SystemAdministrator, NotificationsPermission.GetReceivers.ToString()),
+        new(SystemRole.SystemAdministrator, NotificationsPermission.SendEmail.ToString()),
         
         new(SystemRole.BusinessAdministrator, NotificationsPermission.GetPersonalSettings.ToString()),
         new(SystemRole.BusinessAdministrator, NotificationsPermission.SetPersonalSettings.ToString()),

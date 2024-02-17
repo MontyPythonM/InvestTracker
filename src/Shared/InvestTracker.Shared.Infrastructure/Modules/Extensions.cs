@@ -10,7 +10,7 @@ namespace InvestTracker.Shared.Infrastructure.Modules;
 
 public static class Extensions
 {
-    internal static IHostBuilder ConfigureModuleAppSettings(this IHostBuilder builder)
+    internal static IHostBuilder ConfigureModuleAppSettings(this IHostBuilder builder, IEnumerable<Assembly> assemblies)
         => builder.ConfigureAppConfiguration((context, configuration) =>
         {
             foreach (var settings in GetSettings("*"))
@@ -23,12 +23,16 @@ public static class Extensions
                 configuration.AddJsonFile(settings);
             }
 
+            foreach (var modules in GetModuleEntryPointTypes(assemblies))
+            {
+                configuration.AddUserSecrets(modules.Assembly);
+            }
+            
             IEnumerable<string> GetSettings(string pattern)
                 => Directory.EnumerateFiles(context.HostingEnvironment.ContentRootPath,
                     $"module.{pattern}.json", SearchOption.AllDirectories);
         });
     
-        
     internal static IServiceCollection AddModuleRequests(this IServiceCollection services, IList<Assembly> assemblies)
     {
         services.AddModuleRegistry(assemblies);
@@ -68,5 +72,19 @@ public static class Extensions
 
             return registry;
         });
+    }
+    
+    private static IEnumerable<Type> GetModuleEntryPointTypes(IEnumerable<Assembly> assemblies)
+    {
+        var moduleEntryPointTypes = new List<Type>();
+        foreach (var assembly in assemblies)
+        {
+            var types = assembly.GetTypes()
+                .Where(t => typeof(IModule).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract);
+            
+            moduleEntryPointTypes.AddRange(types);
+        }
+
+        return moduleEntryPointTypes;
     }
 }

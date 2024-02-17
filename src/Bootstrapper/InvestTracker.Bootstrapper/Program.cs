@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 var assemblies = ModuleLoader.LoadAssemblies();
 var modules = ModuleLoader.LoadModules(assemblies);
 
-builder.Host.ConfigureModuleAppSettings();
+builder.Host.ConfigureModuleAppSettings(assemblies);
 
 builder.Services
     .AddSharedInfrastructure(assemblies, modules)
