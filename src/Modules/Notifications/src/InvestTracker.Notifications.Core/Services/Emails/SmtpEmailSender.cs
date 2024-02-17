@@ -1,4 +1,5 @@
 ﻿using InvestTracker.Notifications.Core.Dto.Emails;
+using InvestTracker.Notifications.Core.Exceptions;
 using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Notifications.Core.Options;
 using MailKit.Net.Smtp;
@@ -8,12 +9,12 @@ using MimeKit.Text;
 
 namespace InvestTracker.Notifications.Core.Services.Emails;
 
-internal sealed class EmailSender : IEmailSender
+internal sealed class SmtpEmailSender : IEmailSender
 {
     private readonly EmailSenderOptions _options;
-    private readonly ILogger<EmailSender> _logger;
+    private readonly ILogger<SmtpEmailSender> _logger;
 
-    public EmailSender(EmailSenderOptions options, ILogger<EmailSender> logger)
+    public SmtpEmailSender(EmailSenderOptions options, ILogger<SmtpEmailSender> logger)
     {
         _options = options;
         _logger = logger;
@@ -43,7 +44,8 @@ internal sealed class EmailSender : IEmailSender
         }
         catch (Exception ex)
         {
-            _logger.LogError("Cannot send email message. Error message: {errorMessage}", ex.Message);
+            _logger.LogError("Cannot send email message. Error message: {errorMessage}, Stack trace: {ex}", ex.Message, ex);
+            throw new EmailSenderException($"Cannot send email message. Error message: {ex.Message}");
         }
         finally
         {

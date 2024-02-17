@@ -42,7 +42,7 @@ internal class NotificationsController : ApiControllerBase
     [HttpPost("send-notification")]
     [HasPermission(NotificationsPermission.SendNotification)]
     [SwaggerOperation("Send notifications to a selected recipients who are currently connected and have enabled settings")]
-    public async Task<ActionResult> SendNotification(SendMessageDto dto, CancellationToken token)
+    public async Task<ActionResult> SendNotification(SendNotificationDto dto, CancellationToken token)
     {
         var notification = new PersonalNotification(dto.Message, dto.RecipientIds);
         await _notificationPublisher.PublishAsync(notification, token);
@@ -62,7 +62,7 @@ internal class NotificationsController : ApiControllerBase
     [HttpPost("send-force-notification")]
     [HasPermission(NotificationsPermission.SendForceNotification)]
     [SwaggerOperation("Send notifications to a selected recipients who are currently connected (ignores their settings)")]
-    public async Task<ActionResult> SendForceNotification(SendMessageDto dto, CancellationToken token)
+    public async Task<ActionResult> SendForceNotification(SendNotificationDto dto, CancellationToken token)
     {
         await _notificationSender.SendAsync(new Notification(dto.Message, dto.RecipientIds.ToHashSet()), token);
         return Ok();

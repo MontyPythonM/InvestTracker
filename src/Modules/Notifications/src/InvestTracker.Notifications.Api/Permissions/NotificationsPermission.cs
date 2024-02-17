@@ -10,5 +10,6 @@ public enum NotificationsPermission
     SetGlobalSettings,
     GetPersonalSettings,
     SetPersonalSettings,
-    GetReceivers
+    GetReceivers,
+    SendEmail
 }

@@ -23,7 +23,7 @@ internal static class Extensions
 
         services
             .AddSingleton(emailSenderOptions)
-            .AddScoped<IEmailSender, EmailSender>()
+            .AddScoped<IEmailSender, SmtpEmailSender>()
             .AddScoped<IEmailPublisher, EmailPublisher>();
 
         services 
