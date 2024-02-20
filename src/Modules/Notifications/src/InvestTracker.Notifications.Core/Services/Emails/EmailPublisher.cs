@@ -19,7 +19,7 @@ internal sealed class EmailPublisher : IEmailPublisher
         var receivers = await _receiverRepository.GetAsync(emailMessage.Recipients, emailMessage.FilterBySetting, true, token);
         
         var filteredRecipients = receivers
-            .Where(r => r.PersonalSettings.EnableNotifications)
+            .Where(r => r.PersonalSettings.EnableEmails)
             .Select(r => r.Email)
             .ToHashSet();
 
@@ -29,8 +29,7 @@ internal sealed class EmailPublisher : IEmailPublisher
     public async Task PublishAsync(GroupEmailMessage emailMessage, CancellationToken token = default)
     {
         var receivers = await _receiverRepository.GetAsync(emailMessage.RecipientGroup, emailMessage.FilterBySetting, true, token);
-
-        var recipients = receivers.Where(r => r.PersonalSettings.EnableNotifications);
+        var recipients = receivers.Where(r => r.PersonalSettings.EnableEmails);
         
         if (emailMessage.ExcludedReceiverIds is not null)
         {
