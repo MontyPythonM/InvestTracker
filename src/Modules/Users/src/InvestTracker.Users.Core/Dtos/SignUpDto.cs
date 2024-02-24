@@ -7,10 +7,10 @@ public record SignUpDto
     [Required, EmailAddress]
     public string Email { get; set; } = string.Empty;
     
-    [Required, MinLength(4), MaxLength(100)]
+    [Required]
     public string Password { get; set; } = string.Empty;
     
-    [Required, MinLength(3), MaxLength(100)]
+    [Required]
     public string FullName { get; set; } = string.Empty;
     
     [Phone]

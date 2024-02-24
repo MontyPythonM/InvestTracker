@@ -14,23 +14,22 @@ internal sealed class EmailPublisher : IEmailPublisher
         _emailSender = emailSender;
     }
 
-    public async Task PublishAsync(PersonalEmailMessage emailMessage, CancellationToken token = default)
+    public async Task NotifyAsync(PersonalEmailMessage emailMessage, CancellationToken token = default)
     {
         var receivers = await _receiverRepository.GetAsync(emailMessage.Recipients, emailMessage.FilterBySetting, true, token);
         
         var filteredRecipients = receivers
-            .Where(r => r.PersonalSettings.EnableNotifications)
+            .Where(r => r.PersonalSettings.EnableEmails)
             .Select(r => r.Email)
             .ToHashSet();
 
         await _emailSender.SendAsync(new EmailMessage(filteredRecipients, emailMessage.Subject, emailMessage.Body), token);
     }
 
-    public async Task PublishAsync(GroupEmailMessage emailMessage, CancellationToken token = default)
+    public async Task NotifyAsync(GroupEmailMessage emailMessage, CancellationToken token = default)
     {
         var receivers = await _receiverRepository.GetAsync(emailMessage.RecipientGroup, emailMessage.FilterBySetting, true, token);
-
-        var recipients = receivers.Where(r => r.PersonalSettings.EnableNotifications);
+        var recipients = receivers.Where(r => r.PersonalSettings.EnableEmails);
         
         if (emailMessage.ExcludedReceiverIds is not null)
         {

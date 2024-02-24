@@ -25,7 +25,7 @@ internal class AccountsController : ApiControllerBase
         await _accountService.SignUpAsync(dto, token);
         return Ok();
     }
-    
+
     [HttpPost("sign-in")]
     [AllowAnonymous]
     [SwaggerOperation("Allows registered users enter into system")]
@@ -39,5 +39,23 @@ internal class AccountsController : ApiControllerBase
     {
         await _accountService.DeleteCurrentUserAccount(dto, token);
         return NoContent();
+    }
+
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    [SwaggerOperation("Send email for reset password purpose")]
+    public async Task<ActionResult> ForgotPassword(string email, CancellationToken token)
+    {
+        await _accountService.ForgotPassword(email, token);
+        return Ok();
+    }
+
+    [HttpPost("reset-forgotten-password")]
+    [AllowAnonymous]
+    [SwaggerOperation("Reset password after invoking forgot-password action")]
+    public async Task<ActionResult> ResetForgottenPassword(ResetPasswordDto dto, CancellationToken token)
+    {
+        await _accountService.ResetForgottenPassword(dto, token);
+        return Ok();
     }
 }

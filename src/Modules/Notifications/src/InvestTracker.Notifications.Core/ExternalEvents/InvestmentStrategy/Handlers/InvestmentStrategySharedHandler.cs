@@ -35,7 +35,7 @@ public class InvestmentStrategySharedHandler : IEventHandler<InvestmentStrategyS
             @event.CollaboratorId,
             r => r.PersonalSettings.InvestmentStrategiesActivity);
 
-        await _notificationPublisher.PublishAsync(ownerNotification);
-        await _notificationPublisher.PublishAsync(collaboratorNotification);
+        await _notificationPublisher.NotifyAsync(ownerNotification);
+        await _notificationPublisher.NotifyAsync(collaboratorNotification);
     }
 }

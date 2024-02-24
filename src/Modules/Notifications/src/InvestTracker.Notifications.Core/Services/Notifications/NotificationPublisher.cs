@@ -14,7 +14,7 @@ internal sealed class NotificationPublisher : INotificationPublisher
         _notificationSender = notificationSender;
     }
 
-    public async Task PublishAsync(PersonalNotification notification, CancellationToken token = default)
+    public async Task NotifyAsync(PersonalNotification notification, CancellationToken token = default)
     {
         var receivers = await _receiverRepository.GetAsync(notification.Recipients, notification.FilterBySetting, true, token);
         
@@ -26,7 +26,7 @@ internal sealed class NotificationPublisher : INotificationPublisher
         await _notificationSender.SendAsync(new Notification(notification.Message, filteredRecipients), token);
     }
 
-    public async Task PublishAsync(GroupNotification notification, CancellationToken token = default)
+    public async Task NotifyAsync(GroupNotification notification, CancellationToken token = default)
     {
         var receivers = await _receiverRepository.GetAsync(notification.RecipientGroup, notification.FilterBySetting, true, token);
 

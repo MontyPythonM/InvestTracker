@@ -10,6 +10,7 @@ using InvestTracker.Users.Core.Entities;
 using InvestTracker.Users.Core.Events;
 using InvestTracker.Users.Core.Exceptions;
 using InvestTracker.Users.Core.Interfaces;
+using InvestTracker.Users.Core.Options;
 using InvestTracker.Users.Core.Services;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
@@ -183,6 +184,7 @@ public class AccountServiceTests
     private readonly IMessageBroker _messageBroker;
     private readonly IAccountService _accountService;
     private readonly IRequestContext _requestContext;
+    private readonly IPasswordValidator _passwordValidator;
     
     public AccountServiceTests()
     {
@@ -199,7 +201,13 @@ public class AccountServiceTests
             _passwordManager,
             _timeProvider,
             _messageBroker,
-            _requestContext);
+            _requestContext,
+            new PasswordResetOptions
+            {
+                ExpirationMinutes = 1,
+                RedirectTo = "http://redirect-to.com"
+            },
+            _passwordValidator);
     }
     
     private static User GetUser() => new()

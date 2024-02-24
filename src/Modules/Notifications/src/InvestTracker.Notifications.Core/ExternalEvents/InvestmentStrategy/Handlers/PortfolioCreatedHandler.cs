@@ -33,7 +33,7 @@ public class PortfolioCreatedHandler : IEventHandler<PortfolioCreated>
             @event.CollaboratorIds,
             r => r.PersonalSettings.PortfoliosActivity);
 
-        await _notificationPublisher.PublishAsync(ownerNotification);
-        await _notificationPublisher.PublishAsync(collaboratorsNotification);
+        await _notificationPublisher.NotifyAsync(ownerNotification);
+        await _notificationPublisher.NotifyAsync(collaboratorsNotification);
     }
 }

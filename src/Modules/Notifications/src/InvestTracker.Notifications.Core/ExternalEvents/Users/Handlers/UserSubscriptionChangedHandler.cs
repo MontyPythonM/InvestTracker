@@ -34,7 +34,7 @@ internal sealed class UserSubscriptionChangedHandler : IEventHandler<UserSubscri
         var email = new PersonalEmailMessage(@event.Id, "Subscription changed", message);
         
         await _receiverRepository.UpdateAsync(user);
-        await _notificationPublisher.PublishAsync(notification);
-        await _emailPublisher.PublishAsync(email);
+        await _notificationPublisher.NotifyAsync(notification);
+        await _emailPublisher.NotifyAsync(email);
     }
 }

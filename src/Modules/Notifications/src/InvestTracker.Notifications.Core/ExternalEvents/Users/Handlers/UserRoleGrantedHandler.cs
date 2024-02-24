@@ -39,7 +39,7 @@ internal sealed class UserRoleGrantedHandler : IEventHandler<UserRoleGranted>
             r => r.PersonalSettings.AdministratorsActivity,
             new List<Guid> { user.Id });
         
-        await _notificationPublisher.PublishAsync(userNotification);
-        await _notificationPublisher.PublishAsync(administratorsNotification);
+        await _notificationPublisher.NotifyAsync(userNotification);
+        await _notificationPublisher.NotifyAsync(administratorsNotification);
     }
 }
