@@ -33,7 +33,7 @@ public class FinancialAssetAddedHandler : IEventHandler<FinancialAssetAdded>
             @event.CollaboratorIds,
             r => r.PersonalSettings.AssetActivity);
 
-        await _notificationPublisher.PublishAsync(ownerNotification);
-        await _notificationPublisher.PublishAsync(collaboratorNotification);
+        await _notificationPublisher.NotifyAsync(ownerNotification);
+        await _notificationPublisher.NotifyAsync(collaboratorNotification);
     }
 }

@@ -1,2 +1,13 @@
 {
+  "Password": {
+    "Reset": {
+      "ExpirationMinutes": 5,
+      "RedirectTo": "https://your-frontend-page-for-reset-password.com"
+    },
+    "ValidationRules": {
+      "SpecialCharacters": "!@#$%^&*()_+{}|:<>?-=[]\\;',./'",
+      "MinimumLength": 2,
+      "MaximumLength": 100
+    }
+  }
 }

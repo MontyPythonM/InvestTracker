@@ -11,9 +11,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.OwnsOne<Role>(user => user.Role);
-        builder.OwnsOne<Subscription>(user => user.Subscription);
-
         builder.Property(u => u.Email)
             .HasMaxLength(100)
             .IsRequired()
@@ -29,5 +26,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         
         builder.Property(u => u.Phone)
             .HasConversion(u => u.Value, u => new PhoneNumber(u));
+        
+        builder.OwnsOne<Role>(user => user.Role);
+        builder.OwnsOne<Subscription>(user => user.Subscription);
+        builder.OwnsOne<ResetPassword>(user => user.ResetPassword);
     }
 }

@@ -35,7 +35,7 @@ public class CollaborationCancelledHandler : IEventHandler<CollaborationCancelle
         var email = new PersonalEmailMessage(receivers, "InvestTracker - collaboration cancelled", message, 
             r => r.PersonalSettings.NewCollaborationsActivity);
 
-        await _notificationPublisher.PublishAsync(notification);
-        await _emailPublisher.PublishAsync(email);
+        await _notificationPublisher.NotifyAsync(notification);
+        await _emailPublisher.NotifyAsync(email);
     }
 }

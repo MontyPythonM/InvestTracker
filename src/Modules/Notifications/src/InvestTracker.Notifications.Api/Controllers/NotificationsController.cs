@@ -45,7 +45,7 @@ internal class NotificationsController : ApiControllerBase
     public async Task<ActionResult> SendNotification(SendNotificationDto dto, CancellationToken token)
     {
         var notification = new PersonalNotification(dto.Message, dto.RecipientIds);
-        await _notificationPublisher.PublishAsync(notification, token);
+        await _notificationPublisher.NotifyAsync(notification, token);
         return Ok();
     }
     
@@ -55,7 +55,7 @@ internal class NotificationsController : ApiControllerBase
     public async Task<ActionResult> SendNotificationToGroup(SendMessageToGroupDto dto, CancellationToken token)
     {
         var notification = new GroupNotification(dto.Message, dto.RecipientGroup);
-        await _notificationPublisher.PublishAsync(notification, token);
+        await _notificationPublisher.NotifyAsync(notification, token);
         return Ok();
     }
     

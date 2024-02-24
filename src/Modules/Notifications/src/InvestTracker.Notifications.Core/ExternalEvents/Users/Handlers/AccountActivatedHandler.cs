@@ -26,6 +26,6 @@ internal sealed class AccountActivatedHandler : IEventHandler<AccountActivated>
             RecipientGroup.SystemAdministrators,
             r => r.PersonalSettings.AdministratorsActivity);
         
-        await _notificationPublisher.PublishAsync(groupNotification);
+        await _notificationPublisher.NotifyAsync(groupNotification);
     }
 }

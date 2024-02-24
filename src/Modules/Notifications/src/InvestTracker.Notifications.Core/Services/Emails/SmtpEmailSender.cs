@@ -34,9 +34,17 @@ internal sealed class SmtpEmailSender : IEmailSender
                 ? GetAddresses(_options.RedirectTo)
                 : GetAddresses(message.Recipients.Select(r => r.Value));
         
+            var bodyBuilder = new BodyBuilder();
+            bodyBuilder.TextBody = message.Body;
+
+            if (!string.IsNullOrWhiteSpace(message.HtmlBody))
+            {
+                bodyBuilder.HtmlBody = message.HtmlBody;
+            }
+
+            mimeMessage.Body = bodyBuilder.ToMessageBody();
             mimeMessage.To.AddRange(recipients);
             mimeMessage.Subject = message.Subject;
-            mimeMessage.Body = new TextPart(TextFormat.Plain) { Text = message.Body };
             
             await client.ConnectAsync(_options.Server, _options.Port, _options.UseSsl, token);
             await client.AuthenticateAsync(_options.Username, _options.Password, token);

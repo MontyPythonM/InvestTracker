@@ -35,7 +35,7 @@ public class CollaborationStartedHandler : IEventHandler<CollaborationStarted>
         var email = new PersonalEmailMessage(receivers, "InvestTracker - collaboration started", message, 
             r => r.PersonalSettings.NewCollaborationsActivity);
 
-        await _notificationPublisher.PublishAsync(notification);
-        await _emailPublisher.PublishAsync(email);
+        await _notificationPublisher.NotifyAsync(notification);
+        await _emailPublisher.NotifyAsync(email);
     }
 }

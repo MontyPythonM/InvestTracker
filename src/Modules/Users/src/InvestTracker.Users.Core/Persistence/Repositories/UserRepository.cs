@@ -18,12 +18,14 @@ internal class UserRepository : IUserRepository
         => await _context.Users
             .Include(user => user.Role)
             .Include(user => user.Subscription)
+            .Include(user => user.ResetPassword)
             .SingleOrDefaultAsync(user => user.Id == id, token);
 
     public async Task<User?> GetAsync(Email email, CancellationToken token)
         => await _context.Users
             .Include(user => user.Role)
             .Include(user => user.Subscription)
+            .Include(user => user.ResetPassword)
             .SingleOrDefaultAsync(user => user.Email == email, token);
 
     public async Task CreateAsync(User user, CancellationToken token)

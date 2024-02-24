@@ -28,6 +28,6 @@ public class InvestmentStrategyCreatedHandler : IEventHandler<InvestmentStrategy
             owner.Id,
             r => r.PersonalSettings.InvestmentStrategiesActivity);
         
-        await _notificationPublisher.PublishAsync(ownerNotification);
+        await _notificationPublisher.NotifyAsync(ownerNotification);
     }
 }
