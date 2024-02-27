@@ -9,9 +9,6 @@ public interface IReceiverRepository
 {
     Task<Receiver?> GetAsync(Guid id, bool asNoTracking = false, CancellationToken token = default);
     Task<IEnumerable<Receiver>> GetAsync(RecipientGroup recipientGroup, bool asNoTracking = false, CancellationToken token = default);
-    Task<Receiver?> GetFilteredAsync(Guid id, Expression<Func<NotificationSettings, bool>>? filterBy = null, bool asNoTracking = false, CancellationToken token = default);
-    Task<IEnumerable<Receiver>> GetFilteredAsync(IEnumerable<Guid> receiversIds, Expression<Func<NotificationSettings, bool>>? filterBy = null, bool asNoTracking = false, CancellationToken token = default);
-    Task<IEnumerable<Receiver>> GetFilteredAsync(RecipientGroup recipientGroup, Expression<Func<NotificationSettings, bool>>? filterBy = null, bool asNoTracking = false, CancellationToken token = default);
     Task<bool> ExistsAsync(Guid id, CancellationToken token = default);
     Task CreateAsync(Receiver receiver, CancellationToken token = default);
     Task UpdateAsync(Receiver receiver, CancellationToken token = default);

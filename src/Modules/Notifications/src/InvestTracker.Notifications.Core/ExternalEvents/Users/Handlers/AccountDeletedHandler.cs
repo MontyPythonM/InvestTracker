@@ -7,12 +7,12 @@ namespace InvestTracker.Notifications.Core.ExternalEvents.Users.Handlers;
 internal sealed class AccountDeletedHandler : IEventHandler<AccountDeleted>
 {
     private readonly IReceiverRepository _receiverRepository;
-    private readonly IEmailSender _emailSender;
+    private readonly IEmailPublisher _emailPublisher;
 
-    public AccountDeletedHandler(IReceiverRepository receiverRepository, IEmailSender emailSender)
+    public AccountDeletedHandler(IReceiverRepository receiverRepository, IEmailPublisher emailPublisher)
     {
         _receiverRepository = receiverRepository;
-        _emailSender = emailSender;
+        _emailPublisher = emailPublisher;
     }
 
     public async Task HandleAsync(AccountDeleted @event)
@@ -32,9 +32,9 @@ internal sealed class AccountDeletedHandler : IEventHandler<AccountDeleted>
                             InvestTracker team
                             """;
         
-        var email = new EmailMessage(receiver.Email, "Your InvestTracker account was deleted", body);
+        var email = new DirectEmailMessage(receiver.Email, "Your InvestTracker account was deleted", body);
         
         await _receiverRepository.DeleteAsync(receiver);
-        await _emailSender.SendAsync(email);
+        await _emailPublisher.NotifyAsync(email);
     }
 }
