@@ -17,7 +17,7 @@ public class FinancialAssetAddedHandler : IEventHandler<FinancialAssetAdded>
 
     public async Task HandleAsync(FinancialAssetAdded @event)
     {
-        var owner = await _receiverRepository.GetAsync(@event.OwnerId);
+        var owner = await _receiverRepository.GetAsync(@event.OwnerId, true);
         if (owner is null)
         {
             return;
@@ -26,12 +26,12 @@ public class FinancialAssetAddedHandler : IEventHandler<FinancialAssetAdded>
         var ownerNotification = new PersonalNotification(
             $"Financial asset '{@event.FinancialAssetName}' was added to '{@event.PortfolioTitle}' portfolio", 
             owner.Id,
-            r => r.PersonalSettings.AssetActivity);
+            setting => setting.AssetActivity);
         
         var collaboratorNotification = new PersonalNotification(
             $"Financial asset '{@event.FinancialAssetName}' was added to '{@event.PortfolioTitle}' portfolio owned by {owner.FullName.Value}", 
             @event.CollaboratorIds,
-            r => r.PersonalSettings.AssetActivity);
+            setting => setting.AssetActivity);
 
         await _notificationPublisher.NotifyAsync(ownerNotification);
         await _notificationPublisher.NotifyAsync(collaboratorNotification);

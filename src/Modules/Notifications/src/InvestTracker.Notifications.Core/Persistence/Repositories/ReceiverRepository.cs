@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using InvestTracker.Notifications.Core.Entities;
+using InvestTracker.Notifications.Core.Entities.Base;
 using InvestTracker.Notifications.Core.Enums;
 using InvestTracker.Notifications.Core.Interfaces;
-using InvestTracker.Shared.Abstractions.Authorization;
 using InvestTracker.Shared.Infrastructure.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,85 +11,70 @@ namespace InvestTracker.Notifications.Core.Persistence.Repositories;
 internal sealed class ReceiverRepository : IReceiverRepository
 {
     private readonly NotificationsDbContext _dbContext;
+    private readonly IGlobalSettingsRepository _globalSettingsRepository;
 
-    public ReceiverRepository(NotificationsDbContext dbContext)
+    public ReceiverRepository(NotificationsDbContext dbContext, IGlobalSettingsRepository globalSettingsRepository)
     {
         _dbContext = dbContext;
+        _globalSettingsRepository = globalSettingsRepository;
     }
 
-    public async Task<Receiver?> GetAsync(Guid id, Expression<Func<Receiver, bool>>? filterBy = null, 
-        bool asNoTracking = true, CancellationToken token = default)
+    public async Task<Receiver?> GetAsync(Guid id, bool asNoTracking = false, CancellationToken token = default)
     {
-        var query = _dbContext.Receivers
+        return await _dbContext.Receivers
             .ApplyAsNoTracking(asNoTracking)
             .Include(r => r.PersonalSettings)
-            .AsQueryable();
-
-        if (filterBy is not null)
-        {
-            query = query.Where(filterBy);
-        }
-
-        return await query.SingleOrDefaultAsync(r => r.Id == id, token);
+            .SingleOrDefaultAsync(r => r.Id == id, token);
     }
 
-    public async Task<IEnumerable<Receiver>> GetAsync(IEnumerable<Guid> receiversIds, Expression<Func<Receiver, bool>>? filterBy = null, 
+    public async Task<IEnumerable<Receiver>> GetAsync(RecipientGroup recipientGroup, bool asNoTracking = false, CancellationToken token = default)
+    {
+        return await _dbContext.Receivers
+            .ApplyAsNoTracking(asNoTracking)
+            .Include(r => r.PersonalSettings)
+            .FilterByRecipientGroup(recipientGroup)
+            .ToListAsync(token);
+    }
+
+    public async Task<Receiver?> GetFilteredAsync(Guid id, Expression<Func<NotificationSettings, bool>>? filterBy = null, 
         bool asNoTracking = true, CancellationToken token = default)
     {
-        var query = _dbContext.Receivers
+        var globalSettings = await _globalSettingsRepository.GetAsync(token);
+        
+        return await _dbContext.Receivers
+            .ApplyAsNoTracking(asNoTracking)
+            .Include(r => r.PersonalSettings)
+            .FilterByPersonalSetting(filterBy)
+            .FilterByGlobalSetting(filterBy, globalSettings)
+            .SingleOrDefaultAsync(r => r.Id == id, token);
+    }
+
+    public async Task<IEnumerable<Receiver>> GetFilteredAsync(IEnumerable<Guid> receiversIds, Expression<Func<NotificationSettings, bool>>? filterBy = null, 
+        bool asNoTracking = true, CancellationToken token = default)
+    {
+        var globalSettings = await _globalSettingsRepository.GetAsync(token);
+        
+        return await _dbContext.Receivers
             .ApplyAsNoTracking(asNoTracking)
             .Include(r => r.PersonalSettings)
             .Where(r => receiversIds.Contains(r.Id))
-            .AsQueryable();
-
-        if (filterBy is not null)
-        {
-            query = query.Where(filterBy);
-        }
-        
-        return await query.ToListAsync(token);
+            .FilterByPersonalSetting(filterBy)
+            .FilterByGlobalSetting(filterBy, globalSettings)
+            .ToListAsync(token);
     }
 
-    public async Task<IEnumerable<Receiver>> GetAsync(RecipientGroup recipientGroup, Expression<Func<Receiver, bool>>? filterBy = null, 
+    public async Task<IEnumerable<Receiver>> GetFilteredAsync(RecipientGroup recipientGroup, Expression<Func<NotificationSettings, bool>>? filterBy = null, 
         bool asNoTracking = true, CancellationToken token = default)
     {
-        var query = _dbContext.Receivers
+        var globalSettings = await _globalSettingsRepository.GetAsync(token);
+        
+        return await _dbContext.Receivers
             .ApplyAsNoTracking(asNoTracking)
             .Include(r => r.PersonalSettings)
-            .AsQueryable();
-
-        if (filterBy is not null)
-        {
-            query = query.Where(filterBy);
-        }
-        
-        var filteredQuery = recipientGroup switch
-        {
-            RecipientGroup.None 
-                => null,
-            RecipientGroup.StandardInvestors 
-                => query.Where(r => r.Subscription == SystemSubscription.StandardInvestor),
-            RecipientGroup.ProfessionalInvestors 
-                => query.Where(r => r.Subscription == SystemSubscription.ProfessionalInvestor),
-            RecipientGroup.Investors 
-                => query.Where(r => r.Subscription == SystemSubscription.StandardInvestor || r.Subscription == SystemSubscription.ProfessionalInvestor),
-            RecipientGroup.Advisors 
-                => query.Where(r => r.Subscription == SystemSubscription.Advisor),
-            RecipientGroup.Subscribers 
-                => query.Where(r => r.Subscription == SystemSubscription.StandardInvestor || r.Subscription == SystemSubscription.ProfessionalInvestor || r.Subscription == SystemSubscription.Advisor),
-            RecipientGroup.BusinessAdministrators 
-                => query.Where(r => r.Role == SystemRole.BusinessAdministrator),
-            RecipientGroup.SystemAdministrators 
-                => query.Where(r => r.Role == SystemRole.SystemAdministrator),
-            RecipientGroup.Administrators 
-                => query.Where(r => r.Role == SystemRole.BusinessAdministrator || r.Role == SystemRole.SystemAdministrator),
-            RecipientGroup.All => query,
-            _ => throw new ArgumentOutOfRangeException(nameof(recipientGroup), recipientGroup, null)
-        };
-        
-        return filteredQuery is null 
-            ? new List<Receiver>() 
-            : await filteredQuery.ToListAsync(token);
+            .FilterByRecipientGroup(recipientGroup)
+            .FilterByPersonalSetting(filterBy)
+            .FilterByGlobalSetting(filterBy, globalSettings)
+            .ToListAsync(token);
     }
 
     public async Task<bool> ExistsAsync(Guid id, CancellationToken token = default)

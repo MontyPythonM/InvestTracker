@@ -19,12 +19,6 @@ public class GlobalSettingsService : IGlobalSettingsService
     {
         var settings = await _globalSettingsRepository.GetAsync(token);
 
-        if (settings is null)
-        {
-            settings = Entities.GlobalSettings.CreateInitialSetup();
-            await _globalSettingsRepository.CreateAsync(settings, token);
-        }
-
         return MapToDto(settings);
     }
 

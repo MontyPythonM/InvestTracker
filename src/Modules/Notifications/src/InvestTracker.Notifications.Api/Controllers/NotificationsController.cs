@@ -54,7 +54,7 @@ internal class NotificationsController : ApiControllerBase
     [SwaggerOperation("Send notifications to a selected group of recipients who are currently connected and have enabled settings")]
     public async Task<ActionResult> SendNotificationToGroup(SendMessageToGroupDto dto, CancellationToken token)
     {
-        var notification = new GroupNotification(dto.Message, dto.RecipientGroup);
+        var notification = new GroupNotification(dto.Message, dto.RecipientGroup, setting => setting.AssetActivity);
         await _notificationPublisher.NotifyAsync(notification, token);
         return Ok();
     }

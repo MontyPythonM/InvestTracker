@@ -5,7 +5,6 @@ using InvestTracker.Notifications.Core.Options;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using MimeKit;
-using MimeKit.Text;
 
 namespace InvestTracker.Notifications.Core.Services.Emails;
 

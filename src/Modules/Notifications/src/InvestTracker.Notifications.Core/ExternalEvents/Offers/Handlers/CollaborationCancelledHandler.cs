@@ -21,8 +21,8 @@ public class CollaborationCancelledHandler : IEventHandler<CollaborationCancelle
     
     public async Task HandleAsync(CollaborationCancelled @event)
     {
-        var investor = await _receiverRepository.GetAsync(@event.InvestorId);
-        var advisor = await _receiverRepository.GetAsync(@event.AdvisorId);
+        var investor = await _receiverRepository.GetAsync(@event.InvestorId, true);
+        var advisor = await _receiverRepository.GetAsync(@event.AdvisorId, true);
         
         var receivers = new List<Guid> { @event.AdvisorId, @event.InvestorId };
         
@@ -30,10 +30,10 @@ public class CollaborationCancelledHandler : IEventHandler<CollaborationCancelle
         var investorName = investor?.FullName.Value ?? @event.InvestorId.ToString();
         var message = $"Collaboration between {advisorName} and {investorName} cancelled";
 
-        var notification = new PersonalNotification(message, receivers, r => r.PersonalSettings.NewCollaborationsActivity);
+        var notification = new PersonalNotification(message, receivers, r => r.NewCollaborationsActivity);
 
         var email = new PersonalEmailMessage(receivers, "InvestTracker - collaboration cancelled", message, 
-            r => r.PersonalSettings.NewCollaborationsActivity);
+            setting => setting.NewCollaborationsActivity);
 
         await _notificationPublisher.NotifyAsync(notification);
         await _emailPublisher.NotifyAsync(email);

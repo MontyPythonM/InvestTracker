@@ -16,14 +16,22 @@ internal sealed class GlobalSettingsRepository : IGlobalSettingsRepository
         _timeProvider = timeProvider;
     }
 
-    public async Task<GlobalSettings?> GetAsync(CancellationToken token = default)
+    public async Task<GlobalSettings> GetAsync(CancellationToken token = default)
     {
         var now = _timeProvider.Current();
         
-        return await _dbContext.GlobalSettings
+        var settings = await _dbContext.GlobalSettings
             .Where(s => s.EffectiveFrom <= now)
             .OrderByDescending(s => s.EffectiveFrom)
             .FirstOrDefaultAsync(token);
+        
+        if (settings is null)
+        {
+            settings = GlobalSettings.CreateInitialSetup();
+            await CreateAsync(settings, token);
+        }
+
+        return settings;
     }
 
     public async Task CreateAsync(GlobalSettings setup, CancellationToken token = default)

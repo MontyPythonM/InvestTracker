@@ -17,7 +17,7 @@ public class PortfolioCreatedHandler : IEventHandler<PortfolioCreated>
     
     public async Task HandleAsync(PortfolioCreated @event)
     {
-        var owner = await _receiverRepository.GetAsync(@event.OwnerId);
+        var owner = await _receiverRepository.GetAsync(@event.OwnerId, true);
         if (owner is null)
         {
             return;
@@ -26,12 +26,12 @@ public class PortfolioCreatedHandler : IEventHandler<PortfolioCreated>
         var ownerNotification = new PersonalNotification(
             $"Portfolio '{@event.PortfolioTitle}' created", 
             owner.Id,
-            r => r.PersonalSettings.PortfoliosActivity);
+            setting => setting.PortfoliosActivity);
         
         var collaboratorsNotification = new PersonalNotification(
             $"Portfolio '{@event.PortfolioTitle}' owned by {owner.FullName.Value} created", 
             @event.CollaboratorIds,
-            r => r.PersonalSettings.PortfoliosActivity);
+            setting => setting.PortfoliosActivity);
 
         await _notificationPublisher.NotifyAsync(ownerNotification);
         await _notificationPublisher.NotifyAsync(collaboratorsNotification);

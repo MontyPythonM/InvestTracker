@@ -16,7 +16,7 @@ internal sealed class EmailPublisher : IEmailPublisher
 
     public async Task NotifyAsync(PersonalEmailMessage emailMessage, CancellationToken token = default)
     {
-        var receivers = await _receiverRepository.GetAsync(emailMessage.Recipients, emailMessage.FilterBySetting, true, token);
+        var receivers = await _receiverRepository.GetFilteredAsync(emailMessage.Recipients, emailMessage.FilterBySetting, true, token);
         
         var filteredRecipients = receivers
             .Where(r => r.PersonalSettings.EnableEmails)
@@ -28,7 +28,7 @@ internal sealed class EmailPublisher : IEmailPublisher
 
     public async Task NotifyAsync(GroupEmailMessage emailMessage, CancellationToken token = default)
     {
-        var receivers = await _receiverRepository.GetAsync(emailMessage.RecipientGroup, emailMessage.FilterBySetting, true, token);
+        var receivers = await _receiverRepository.GetFilteredAsync(emailMessage.RecipientGroup, emailMessage.FilterBySetting, true, token);
         var recipients = receivers.Where(r => r.PersonalSettings.EnableEmails);
         
         if (emailMessage.ExcludedReceiverIds is not null)

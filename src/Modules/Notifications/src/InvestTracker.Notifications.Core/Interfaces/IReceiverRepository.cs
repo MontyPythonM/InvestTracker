@@ -1,14 +1,17 @@
 ﻿using System.Linq.Expressions;
 using InvestTracker.Notifications.Core.Entities;
+using InvestTracker.Notifications.Core.Entities.Base;
 using InvestTracker.Notifications.Core.Enums;
 
 namespace InvestTracker.Notifications.Core.Interfaces;
 
 public interface IReceiverRepository
 {
-    Task<Receiver?> GetAsync(Guid id, Expression<Func<Receiver, bool>>? filterBy = null, bool asNoTracking = false, CancellationToken token = default);
-    Task<IEnumerable<Receiver>> GetAsync(IEnumerable<Guid> receiversIds, Expression<Func<Receiver, bool>>? filterBy = null, bool asNoTracking = false, CancellationToken token = default);
-    Task<IEnumerable<Receiver>> GetAsync(RecipientGroup recipientGroup, Expression<Func<Receiver, bool>>? filterBy = null, bool asNoTracking = false, CancellationToken token = default);
+    Task<Receiver?> GetAsync(Guid id, bool asNoTracking = false, CancellationToken token = default);
+    Task<IEnumerable<Receiver>> GetAsync(RecipientGroup recipientGroup, bool asNoTracking = false, CancellationToken token = default);
+    Task<Receiver?> GetFilteredAsync(Guid id, Expression<Func<NotificationSettings, bool>>? filterBy = null, bool asNoTracking = false, CancellationToken token = default);
+    Task<IEnumerable<Receiver>> GetFilteredAsync(IEnumerable<Guid> receiversIds, Expression<Func<NotificationSettings, bool>>? filterBy = null, bool asNoTracking = false, CancellationToken token = default);
+    Task<IEnumerable<Receiver>> GetFilteredAsync(RecipientGroup recipientGroup, Expression<Func<NotificationSettings, bool>>? filterBy = null, bool asNoTracking = false, CancellationToken token = default);
     Task<bool> ExistsAsync(Guid id, CancellationToken token = default);
     Task CreateAsync(Receiver receiver, CancellationToken token = default);
     Task UpdateAsync(Receiver receiver, CancellationToken token = default);

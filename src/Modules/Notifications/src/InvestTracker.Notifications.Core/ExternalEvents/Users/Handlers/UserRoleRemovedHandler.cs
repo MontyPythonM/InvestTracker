@@ -19,8 +19,8 @@ internal sealed class UserRoleRemovedHandler : IEventHandler<UserRoleRemoved>
     
     public async Task HandleAsync(UserRoleRemoved @event)
     {
-        var user = await _receiverRepository.GetAsync(@event.Id);
-        var modifiedBy = await _receiverRepository.GetAsync(@event.ModifiedBy, null, true);
+        var user = await _receiverRepository.GetAsync(@event.Id, true);
+        var modifiedBy = await _receiverRepository.GetAsync(@event.ModifiedBy, true);
 
         if (user is null)
         {
@@ -37,7 +37,7 @@ internal sealed class UserRoleRemovedHandler : IEventHandler<UserRoleRemoved>
         var administratorsNotification = new GroupNotification(
             $"{user.FullName.Value} role was set to '{SystemRole.None}' by {modifiedBy?.FullName.Value ?? "-"}", 
             RecipientGroup.SystemAdministrators,
-            r => r.PersonalSettings.AdministratorsActivity,
+            r => r.AdministratorsActivity,
             new List<Guid> { user.Id });
         
         await _notificationPublisher.NotifyAsync(userNotification);

@@ -17,7 +17,7 @@ internal sealed class PasswordChangedHandler : IEventHandler<PasswordChanged>
 
     public async Task HandleAsync(PasswordChanged @event)
     {
-        var user = await _receiverRepository.GetAsync(@event.UserId);
+        var user = await _receiverRepository.GetAsync(@event.UserId, true);
         if (user is null)
         {
             return;

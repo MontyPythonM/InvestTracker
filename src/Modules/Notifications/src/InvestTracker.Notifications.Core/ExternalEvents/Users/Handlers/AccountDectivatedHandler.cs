@@ -18,13 +18,13 @@ internal sealed class AccountDeactivatedHandler : IEventHandler<AccountDeactivat
     
     public async Task HandleAsync(AccountDeactivated @event)
     {
-        var user = await _receiverRepository.GetAsync(@event.Id, null, true);
-        var modifiedBy = await _receiverRepository.GetAsync(@event.ModifiedBy, null, true);
+        var user = await _receiverRepository.GetAsync(@event.Id, true);
+        var modifiedBy = await _receiverRepository.GetAsync(@event.ModifiedBy, true);
         
         var groupNotification = new GroupNotification(
             $"{user?.FullName.Value ?? "-"} account was deactivated by {modifiedBy?.FullName.Value ?? "-"}", 
             RecipientGroup.SystemAdministrators,
-            r => r.PersonalSettings.AdministratorsActivity);
+            setting => setting.AdministratorsActivity);
         
         await _notificationPublisher.NotifyAsync(groupNotification);
     }

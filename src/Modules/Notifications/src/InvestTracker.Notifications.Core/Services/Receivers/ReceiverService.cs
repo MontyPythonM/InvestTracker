@@ -22,7 +22,7 @@ public class ReceiverService : IReceiverService
     public async Task<PersonalSettingsDto> GetPersonalSettingsAsync(CancellationToken token)
     {
         var currentUserId = _requestContext.Identity.UserId;
-        var receiver = await _receiverRepository.GetAsync(currentUserId, null, true, token);
+        var receiver = await _receiverRepository.GetFilteredAsync(currentUserId, null, true, token);
 
         if (receiver is null)
         {
@@ -43,7 +43,7 @@ public class ReceiverService : IReceiverService
 
     public async Task<IEnumerable<ReceiverDto>> GetReceiversAsync(RecipientGroup recipientGroup, CancellationToken token)
     {
-        var receivers = await _receiverRepository.GetAsync(recipientGroup, null, true, token);
+        var receivers = await _receiverRepository.GetAsync(recipientGroup, true, token);
 
         return receivers.Select(receiver => new ReceiverDto
         {
@@ -60,7 +60,7 @@ public class ReceiverService : IReceiverService
     public async Task SetPersonalSettingsAsync(SetPersonalSettingsDto dto, CancellationToken token)
     {
         var currentUserId = _requestContext.Identity.UserId;
-        var receiver = await _receiverRepository.GetAsync(currentUserId, null, false, token);
+        var receiver = await _receiverRepository.GetFilteredAsync(currentUserId, null, false, token);
         
         if (receiver is null)
         {
