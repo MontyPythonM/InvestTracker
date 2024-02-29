@@ -13,12 +13,10 @@ namespace InvestTracker.Notifications.Api.Controllers;
 internal class NotificationsController : ApiControllerBase
 {
     private readonly INotificationPublisher _notificationPublisher;
-    private readonly INotificationSender _notificationSender;
 
-    public NotificationsController(INotificationPublisher notificationPublisher, INotificationSender notificationSender)
+    public NotificationsController(INotificationPublisher notificationPublisher)
     {
         _notificationPublisher = notificationPublisher;
-        _notificationSender = notificationSender;
     }
 
     [HttpGet("recipient-groups")]
@@ -54,7 +52,7 @@ internal class NotificationsController : ApiControllerBase
     [SwaggerOperation("Send notifications to a selected group of recipients who are currently connected and have enabled settings")]
     public async Task<ActionResult> SendNotificationToGroup(SendMessageToGroupDto dto, CancellationToken token)
     {
-        var notification = new GroupNotification(dto.Message, dto.RecipientGroup);
+        var notification = new GroupNotification(dto.Message, dto.RecipientGroup, setting => setting.AssetActivity);
         await _notificationPublisher.NotifyAsync(notification, token);
         return Ok();
     }
@@ -64,7 +62,7 @@ internal class NotificationsController : ApiControllerBase
     [SwaggerOperation("Send notifications to a selected recipients who are currently connected (ignores their settings)")]
     public async Task<ActionResult> SendForceNotification(SendNotificationDto dto, CancellationToken token)
     {
-        await _notificationSender.SendAsync(new Notification(dto.Message, dto.RecipientIds.ToHashSet()), token);
+        await _notificationPublisher.NotifyAsync(new DirectNotification(dto.Message, dto.RecipientIds.ToHashSet()), token);
         return Ok();
     }
 }

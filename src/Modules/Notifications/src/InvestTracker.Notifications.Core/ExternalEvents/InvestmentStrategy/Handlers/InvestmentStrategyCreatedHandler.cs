@@ -17,7 +17,7 @@ public class InvestmentStrategyCreatedHandler : IEventHandler<InvestmentStrategy
     
     public async Task HandleAsync(InvestmentStrategyCreated @event)
     {
-        var owner = await _receiverRepository.GetAsync(@event.OwnerId);
+        var owner = await _receiverRepository.GetAsync(@event.OwnerId, true);
         if (owner is null)
         {
             return;
@@ -26,7 +26,7 @@ public class InvestmentStrategyCreatedHandler : IEventHandler<InvestmentStrategy
         var ownerNotification = new PersonalNotification(
             $"Investment strategy '{@event.InvestmentStrategyTitle}' created", 
             owner.Id,
-            r => r.PersonalSettings.InvestmentStrategiesActivity);
+            setting => setting.InvestmentStrategiesActivity);
         
         await _notificationPublisher.NotifyAsync(ownerNotification);
     }

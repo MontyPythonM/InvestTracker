@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\InvestTracker.Notifications.Core\InvestTracker.Notifications.Core.csproj" />
+        <ProjectReference Include="..\InvestTracker.Notifications.Infrastructure\InvestTracker.Notifications.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>

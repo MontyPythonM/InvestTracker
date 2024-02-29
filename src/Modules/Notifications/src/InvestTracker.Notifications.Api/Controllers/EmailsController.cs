@@ -10,12 +10,10 @@ namespace InvestTracker.Notifications.Api.Controllers;
 
 internal class EmailsController : ApiControllerBase
 {
-    private readonly IEmailSender _emailSender;
     private readonly IEmailPublisher _emailPublisher;
 
-    public EmailsController(IEmailSender emailSender, IEmailPublisher emailPublisher)
+    public EmailsController(IEmailPublisher emailPublisher)
     {
-        _emailSender = emailSender;
         _emailPublisher = emailPublisher;
     }
     
@@ -24,7 +22,7 @@ internal class EmailsController : ApiControllerBase
     [SwaggerOperation("Send email to selected email address")]
     public async Task<ActionResult> SendEmail(string emailAddress, string subject, string body, CancellationToken token)
     {
-        await _emailSender.SendAsync(new EmailMessage(emailAddress, subject, body), token);
+        await _emailPublisher.NotifyAsync(new DirectEmailMessage(emailAddress, subject, body), token);
         return Ok();
     }
 }

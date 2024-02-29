@@ -7,17 +7,17 @@ namespace InvestTracker.Notifications.Core.ExternalEvents.Users.Handlers;
 internal sealed class PasswordForgottenHandler : IEventHandler<PasswordForgotten>
 {
     private readonly IReceiverRepository _receiverRepository;
-    private readonly IEmailSender _emailSender;
+    private readonly IEmailPublisher _emailPublisher;
 
-    public PasswordForgottenHandler(IReceiverRepository receiverRepository, IEmailSender emailSender)
+    public PasswordForgottenHandler(IReceiverRepository receiverRepository, IEmailPublisher emailPublisher)
     {
         _receiverRepository = receiverRepository;
-        _emailSender = emailSender;
+        _emailPublisher = emailPublisher;
     }
 
     public async Task HandleAsync(PasswordForgotten @event)
     {
-        var user = await _receiverRepository.GetAsync(@event.UserId);
+        var user = await _receiverRepository.GetAsync(@event.UserId, true);
         if (user is null)
         {
             return;
@@ -49,8 +49,8 @@ internal sealed class PasswordForgottenHandler : IEventHandler<PasswordForgotten
                    InvestTracker team
                    """;
         
-        var email = new EmailMessage(user.Email, subject, body, htmlBody);
+        var email = new DirectEmailMessage(user.Email, subject, body, htmlBody);
         
-        await _emailSender.SendAsync(email);
+        await _emailPublisher.NotifyAsync(email);
     }
 }

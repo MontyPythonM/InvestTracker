@@ -13,11 +13,6 @@
 
     <ItemGroup>
       <Folder Include="ExternalEvents\Calculators\" />
-      <Folder Include="Persistence\Migrations\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="MailKit" Version="4.3.0" />
     </ItemGroup>
     
 </Project>
