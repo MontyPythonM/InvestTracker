@@ -1,9 +1,9 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Common;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
+﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Entities;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
+using InvestTracker.InvestmentStrategies.Domain.Shared;
 using InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;
 using InvestTracker.Shared.Abstractions.Context;
 

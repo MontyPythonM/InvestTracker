@@ -72,7 +72,7 @@ internal sealed class GusInflationRateApiClient : IInflationRateApiClient
         var recordsNumber = _inflationRateApiOptions.RecordsNumber;
         var periodId = GusApiPeriods.GetByMonth(monthlyDate.Month);
         
-        return @$"variable/variable-data-section?id-zmienna=305&id-przekroj=736&id-rok={monthlyDate.Year}&id-okres={periodId.PeriodId}&ile-na-stronie={recordsNumber}&numer-strony=0";
+        return $"variable/variable-data-section?id-zmienna=305&id-przekroj=736&id-rok={monthlyDate.Year}&id-okres={periodId.PeriodId}&ile-na-stronie={recordsNumber}&numer-strony=0";
     }
 
     private InflationRateResponseDetails? GetInflationRateResponseDetails(InflationRateResponse response)
