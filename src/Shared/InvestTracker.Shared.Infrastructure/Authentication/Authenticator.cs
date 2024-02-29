@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using InvestTracker.Shared.Abstractions.Authentication;
 using InvestTracker.Shared.Abstractions.Time;
+using InvestTracker.Shared.Abstractions.Types;
 using Microsoft.IdentityModel.Tokens;
 
 namespace InvestTracker.Shared.Infrastructure.Authentication;
@@ -21,7 +22,7 @@ internal sealed class Authenticator : IAuthenticator
             Encoding.UTF8.GetBytes(_authOptions.IssuerSigningKey)), SecurityAlgorithms.HmacSha256);
     }
     
-    public JsonWebToken CreateToken(string userId, string? role = null, string? subscription = null)
+    public AccessToken CreateAccessToken(string userId, string? role = null, string? subscription = null)
     {
         if (string.IsNullOrWhiteSpace(userId))
         {
@@ -62,14 +63,46 @@ internal sealed class Authenticator : IAuthenticator
             signingCredentials: _signingKey
         );
         
-        return new JsonWebToken
+        return new AccessToken
         {
-            AccessToken = new JwtSecurityTokenHandler().WriteToken(jwt),
+            Token = new JwtSecurityTokenHandler().WriteToken(jwt),
             ExpiredAt = expires,
             Expires = new DateTimeOffset(expires).ToUnixTimeMilliseconds(),
             UserId = userId,
             Role = role,
             Subscription = subscription,
         };
+    }
+
+    public RefreshToken CreateRefreshToken()
+    {
+        var expiredAt = _timeProvider.Current().AddMinutes(_authOptions.RefreshTokenExpiryMinutes);
+        
+        return new RefreshToken
+        {
+            Token = Guid.NewGuid().ToString(),
+            ExpiredAt = expiredAt,
+            Expires = new DateTimeOffset(expiredAt).ToUnixTimeMilliseconds()
+        };
+    }
+
+    public Guid? GetUserFromAccessToken(string accessToken)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authOptions.IssuerSigningKey)),
+            ValidIssuer = _authOptions.ValidIssuer,
+            ValidAudiences = _authOptions.ValidAudiences,
+            ValidateAudience = _authOptions.ValidateAudience,
+            ValidateIssuer = _authOptions.ValidateIssuer,
+            ValidateLifetime = _authOptions.ValidateLifetime,
+            ClockSkew = TimeSpan.Zero,
+            ValidateIssuerSigningKey = true
+        };
+        
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var principal = tokenHandler.ValidateToken(accessToken, tokenValidationParameters, out var securityToken);
+
+        return principal.Identity?.Name?.ToNullableGuid();
     }
 }

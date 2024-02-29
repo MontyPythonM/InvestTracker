@@ -2,5 +2,7 @@
 
 public interface IAuthenticator
 {
-    JsonWebToken CreateToken(string userId, string? role = null, string? subscription = null);
+    AccessToken CreateAccessToken(string userId, string? role = null, string? subscription = null);
+    RefreshToken CreateRefreshToken();
+    Guid? GetUserFromAccessToken(string accessToken);
 }

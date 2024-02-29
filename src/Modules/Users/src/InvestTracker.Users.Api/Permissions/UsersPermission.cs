@@ -8,5 +8,6 @@ public enum UsersPermission
     RemoveRole,
     SetSubscription,
     ActivateUserAccount,
-    DeactivateUserAccount
+    DeactivateUserAccount,
+    RevokeToken
 }

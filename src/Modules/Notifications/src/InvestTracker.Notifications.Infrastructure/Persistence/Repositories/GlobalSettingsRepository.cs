@@ -1,5 +1,4 @@
 ﻿using InvestTracker.Notifications.Core.Entities;
-using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Notifications.Infrastructure.Interfaces;
 using InvestTracker.Shared.Abstractions.Time;
 using Microsoft.EntityFrameworkCore;

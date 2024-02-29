@@ -1,8 +1,8 @@
 ﻿namespace InvestTracker.Shared.Abstractions.Authentication;
 
-public class JsonWebToken
+public class AccessToken
 {
-    public string AccessToken { get; set; } = string.Empty;
+    public string Token { get; set; } = string.Empty;
     public long Expires { get; set; }
     public DateTime ExpiredAt { get; set; }
     public string UserId { get; set; } = string.Empty;

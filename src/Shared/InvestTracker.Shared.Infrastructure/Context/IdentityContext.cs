@@ -16,7 +16,7 @@ public class IdentityContext : IIdentityContext
         IsAuthenticated = principal.Identity?.IsAuthenticated is true;
         
         UserId = IsAuthenticated 
-            ? Guid.Parse(principal.Identity.Name) 
+            ? Guid.Parse(principal.Identity!.Name!) 
             : Guid.Empty;
         
         Role = principal.Claims

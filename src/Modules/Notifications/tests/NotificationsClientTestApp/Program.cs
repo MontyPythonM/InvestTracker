@@ -16,7 +16,7 @@ Console.WriteLine($"Response from API: {JsonConvert.SerializeObject(jwt)}");
 var connection = new HubConnectionBuilder()
     .WithUrl(uri, options =>
     {
-        options.Headers.Add("Authorization", $"Bearer {jwt.AccessToken}");
+        options.Headers.Add("Authorization", $"Bearer {jwt.Token}");
     })
     .Build();
 
@@ -34,7 +34,7 @@ while (true)
     await Task.Delay(1000);
 }
 
-async Task<JsonWebToken> GetJsonWebTokenAsync(string apiUri, string email, string password)
+async Task<AccessToken> GetJsonWebTokenAsync(string apiUri, string email, string password)
 {
     using var httpClient = new HttpClient();
     var body = new { email, password };
@@ -43,5 +43,5 @@ async Task<JsonWebToken> GetJsonWebTokenAsync(string apiUri, string email, strin
     var response = await httpClient.PostAsync(apiUri, stringContent);
 
     var responseData = await response.Content.ReadAsStringAsync();
-    return JsonConvert.DeserializeObject<JsonWebToken>(responseData) ?? throw new Exception("ERROR: Cannot deserialize JWT.");
+    return JsonConvert.DeserializeObject<AccessToken>(responseData) ?? throw new Exception("ERROR: Cannot deserialize JWT.");
 }
