@@ -33,6 +33,10 @@ For example, to optimize an investor's financial _portfolio_.
 ### Users
 The module responsible for the registration and login and management of application users by administrators.
 
+Authentication is based on JSON Web Tokens (JWT) with an optional refresh/revoke token functions. 
+
+Authorization uses a permission-based approach.
+
 ### Calculators
 A module containing calculators for estimating investment returns, such as government bond yields under certain assumptions.
 
