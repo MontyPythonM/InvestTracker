@@ -99,20 +99,22 @@ internal sealed class AccountService : IAccountService
             throw new InvalidCredentialsException();
         }
 
-        var accessToken = _authenticator.CreateAccessToken(user.Id.ToString(), user.Role.Value, user.Subscription.Value);
-        accessToken.Email = user.Email;
+        var accessToken = _authenticator.CreateAccessToken(user.Id, user.Email.Value, user.Role.Value, user.Subscription.Value);
 
+        user.LastSuccessfulLogin = _timeProvider.Current();
+        user.RefreshToken = null;
+        
         if (_authOptions.UseRefreshToken)
         {
             var refreshToken = _authenticator.CreateRefreshToken();
-            
             user.RefreshToken = new RefreshToken { Token = refreshToken.Token, ExpiredAt = refreshToken.ExpiredAt };
-            await _userRepository.UpdateAsync(user, token);
-            
-            return new AuthenticationResponse(accessToken, refreshToken);
         }
+        
+        await _userRepository.UpdateAsync(user, token);
 
-        return new AuthenticationResponse(accessToken, null);
+        return _authOptions.UseRefreshToken
+            ? new AuthenticationResponse(accessToken, new RefreshTokenDto(user.RefreshToken!.Token, user.RefreshToken.ExpiredAt))
+            : new AuthenticationResponse(accessToken, null);
     }
     
     public async Task DeleteCurrentUserAccountAsync(DeleteAccountDto dto, CancellationToken token)
@@ -190,38 +192,37 @@ internal sealed class AccountService : IAccountService
         await _messageBroker.PublishAsync(new PasswordChanged(user.Id));
     }
 
-    public async Task<AuthenticationResponse> RefreshTokenAsync(AuthTokenDto dto, CancellationToken token)
+    public async Task<AuthenticationResponse> RefreshTokenAsync(string? refreshToken, CancellationToken token)
     {
         if (!_authOptions.UseRefreshToken)
-        {
             throw new RefreshTokenException("Refresh token feature is disabled");
-        }
-
-        var userId = _authenticator.GetUserFromAccessToken(dto.ExpiredAccessToken) 
-                     ?? throw new RefreshTokenException("Unable to read User ID from access token");
         
-        var user = await _userRepository.GetAsync(userId, token);
-        if (user is null)
-        {
-            throw new UserNotFoundException();
-        }
-
-        if (IsValidRefreshToken(dto.RefreshToken, user))
-        {
+        if (string.IsNullOrWhiteSpace(refreshToken))
             throw new RefreshTokenException("Invalid refresh token");
-        }
         
-        var newAccessToken = _authenticator.CreateAccessToken(user.Id.ToString(), user.Role.Value, user.Subscription.Value);
+        var user = await _userRepository.GetByRefreshTokenAsync(refreshToken, token);
+        
+        if (user is null)
+            throw new RefreshTokenException($"Cannot find user with refresh token '{refreshToken}'");
+
+        if (user.RefreshToken!.ExpiredAt <= _timeProvider.Current())
+            throw new RefreshTokenException("Refresh token has expired");
+        
+        var newAccessToken = _authenticator.CreateAccessToken(user.Id, user.Email, user.Role.Value, user.Subscription.Value);
         var newRefreshToken = _authenticator.CreateRefreshToken();
 
-        user.RefreshToken = new RefreshToken { Token = newRefreshToken.Token, ExpiredAt = newRefreshToken.ExpiredAt };
+        user.RefreshToken = new RefreshToken 
+        { 
+            Token = newRefreshToken.Token, 
+            ExpiredAt = newRefreshToken.ExpiredAt
+        };
 
         await _userRepository.UpdateAsync(user, token);
         
-        return new AuthenticationResponse(newAccessToken, newRefreshToken);
+        return new AuthenticationResponse(newAccessToken, new RefreshTokenDto(user.RefreshToken.Token, user.RefreshToken.ExpiredAt));
     }
 
-    public async Task RevokeTokenAsync(Guid userId, CancellationToken token)
+    public async Task RevokeRefreshTokenAsync(Guid userId, CancellationToken token)
     {
         var user = await _userRepository.GetAsync(userId, token);
         if (user is null)
@@ -234,8 +235,4 @@ internal sealed class AccountService : IAccountService
     }
 
     private string CreateResetPasswordUri(string resetPasswordKey) => $"{_passwordResetOptions.RedirectTo}/{resetPasswordKey}";
-
-    private bool IsValidRefreshToken(string refreshToken, User user) 
-        => user.RefreshToken is not null && 
-           (user.RefreshToken.Token != refreshToken || user.RefreshToken.ExpiredAt <= _timeProvider.Current());
 }

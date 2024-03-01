@@ -1,8 +1,9 @@
-﻿namespace InvestTracker.Shared.Abstractions.Authentication;
+﻿using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
+
+namespace InvestTracker.Shared.Abstractions.Authentication;
 
 public interface IAuthenticator
 {
-    AccessToken CreateAccessToken(string userId, string? role = null, string? subscription = null);
-    RefreshToken CreateRefreshToken();
-    Guid? GetUserFromAccessToken(string accessToken);
+    AccessTokenDto CreateAccessToken(Guid userId, Email email, Role? role = null, Subscription? subscription = null);
+    RefreshTokenDto CreateRefreshToken();
 }

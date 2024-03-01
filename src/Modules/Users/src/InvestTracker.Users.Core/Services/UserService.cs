@@ -42,6 +42,7 @@ internal sealed class UserService : IUserService
                 FullName = user.FullName,
                 Email = user.Email,
                 Phone = user.Phone ?? string.Empty,
+                IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt,
                 Subscription = user.Subscription.Value,
                 Role = user.Role.Value

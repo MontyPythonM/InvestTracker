@@ -1,6 +1,6 @@
 ﻿namespace InvestTracker.Shared.Abstractions.Authentication;
 
-public class AccessToken
+public class AccessTokenDto
 {
     public string Token { get; set; } = string.Empty;
     public long Expires { get; set; }

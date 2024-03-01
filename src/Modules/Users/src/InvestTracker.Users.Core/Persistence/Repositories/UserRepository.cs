@@ -28,6 +28,15 @@ internal class UserRepository : IUserRepository
             .Include(user => user.ResetPassword)
             .SingleOrDefaultAsync(user => user.Email == email, token);
 
+    public async Task<User?> GetByRefreshTokenAsync(string refreshToken, CancellationToken token)
+    {
+        return await _context.Users
+            .Include(user => user.Role)
+            .Include(user => user.Subscription)
+            .Include(user => user.ResetPassword)
+            .SingleOrDefaultAsync(user => user.RefreshToken != null && user.RefreshToken.Token == refreshToken, token);
+    }
+
     public async Task CreateAsync(User user, CancellationToken token)
     {
         await _context.Users.AddAsync(user, token);

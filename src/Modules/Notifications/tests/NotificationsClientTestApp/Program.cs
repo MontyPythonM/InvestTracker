@@ -34,7 +34,7 @@ while (true)
     await Task.Delay(1000);
 }
 
-async Task<AccessToken> GetJsonWebTokenAsync(string apiUri, string email, string password)
+async Task<AccessTokenDto> GetJsonWebTokenAsync(string apiUri, string email, string password)
 {
     using var httpClient = new HttpClient();
     var body = new { email, password };
@@ -43,5 +43,5 @@ async Task<AccessToken> GetJsonWebTokenAsync(string apiUri, string email, string
     var response = await httpClient.PostAsync(apiUri, stringContent);
 
     var responseData = await response.Content.ReadAsStringAsync();
-    return JsonConvert.DeserializeObject<AccessToken>(responseData) ?? throw new Exception("ERROR: Cannot deserialize JWT.");
+    return JsonConvert.DeserializeObject<AccessTokenDto>(responseData) ?? throw new Exception("ERROR: Cannot deserialize JWT.");
 }

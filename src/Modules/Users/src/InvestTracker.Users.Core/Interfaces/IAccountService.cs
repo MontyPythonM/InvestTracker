@@ -9,6 +9,6 @@ public interface IAccountService
     Task DeleteCurrentUserAccountAsync(DeleteAccountDto dto, CancellationToken token);
     Task ForgotPasswordAsync(string email, CancellationToken token);
     Task ResetForgottenPasswordAsync(ResetPasswordDto dto, CancellationToken token);
-    Task<AuthenticationResponse> RefreshTokenAsync(AuthTokenDto dto, CancellationToken token);
-    Task RevokeTokenAsync(Guid userId, CancellationToken token);
+    Task<AuthenticationResponse> RefreshTokenAsync(string? refreshToken, CancellationToken token);
+    Task RevokeRefreshTokenAsync(Guid userId, CancellationToken token);
 }

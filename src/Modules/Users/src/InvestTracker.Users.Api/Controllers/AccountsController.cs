@@ -1,10 +1,12 @@
-﻿using InvestTracker.Shared.Abstractions.Context;
+﻿using InvestTracker.Shared.Abstractions.Authentication;
+using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Infrastructure.Authorization;
 using InvestTracker.Users.Api.Controllers.Base;
 using InvestTracker.Users.Api.Permissions;
 using InvestTracker.Users.Core.Dtos;
 using InvestTracker.Users.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -33,8 +35,17 @@ internal class AccountsController : ApiControllerBase
     [HttpPost("sign-in")]
     [AllowAnonymous]
     [SwaggerOperation("Allows registered users enter into system")]
-    public async Task<ActionResult<AuthenticationResponse>> SignIn(SignInDto dto, CancellationToken token)
-        => await _accountService.SignInAsync(dto, token);
+    public async Task<ActionResult<AccessTokenDto>> SignIn(SignInDto dto, CancellationToken token)
+    {
+        var (accessToken, refreshToken) = await _accountService.SignInAsync(dto, token);
+        
+        if (refreshToken is not null)
+        {
+            SetRefreshTokenCookie(refreshToken);
+        }
+
+        return accessToken;
+    }
 
     [HttpDelete]
     [Authorize]
@@ -62,28 +73,49 @@ internal class AccountsController : ApiControllerBase
         await _accountService.ResetForgottenPasswordAsync(dto, token);
         return Ok();
     }
-    
+
     [HttpPost("refresh-token")]
     [AllowAnonymous]
     [SwaggerOperation("Reset password after invoking forgot-password action")]
-    public async Task<ActionResult<AuthenticationResponse>> RefreshToken(AuthTokenDto dto, CancellationToken token) 
-        => await _accountService.RefreshTokenAsync(dto, token);
+    public async Task<ActionResult<AccessTokenDto>> RefreshToken( CancellationToken token)
+    {
+        var refreshTokenCookie = Request.Cookies["RefreshToken"];
+        var (accessToken, refreshToken) = await _accountService.RefreshTokenAsync(refreshTokenCookie, token);
+
+        if (refreshToken is not null)
+        {
+            SetRefreshTokenCookie(refreshToken);
+        }
+        
+        return Ok(accessToken);
+    }
     
     [HttpPost("revoke-token")]
     [Authorize]
     [SwaggerOperation("Revoke current user refresh token")]
-    public async Task<ActionResult> RevokeToken(CancellationToken token)
+    public async Task<ActionResult> RevokeRefreshToken(CancellationToken token)
     {
-        await _accountService.RevokeTokenAsync(_requestContext.Identity.UserId, token);
+        await _accountService.RevokeRefreshTokenAsync(_requestContext.Identity.UserId, token);
         return Ok();
     }
     
     [HttpPost("revoke-token/{userId:guid}")]
-    [HasPermission(UsersPermission.RevokeToken)]
+    [HasPermission(UsersPermission.RevokeRefreshToken)]
     [SwaggerOperation("Revoke selected user refresh token")]
-    public async Task<ActionResult> RevokeToken(Guid userId, CancellationToken token)
+    public async Task<ActionResult> RevokeRefreshToken(Guid userId, CancellationToken token)
     {
-        await _accountService.RevokeTokenAsync(userId, token);
+        await _accountService.RevokeRefreshTokenAsync(userId, token);
         return Ok();
+    }
+    
+    private void SetRefreshTokenCookie(RefreshTokenDto refreshTokenDto)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = refreshTokenDto.ExpiredAt,
+        };
+
+        Response.Cookies.Append("RefreshToken", refreshTokenDto.Token, cookieOptions);
     }
 }

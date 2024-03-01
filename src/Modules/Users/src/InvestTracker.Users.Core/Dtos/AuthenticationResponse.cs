@@ -2,4 +2,4 @@
 
 namespace InvestTracker.Users.Core.Dtos;
 
-public record AuthenticationResponse(AccessToken AccessToken, RefreshToken? RefreshToken);
+public record AuthenticationResponse(AccessTokenDto AccessTokenDto, RefreshTokenDto? RefreshToken);

@@ -9,5 +9,5 @@ public enum UsersPermission
     SetSubscription,
     ActivateUserAccount,
     DeactivateUserAccount,
-    RevokeToken
+    RevokeRefreshToken
 }
