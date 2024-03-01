@@ -14,4 +14,6 @@ public class User
     public Role Role { get; set; }
     public Subscription Subscription { get; set; }
     public ResetPassword ResetPassword { get; set; }
+    public RefreshToken? RefreshToken { get; set; }
+    public DateTime? LastSuccessfulLogin { get; set; }
 }

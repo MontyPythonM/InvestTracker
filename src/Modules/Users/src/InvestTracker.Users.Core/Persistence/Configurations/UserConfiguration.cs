@@ -28,7 +28,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasConversion(u => u.Value, u => new PhoneNumber(u));
         
         builder.OwnsOne<Role>(user => user.Role);
+        
         builder.OwnsOne<Subscription>(user => user.Subscription);
+        
         builder.OwnsOne<ResetPassword>(user => user.ResetPassword);
+        
+        builder.OwnsOne<RefreshToken>(user => user.RefreshToken);
     }
 }

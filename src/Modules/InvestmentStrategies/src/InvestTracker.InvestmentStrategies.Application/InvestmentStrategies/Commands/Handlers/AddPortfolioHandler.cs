@@ -1,10 +1,10 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Common;
-using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Repositories;
+﻿using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Dto;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Policies.PortfolioLimitPolicy;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
+using InvestTracker.InvestmentStrategies.Domain.Shared;
 using InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;
 using InvestTracker.InvestmentStrategies.Domain.Stakeholders.Repositories;
 using InvestTracker.Shared.Abstractions.Commands;

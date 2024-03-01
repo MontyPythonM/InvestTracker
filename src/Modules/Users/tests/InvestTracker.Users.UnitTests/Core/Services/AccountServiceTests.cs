@@ -5,6 +5,7 @@ using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using InvestTracker.Shared.Abstractions.Messages;
 using InvestTracker.Shared.Abstractions.Time;
 using InvestTracker.Shared.Abstractions.Types;
+using InvestTracker.Shared.Infrastructure.Authentication;
 using InvestTracker.Users.Core.Dtos;
 using InvestTracker.Users.Core.Entities;
 using InvestTracker.Users.Core.Events;
@@ -194,6 +195,7 @@ public class AccountServiceTests
         _timeProvider = Substitute.For<ITimeProvider>();
         _messageBroker = Substitute.For<IMessageBroker>();
         _requestContext = Substitute.For<IRequestContext>();
+        _passwordValidator = Substitute.For<IPasswordValidator>();
         
         _accountService = new AccountService(
             _userRepository,
@@ -207,7 +209,8 @@ public class AccountServiceTests
                 ExpirationMinutes = 1,
                 RedirectTo = "http://redirect-to.com"
             },
-            _passwordValidator);
+            _passwordValidator,
+            new AuthOptions());
     }
     
     private static User GetUser() => new()

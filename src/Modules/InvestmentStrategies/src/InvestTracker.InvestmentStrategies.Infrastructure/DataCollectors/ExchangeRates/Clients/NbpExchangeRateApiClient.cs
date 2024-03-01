@@ -43,7 +43,7 @@ internal sealed class NbpExchangeRateApiClient : IExchangeRateApiClient
                 throw new MaxDaysLimitExceedException(daysLimitPerRequest);
             }
 
-            var route = @$"rates/A/{currency.Value}/{dateRange.From.ToString(DateFormat)}/{dateRange.To.ToString(DateFormat)}";
+            var route = $"rates/A/{currency.Value}/{dateRange.From.ToString(DateFormat)}/{dateRange.To.ToString(DateFormat)}";
             var responseResult = await _httpClient.GetFromJsonAsync<ConcreteExchangeRatesResponse>(route, token);
 
             return responseResult is not null
@@ -75,7 +75,7 @@ internal sealed class NbpExchangeRateApiClient : IExchangeRateApiClient
                 throw new MaxDaysLimitExceedException(daysLimitPerRequest);
             }
 
-            var route = @$"tables/A/{dateRange.From.ToString(DateFormat)}/{dateRange.To.ToString(DateFormat)}";
+            var route = $"tables/A/{dateRange.From.ToString(DateFormat)}/{dateRange.To.ToString(DateFormat)}";
             var responseResults = await _httpClient.GetFromJsonAsync<List<ExchangeRateResponse>>(route, token);
 
             return responseResults is not null

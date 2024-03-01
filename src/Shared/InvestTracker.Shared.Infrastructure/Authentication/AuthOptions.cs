@@ -1,6 +1,6 @@
 ﻿namespace InvestTracker.Shared.Infrastructure.Authentication;
 
-internal class AuthOptions
+public class AuthOptions
 {
     public const string SectionName = "Authentication";
     
@@ -15,4 +15,6 @@ internal class AuthOptions
     public bool ValidateLifetime { get; set; } = true;
     public bool SaveToken { get; set; }
     public bool RequireHttpsMetadata { get; set; }
+    public bool UseRefreshToken { get; set; }
+    public int RefreshTokenExpiryMinutes { get; set; }
 }

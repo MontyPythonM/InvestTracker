@@ -2,7 +2,7 @@
 using InvestTracker.InvestmentStrategies.Domain.InvestmentStrategies.ValueObjects.Types;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects.Types;
 
-namespace InvestTracker.InvestmentStrategies.Domain.Common;
+namespace InvestTracker.InvestmentStrategies.Domain.Shared;
 
 public interface IResourceAccessor
 {

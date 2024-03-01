@@ -2,7 +2,9 @@
 using System.Security.Claims;
 using System.Text;
 using InvestTracker.Shared.Abstractions.Authentication;
+using InvestTracker.Shared.Abstractions.DDD.ValueObjects;
 using InvestTracker.Shared.Abstractions.Time;
+using InvestTracker.Shared.Abstractions.Types;
 using Microsoft.IdentityModel.Tokens;
 
 namespace InvestTracker.Shared.Infrastructure.Authentication;
@@ -21,30 +23,25 @@ internal sealed class Authenticator : IAuthenticator
             Encoding.UTF8.GetBytes(_authOptions.IssuerSigningKey)), SecurityAlgorithms.HmacSha256);
     }
     
-    public JsonWebToken CreateToken(string userId, string? role = null, string? subscription = null)
+    public AccessTokenDto CreateAccessToken(Guid userId, Email email, Role? role = null, Subscription? subscription = null)
     {
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            throw new ArgumentException("User ID claim (subject) cannot be empty.", nameof(userId));
-        }
-
         var now = _timeProvider.Current();
         var expires = now.AddMinutes(_authOptions.ExpiryMinutes);
 
         var jwtClaims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, userId),
-            new(JwtRegisteredClaimNames.UniqueName, userId),
+            new(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Iat, new DateTimeOffset(now).ToUnixTimeMilliseconds().ToString())
         };
         
-        if (!string.IsNullOrWhiteSpace(role))
+        if (!string.IsNullOrWhiteSpace(role?.Value))
         {
             jwtClaims.Add(new Claim(ClaimTypes.Role, role));
         }
         
-        if (!string.IsNullOrWhiteSpace(subscription))
+        if (!string.IsNullOrWhiteSpace(subscription?.Value))
         {
             jwtClaims.Add(new Claim(CustomClaim.Subscription, subscription));
         }
@@ -62,14 +59,22 @@ internal sealed class Authenticator : IAuthenticator
             signingCredentials: _signingKey
         );
         
-        return new JsonWebToken
+        return new AccessTokenDto
         {
-            AccessToken = new JwtSecurityTokenHandler().WriteToken(jwt),
+            Token = new JwtSecurityTokenHandler().WriteToken(jwt),
             ExpiredAt = expires,
             Expires = new DateTimeOffset(expires).ToUnixTimeMilliseconds(),
-            UserId = userId,
-            Role = role,
-            Subscription = subscription,
+            UserId = userId.ToString(),
+            Role = role?.Value,
+            Subscription = subscription?.Value,
+            Email = email.Value
         };
+    }
+
+    public RefreshTokenDto CreateRefreshToken()
+    {
+        var expiredAt = _timeProvider.Current().AddMinutes(_authOptions.RefreshTokenExpiryMinutes);
+
+        return new RefreshTokenDto(Guid.NewGuid().ToString(), expiredAt);
     }
 }

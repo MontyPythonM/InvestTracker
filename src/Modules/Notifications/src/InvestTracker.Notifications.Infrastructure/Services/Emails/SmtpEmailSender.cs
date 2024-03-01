@@ -1,6 +1,4 @@
-﻿using InvestTracker.Notifications.Core.Dto.Emails;
-using InvestTracker.Notifications.Core.Interfaces;
-using InvestTracker.Notifications.Infrastructure.Dto;
+﻿using InvestTracker.Notifications.Infrastructure.Dto;
 using InvestTracker.Notifications.Infrastructure.Exceptions;
 using InvestTracker.Notifications.Infrastructure.Interfaces;
 using InvestTracker.Notifications.Infrastructure.Options;

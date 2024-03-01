@@ -1,6 +1,6 @@
-﻿using InvestTracker.InvestmentStrategies.Domain.Common;
-using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
+﻿using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
+using InvestTracker.InvestmentStrategies.Domain.Shared;
 using InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;
 using InvestTracker.Shared.Abstractions.Commands;
 using InvestTracker.Shared.Abstractions.Time;

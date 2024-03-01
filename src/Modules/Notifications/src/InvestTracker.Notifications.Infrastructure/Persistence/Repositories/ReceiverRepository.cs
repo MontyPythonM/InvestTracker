@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-using InvestTracker.Notifications.Core.Entities;
-using InvestTracker.Notifications.Core.Entities.Base;
+﻿using InvestTracker.Notifications.Core.Entities;
 using InvestTracker.Notifications.Core.Enums;
 using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Notifications.Infrastructure.Interfaces;

@@ -1,10 +1,10 @@
 ﻿using InvestTracker.InvestmentStrategies.Application.Portfolios.Dto;
 using InvestTracker.InvestmentStrategies.Application.Portfolios.Queries;
-using InvestTracker.InvestmentStrategies.Domain.Common;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Entities.FinancialAssets;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.Repositories;
 using InvestTracker.InvestmentStrategies.Domain.Portfolios.ValueObjects;
+using InvestTracker.InvestmentStrategies.Domain.Shared;
 using InvestTracker.InvestmentStrategies.Domain.Shared.Exceptions;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence;
 using InvestTracker.InvestmentStrategies.Infrastructure.Persistence.Repositories;
