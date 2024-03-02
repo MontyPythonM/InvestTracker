@@ -22,7 +22,7 @@ namespace InvestTracker.Users.UnitTests.Core.Services;
 
 public class AccountServiceTests
 {
-    #region SignInAsync tests
+    #region SignInAsync
     [Theory]
     [InlineData("", "secret-password")]
     [InlineData("email@email.com", "")]
@@ -100,7 +100,7 @@ public class AccountServiceTests
     
     #endregion
 
-    #region SignUpAsync tests
+    #region SignUpAsync
 
     [Fact]
     public async Task SignUpAsync_ShouldThrowEmailAlreadyInUseException_WhenOtherUserUseEmail()
@@ -177,6 +177,69 @@ public class AccountServiceTests
     }
     #endregion
 
+    #region DeleteCurrentUserAccountAsync
+
+    
+
+    #endregion
+    
+    #region ForgotPasswordAsync
+
+    
+
+    #endregion
+        
+    #region ResetForgottenPasswordAsync
+
+    
+
+    #endregion
+            
+    #region RefreshTokenAsync
+
+    
+
+    #endregion
+                
+    #region RevokeRefreshTokenAsync
+
+    [Fact]
+    public async Task RevokeRefreshTokenAsync_ShouldThrowUserNotFoundException_WhenUserNotExist()
+    {
+        // arrange
+        _userRepository.GetAsync(Arg.Any<Guid>(), CancellationToken.None).ReturnsNull();
+        
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.RevokeRefreshTokenAsync(Arg.Any<Guid>(), CancellationToken.None));
+        
+        // assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<UserNotFoundException>();
+    }
+
+    [Fact]
+    public async Task RevokeRefreshTokenAsync_ShouldSetNullForRefreshToken_WhenUserExists()
+    {
+        // arrange
+        var user = GetUser();
+        user.RefreshToken = new RefreshToken
+        {
+            Token = Guid.NewGuid().ToString(),
+            ExpiredAt = DateTime.Now
+        };
+        _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
+        
+        // act
+        await _accountService.RevokeRefreshTokenAsync(user.Id, CancellationToken.None);
+        
+        // assert
+        user.ShouldNotBeNull();
+        user.RefreshToken.ShouldBeNull();
+    }
+
+    #endregion
+    
     #region Arrange
     private readonly IUserRepository _userRepository;
     private readonly IAuthenticator _authenticator;
