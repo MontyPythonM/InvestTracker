@@ -156,15 +156,18 @@ internal sealed class AccountService : IAccountService
         var now = _timeProvider.Current();
         var expiredAt = now.AddMinutes(_passwordResetOptions.ExpirationMinutes);
         
-        if (user.ResetPassword.ExpiredAt is not null && user.ResetPassword.ExpiredAt > now)
+        if (user.ResetPassword?.ExpiredAt is not null && user.ResetPassword.ExpiredAt > now)
         {
             throw new ResetPasswordActionAlreadyInvokedException(expiredAt);
         }
 
-        user.ResetPassword.Key = resetPasswordKey;
-        user.ResetPassword.InvokeAt = now;
-        user.ResetPassword.ExpiredAt = expiredAt;
-        
+        user.ResetPassword = new ResetPassword
+        {
+            Key = resetPasswordKey,
+            ExpiredAt = expiredAt,
+            InvokeAt = now
+        };
+
         await _userRepository.UpdateAsync(user, token);
         await _messageBroker.PublishAsync(new PasswordForgotten(user.Id, resetPasswordUri));
     }

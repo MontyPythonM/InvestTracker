@@ -207,7 +207,7 @@ public class AccountServiceTests
 
         _requestContext.Identity.UserId.Returns(user.Id);
         _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
-            
+
         // act
         var exception = await Record.ExceptionAsync(() => 
             _accountService.DeleteCurrentUserAccountAsync(dto, CancellationToken.None));
@@ -243,8 +243,69 @@ public class AccountServiceTests
     
     #region ForgotPasswordAsync
 
-    
+    [Fact]
+    public async Task ForgotPasswordAsync_ShouldPublishEvent_WhenUserInvokeForgotPasswordAction()
+    {
+        // arrange
+        const string email = "test@test.com";
+        var user = GetUser();
+        user.Email = email;
+        
+        _userRepository.GetAsync(email, CancellationToken.None).Returns(user);
 
+        // act
+        await _accountService.ForgotPasswordAsync(email, CancellationToken.None);
+
+        // assert
+        await _messageBroker.Received(1).PublishAsync(Arg.Is<PasswordForgotten>(e => e.UserId == user.Id));
+    }
+    
+    [Fact]
+    public async Task ForgotPasswordAsync_ShouldUpdateUserEntity_WhenUserInvokeForgotPasswordAction()
+    {
+        // arrange
+        const string email = "test@test.com";
+        var user = GetUser();
+        user.Email = email;
+        
+        _userRepository.GetAsync(email, CancellationToken.None).Returns(user);
+
+        // act
+        await _accountService.ForgotPasswordAsync(email, CancellationToken.None);
+
+        // assert
+        await _userRepository.Received(1).UpdateAsync(user, CancellationToken.None);
+    }
+    
+    [Fact]
+    public async Task ForgotPasswordAsync_ShouldThrowResetPasswordActionAlreadyInvokedException_WhenResetPasswordActionWasAlreadyInvokedAndItsNotExpired()
+    {
+        // arrange
+        const string email = "test@test.com";
+
+        var now = DateTime.Now;
+        
+        var user = GetUser();
+        user.Email = email;
+        user.ResetPassword = new ResetPassword
+        {
+            Key = "reset-password-key",
+            ExpiredAt = now.AddMinutes(5),
+            InvokeAt = now.AddMinutes(-5) 
+        };
+
+        _timeProvider.Current().Returns(now);
+        _userRepository.GetAsync(email, CancellationToken.None).Returns(user);
+
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.ForgotPasswordAsync(email, CancellationToken.None));
+        
+        // assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ResetPasswordActionAlreadyInvokedException>();
+    }
+    
     #endregion
         
     #region ResetForgottenPasswordAsync
@@ -478,7 +539,7 @@ public class AccountServiceTests
             _requestContext,
             new PasswordResetOptions
             {
-                ExpirationMinutes = 1,
+                ExpirationMinutes = 10,
                 RedirectTo = "http://redirect-to.com"
             },
             _passwordValidator,

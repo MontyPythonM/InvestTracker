@@ -13,7 +13,7 @@ public class User
     public bool IsActive { get; set; } = true;
     public Role Role { get; set; }
     public Subscription Subscription { get; set; }
-    public ResetPassword ResetPassword { get; set; }
+    public ResetPassword? ResetPassword { get; set; }
     public RefreshToken? RefreshToken { get; set; }
     public DateTime? LastSuccessfulLogin { get; set; }
 }
