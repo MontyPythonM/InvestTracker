@@ -179,7 +179,65 @@ public class AccountServiceTests
 
     #region DeleteCurrentUserAccountAsync
 
+    [Fact]
+    public async Task DeleteCurrentUserAccountAsync_ShouldThrowUserNotFoundException_WhenUserNotExists()
+    {
+        // arrange
+        var dto = new DeleteAccountDto { Password = "password" };
+
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.DeleteCurrentUserAccountAsync(dto, CancellationToken.None));
+        
+        // assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<UserNotFoundException>();
+    }
     
+    [Fact]
+    public async Task DeleteCurrentUserAccountAsync_ShouldThrowUserNotActiveException_WhenUserAccountIsNotActive()
+    {
+        // arrange
+        const string correctPassword = "password";
+        
+        var user = GetUser();
+        user.IsActive = false;
+        
+        var dto = new DeleteAccountDto { Password = correctPassword };
+
+        _requestContext.Identity.UserId.Returns(user.Id);
+        _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
+            
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.DeleteCurrentUserAccountAsync(dto, CancellationToken.None));
+        
+        // assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<UserNotActiveException>();
+    }
+    
+    [Fact]
+    public async Task DeleteCurrentUserAccountAsync_ShouldPublishEvent_WhenUserDeleteAccount()
+    {
+        // arrange
+        const string correctPassword = "password";
+        
+        var user = GetUser();
+        user.Password = correctPassword;
+        
+        var dto = new DeleteAccountDto { Password = correctPassword };
+
+        _requestContext.Identity.UserId.Returns(user.Id);
+        _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
+        _passwordManager.Validate(Arg.Any<string>(), Arg.Any<string>()).Returns(true);
+            
+        // act
+        await _accountService.DeleteCurrentUserAccountAsync(dto, CancellationToken.None);
+
+        // assert
+        await _messageBroker.Received(1).PublishAsync(Arg.Is<AccountDeleted>(e => e.Id == user.Id));
+    }
 
     #endregion
     
@@ -398,6 +456,8 @@ public class AccountServiceTests
     private readonly IMessageBroker _messageBroker;
     private readonly IAuthenticator _authenticator;
     private readonly ITimeProvider _timeProvider;
+    private readonly IRequestContext _requestContext;
+    private readonly IPasswordValidator _passwordValidator;
 
     public AccountServiceTests()
     {
@@ -406,9 +466,8 @@ public class AccountServiceTests
         _messageBroker = Substitute.For<IMessageBroker>();
         _authenticator = Substitute.For<IAuthenticator>();
         _timeProvider = Substitute.For<ITimeProvider>(); 
-        
-        var requestContext = Substitute.For<IRequestContext>();
-        var passwordValidator = Substitute.For<IPasswordValidator>();
+        _requestContext = Substitute.For<IRequestContext>();
+        _passwordValidator = Substitute.For<IPasswordValidator>();
         
         _accountService = new AccountService(
             _userRepository,
@@ -416,13 +475,13 @@ public class AccountServiceTests
             _passwordManager,
             _timeProvider,
             _messageBroker,
-            requestContext,
+            _requestContext,
             new PasswordResetOptions
             {
                 ExpirationMinutes = 1,
                 RedirectTo = "http://redirect-to.com"
             },
-            passwordValidator,
+            _passwordValidator,
             new AuthOptions
             {
                 UseRefreshToken = true,
