@@ -195,18 +195,18 @@ internal sealed class AccountService : IAccountService
     public async Task<AuthenticationResponse> RefreshTokenAsync(string? refreshToken, CancellationToken token)
     {
         if (!_authOptions.UseRefreshToken)
-            throw new RefreshTokenException("Refresh token feature is disabled");
+            throw new RefreshTokenDisabledException();
         
         if (string.IsNullOrWhiteSpace(refreshToken))
-            throw new RefreshTokenException("Invalid refresh token");
+            throw new InvalidRefreshTokenException();
         
         var user = await _userRepository.GetByRefreshTokenAsync(refreshToken, token);
         
         if (user is null)
-            throw new RefreshTokenException($"Cannot find user with refresh token '{refreshToken}'");
+            throw new CannotFindUserByRefreshTokenException(refreshToken);
 
         if (user.RefreshToken!.ExpiredAt <= _timeProvider.Current())
-            throw new RefreshTokenException("Refresh token has expired");
+            throw new RefreshTokenExpiredException();
         
         var newAccessToken = _authenticator.CreateAccessToken(user.Id, user.Email, user.Role.Value, user.Subscription.Value);
         var newRefreshToken = _authenticator.CreateRefreshToken();

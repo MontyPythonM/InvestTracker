@@ -8,6 +8,7 @@ using InvestTracker.Shared.Abstractions.Types;
 using InvestTracker.Shared.Infrastructure.Authentication;
 using InvestTracker.Users.Core.Dtos;
 using InvestTracker.Users.Core.Entities;
+using InvestTracker.Users.Core.Enums;
 using InvestTracker.Users.Core.Events;
 using InvestTracker.Users.Core.Exceptions;
 using InvestTracker.Users.Core.Interfaces;
@@ -17,6 +18,8 @@ using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using Shouldly;
 using Xunit;
+using Role = InvestTracker.Users.Core.Entities.Role;
+using Subscription = InvestTracker.Users.Core.Entities.Subscription;
 
 namespace InvestTracker.Users.UnitTests.Core.Services;
 
@@ -144,7 +147,6 @@ public class AccountServiceTests
     public async Task SignUpAsync_ShouldAssignNoneRole_WhenUserRegisterAccount()
     {
         // arrange
-        var user = GetUser();
         var dto = GetSignUpDto();
         
         _userRepository.GetAsync(dto.Email, CancellationToken.None).ReturnsNull();
@@ -155,8 +157,6 @@ public class AccountServiceTests
         // assert
         await _userRepository.Received(1).CreateAsync(Arg.Is<User>(u => 
             u.Role.Value == SystemRole.None), CancellationToken.None);
-        
-        user.Role.ShouldBeNull();
     }
     
     [Fact]
@@ -196,9 +196,160 @@ public class AccountServiceTests
     #endregion
             
     #region RefreshTokenAsync
-
     
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public async Task RefreshTokenAsync_ShouldThrowInvalidRefreshTokenException_WhenRefreshTokenHasInvalidFormat(string? inputRefreshToken)
+    {
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.RefreshTokenAsync(inputRefreshToken, CancellationToken.None));
+        
+        // assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<InvalidRefreshTokenException>();
+    }
 
+    [Fact]
+    public async Task RefreshTokenAsync_ShouldThrowCannotFindUserByRefreshTokenException_WhenUserWithRefreshTokenNotExists()
+    {
+        // arrange
+        var inputRefreshToken = Guid.NewGuid().ToString();
+        _userRepository.GetByRefreshTokenAsync(inputRefreshToken, CancellationToken.None).ReturnsNull();
+        
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.RefreshTokenAsync(inputRefreshToken, CancellationToken.None));
+        
+        // assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<CannotFindUserByRefreshTokenException>();
+    }
+    
+    [Fact]
+    public async Task RefreshTokenAsync_ShouldThrowRefreshTokenExpiredException_WhenRefreshTokenExpired()
+    {
+        // arrange
+        const string inputRefreshToken = "FA952ACE-9518-46AD-9554-9789955A1C64";
+        const string storedRefreshToken = "D551FFC4-076E-4CF1-9EFD-2B21F4F04A33";
+        
+        var newRefreshTokenExpiredAt = new DateTime(2024, 04, 01).AddMinutes(1000);
+
+        var user = GetUser();
+        user.RefreshToken = new RefreshToken
+        {
+            Token = storedRefreshToken,
+            ExpiredAt = newRefreshTokenExpiredAt
+        };
+        
+        _timeProvider.Current().Returns(newRefreshTokenExpiredAt);
+        _userRepository.GetByRefreshTokenAsync(inputRefreshToken, CancellationToken.None).Returns(user);
+        
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.RefreshTokenAsync(inputRefreshToken, CancellationToken.None));
+        
+        // assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<RefreshTokenExpiredException>();
+    }
+    
+    [Fact]
+    public async Task RefreshTokenAsync_ShouldNotThrowRefreshTokenExpiredException_WhenRefreshTokenNotExpired()
+    {
+        // arrange
+        const int refreshTokenExpiredAfterMinutes = 1000;
+        const string inputRefreshToken = "FA952ACE-9518-46AD-9554-9789955A1C64";
+        const string storedRefreshToken = "D551FFC4-076E-4CF1-9EFD-2B21F4F04A33";
+        
+        var newRefreshTokenExpiredAt = new DateTime(2024, 04, 01).AddMinutes(refreshTokenExpiredAfterMinutes);
+
+        var user = GetUser();
+        user.RefreshToken = new RefreshToken
+        {
+            Token = storedRefreshToken,
+            ExpiredAt = newRefreshTokenExpiredAt
+        };
+        
+        _timeProvider.Current().Returns(newRefreshTokenExpiredAt.AddMinutes(-1));
+        _userRepository.GetByRefreshTokenAsync(inputRefreshToken, CancellationToken.None).Returns(user);
+        _authenticator.CreateRefreshToken().Returns(new RefreshTokenDto(Guid.NewGuid().ToString(), DateTime.Now.AddMinutes(refreshTokenExpiredAfterMinutes)));
+        
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.RefreshTokenAsync(inputRefreshToken, CancellationToken.None));
+        
+        // assert
+        exception.ShouldBeNull();
+    }
+    
+    [Fact]
+    public async Task RefreshTokenAsync_ShouldUpdateUserStoredRefreshToken_WhenRefreshTokenIsValid()
+    {
+        // arrange
+        const int refreshTokenExpiredAfterMinutes = 1000;
+        const string inputRefreshToken = "FA952ACE-9518-46AD-9554-9789955A1C64";
+        const string storedRefreshToken = "D551FFC4-076E-4CF1-9EFD-2B21F4F04A33";
+        
+        var newRefreshTokenExpiredAt = new DateTime(2024, 04, 01).AddMinutes(refreshTokenExpiredAfterMinutes);
+
+        var user = GetUser();
+        user.RefreshToken = new RefreshToken
+        {
+            Token = storedRefreshToken,
+            ExpiredAt = newRefreshTokenExpiredAt
+        };
+        
+        _timeProvider.Current().Returns(newRefreshTokenExpiredAt.AddMinutes(-1));
+        _userRepository.GetByRefreshTokenAsync(inputRefreshToken, CancellationToken.None).Returns(user);
+        _authenticator.CreateRefreshToken().Returns(new RefreshTokenDto(Guid.NewGuid().ToString(), DateTime.Now.AddMinutes(refreshTokenExpiredAfterMinutes)));
+        
+        // act
+        await _accountService.RefreshTokenAsync(inputRefreshToken, CancellationToken.None);
+        
+        // assert
+        await _userRepository.Received(1).UpdateAsync(Arg.Any<User>(), CancellationToken.None);
+    }
+    
+    [Fact]
+    public async Task RefreshTokenAsync_ShouldReturnsNewRefreshTokenAndAccessToken_WhenRefreshTokenIsValid()
+    {
+        // arrange
+        const int refreshTokenExpiredAfterMinutes = 1000;
+        const string inputRefreshToken = "FA952ACE-9518-46AD-9554-9789955A1C64";
+        const string storedRefreshToken = "D551FFC4-076E-4CF1-9EFD-2B21F4F04A33";
+        
+        var newRefreshTokenExpiredAt = new DateTime(2024, 04, 01).AddMinutes(refreshTokenExpiredAfterMinutes);
+
+        var user = GetUser();
+        user.RefreshToken = new RefreshToken
+        {
+            Token = storedRefreshToken,
+            ExpiredAt = newRefreshTokenExpiredAt
+        };
+        
+        _timeProvider.Current().Returns(newRefreshTokenExpiredAt.AddMinutes(-1));
+        _userRepository.GetByRefreshTokenAsync(inputRefreshToken, CancellationToken.None).Returns(user);
+        _authenticator.CreateRefreshToken().Returns(new RefreshTokenDto(Guid.NewGuid().ToString(), DateTime.Now.AddMinutes(refreshTokenExpiredAfterMinutes)));
+        _authenticator.CreateAccessToken(
+            Arg.Any<Guid>(), 
+            Arg.Any<Email>(), 
+            Arg.Any<Shared.Abstractions.DDD.ValueObjects.Role>(), 
+            Arg.Any<Shared.Abstractions.DDD.ValueObjects.Subscription>())
+            .Returns(new AccessTokenDto());
+        
+        // act
+        var result = await _accountService.RefreshTokenAsync(inputRefreshToken, CancellationToken.None);
+        
+        // assert
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<AuthenticationResponse>();
+        result.RefreshToken.ShouldBeOfType<RefreshTokenDto>().ShouldNotBeNull();
+        result.AccessToken.ShouldBeOfType<AccessTokenDto>().ShouldNotBeNull();
+    }
+    
     #endregion
                 
     #region RevokeRefreshTokenAsync
@@ -241,24 +392,23 @@ public class AccountServiceTests
     #endregion
     
     #region Arrange
-    private readonly IUserRepository _userRepository;
-    private readonly IAuthenticator _authenticator;
-    private readonly IPasswordManager _passwordManager;
-    private readonly ITimeProvider _timeProvider;
-    private readonly IMessageBroker _messageBroker;
     private readonly IAccountService _accountService;
-    private readonly IRequestContext _requestContext;
-    private readonly IPasswordValidator _passwordValidator;
-    
+    private readonly IUserRepository _userRepository;
+    private readonly IPasswordManager _passwordManager;
+    private readonly IMessageBroker _messageBroker;
+    private readonly IAuthenticator _authenticator;
+    private readonly ITimeProvider _timeProvider;
+
     public AccountServiceTests()
     {
         _userRepository = Substitute.For<IUserRepository>();
-        _authenticator = Substitute.For<IAuthenticator>();
         _passwordManager = Substitute.For<IPasswordManager>();
-        _timeProvider = Substitute.For<ITimeProvider>();
         _messageBroker = Substitute.For<IMessageBroker>();
-        _requestContext = Substitute.For<IRequestContext>();
-        _passwordValidator = Substitute.For<IPasswordValidator>();
+        _authenticator = Substitute.For<IAuthenticator>();
+        _timeProvider = Substitute.For<ITimeProvider>(); 
+        
+        var requestContext = Substitute.For<IRequestContext>();
+        var passwordValidator = Substitute.For<IPasswordValidator>();
         
         _accountService = new AccountService(
             _userRepository,
@@ -266,14 +416,18 @@ public class AccountServiceTests
             _passwordManager,
             _timeProvider,
             _messageBroker,
-            _requestContext,
+            requestContext,
             new PasswordResetOptions
             {
                 ExpirationMinutes = 1,
                 RedirectTo = "http://redirect-to.com"
             },
-            _passwordValidator,
-            new AuthOptions());
+            passwordValidator,
+            new AuthOptions
+            {
+                UseRefreshToken = true,
+                RefreshTokenExpiryMinutes = 1000
+            });
     }
     
     private static User GetUser() => new()
@@ -283,7 +437,21 @@ public class AccountServiceTests
         Email = "email@email.com",
         Password = "secret-password",
         CreatedAt = new DateTime(2023, 7, 13),
-        IsActive = true
+        IsActive = true,
+        Role = new Role
+        {
+            Value = SystemRole.None,
+            GrantedAt = DateTime.Now,
+            GrantedBy = Guid.NewGuid()
+        },
+        Subscription = new Subscription
+        {
+            Value = SystemSubscription.StandardInvestor,
+            GrantedAt = DateTime.Now,
+            GrantedBy = Guid.NewGuid(),
+            ExpiredAt = null,
+            ChangeSource = SubscriptionChangeSource.NeverChanged
+        }
     };
 
     private static SignUpDto GetSignUpDto(string email = "default@email.com") 
@@ -294,6 +462,6 @@ public class AccountServiceTests
             Password = "password",
             Phone = null
         };
-
+    
     #endregion
 }
