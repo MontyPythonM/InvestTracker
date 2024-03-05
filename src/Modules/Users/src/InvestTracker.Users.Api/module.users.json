@@ -2,7 +2,9 @@
   "Password": {
     "Reset": {
       "ExpirationMinutes": 10,
-      "RedirectTo": "https://your-frontend-page-for-reset-password.com"
+      "RedirectTo": "https://your-frontend-page-for-reset-password.com",
+      "UseResetPasswordPolicyPolicy": true,
+      "ResetPasswordPolicyMultiplierMinutes": 5
     },
     "ValidationRules": {
       "SpecialCharacters": "!@#$%^&*()_+{}|:<>?-=[]\\;',./'",

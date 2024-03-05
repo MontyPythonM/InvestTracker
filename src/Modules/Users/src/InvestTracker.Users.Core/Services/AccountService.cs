@@ -143,17 +143,22 @@ internal sealed class AccountService : IAccountService
 
     public async Task ForgotPasswordAsync(string email, CancellationToken token)
     {
+        var now = _timeProvider.Current();
         var user = await _userRepository.GetAsync(email, token);
 
         if (user is null)
         {
             return;
         }
-        
+
+        var passwordPolicy = CheckResetPasswordPolicy(user.ResetPassword, now);
+        if (passwordPolicy.CanResetPassword is false)
+        {
+            throw new ResetPasswordRequiredWaitingException(passwordPolicy.CanResetPasswordAfter);
+        }
+
         var resetPasswordKey = ResetPasswordKey.Create(user.Id);
         var resetPasswordUri = CreateResetPasswordUri(resetPasswordKey);
-        
-        var now = _timeProvider.Current();
         var expiredAt = now.AddMinutes(_passwordResetOptions.ExpirationMinutes);
         
         if (user.ResetPassword?.ExpiredAt is not null && user.ResetPassword.ExpiredAt > now)
@@ -165,7 +170,8 @@ internal sealed class AccountService : IAccountService
         {
             Key = resetPasswordKey,
             ExpiredAt = expiredAt,
-            InvokeAt = now
+            InvokeAt = now,
+            Counter = user.ResetPassword is not null ? user.ResetPassword.Counter + 1 : 1
         };
 
         await _userRepository.UpdateAsync(user, token);
@@ -182,7 +188,7 @@ internal sealed class AccountService : IAccountService
             throw new UserNotFoundException();
         }
 
-        if (user.ResetPassword.ExpiredAt < _timeProvider.Current())
+        if (user.ResetPassword is null || user.ResetPassword.ExpiredAt < _timeProvider.Current())
         {
             throw new ResetPasswordKeyExpiredException();
         }
@@ -238,4 +244,17 @@ internal sealed class AccountService : IAccountService
     }
 
     private string CreateResetPasswordUri(string resetPasswordKey) => $"{_passwordResetOptions.RedirectTo}/{resetPasswordKey}";
+    
+    private (bool CanResetPassword, DateTime CanResetPasswordAfter) CheckResetPasswordPolicy(ResetPassword? resetPassword, DateTime now)
+    {
+        if (_passwordResetOptions.UseResetPasswordPolicyPolicy is false || resetPassword is null)
+        {
+            return (true, DateTime.MinValue);
+        }
+
+        var canResetPasswordAfter = resetPassword.ExpiredAt.AddMinutes(_passwordResetOptions.ResetPasswordPolicyMultiplierMinutes * resetPassword.Counter);
+        var canResetPassword = canResetPasswordAfter <= now;
+        
+        return (canResetPassword, canResetPasswordAfter);
+    }
 }

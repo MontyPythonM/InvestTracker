@@ -14,6 +14,7 @@ using InvestTracker.Users.Core.Exceptions;
 using InvestTracker.Users.Core.Interfaces;
 using InvestTracker.Users.Core.Options;
 using InvestTracker.Users.Core.Services;
+using InvestTracker.Users.Core.Validators;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using Shouldly;
@@ -281,8 +282,11 @@ public class AccountServiceTests
     public async Task ForgotPasswordAsync_ShouldThrowResetPasswordActionAlreadyInvokedException_WhenResetPasswordActionWasAlreadyInvokedAndItsNotExpired()
     {
         // arrange
+        var accountService = new AccountService(_userRepository, _authenticator, _passwordManager,
+            _timeProvider, _messageBroker, _requestContext, new PasswordResetOptions(),
+            _passwordValidator, new AuthOptions());
+        
         const string email = "test@test.com";
-
         var now = DateTime.Now;
         
         var user = GetUser();
@@ -299,19 +303,190 @@ public class AccountServiceTests
 
         // act
         var exception = await Record.ExceptionAsync(() => 
-            _accountService.ForgotPasswordAsync(email, CancellationToken.None));
+            accountService.ForgotPasswordAsync(email, CancellationToken.None));
         
         // assert
         exception.ShouldNotBeNull();
         exception.ShouldBeOfType<ResetPasswordActionAlreadyInvokedException>();
     }
     
+    [Fact]
+    public async Task ForgotPasswordAsync_ShouldNotThrowResetPasswordRequiredWaitingException_WhenUserNeverResetHisPassword()
+    {
+        // arrange
+        const string email = "test@test.com";
+        
+        var user = GetUser();
+        user.Email = email;
+        user.ResetPassword = null;
+
+        _timeProvider.Current().Returns(new DateTime(2023, 04, 05, 12, 30, 00));
+        _userRepository.GetAsync(email, CancellationToken.None).Returns(user);
+
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.ForgotPasswordAsync(email, CancellationToken.None));
+        
+        // assert
+        exception.ShouldBeNull();
+        exception.ShouldNotBeOfType<ResetPasswordRequiredWaitingException>();
+    }
+    
+    [Fact]
+    public async Task ForgotPasswordAsync_ShouldThrowPasswordResetRequiredWaitingException_WhenResetPasswordActionWasAlreadyInvokedAndItsNotExpired()
+    {
+        // arrange
+        const string email = "test@test.com";
+        var now = new DateTime(2024, 01, 05, 13, 00, 00);
+        
+        var user = GetUser();
+        user.Email = email;
+        user.ResetPassword = new ResetPassword
+        {
+            Key = "reset-password-key",
+            ExpiredAt = now.AddMinutes(-1),
+            InvokeAt = now.AddMinutes(-11),
+            Counter = 1
+        };
+
+        _timeProvider.Current().Returns(now);
+        _userRepository.GetAsync(email, CancellationToken.None).Returns(user);
+
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.ForgotPasswordAsync(email, CancellationToken.None));
+        
+        // assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ResetPasswordRequiredWaitingException>();
+    }
+    
     #endregion
         
     #region ResetForgottenPasswordAsync
 
-    
+    [Fact]
+    public async Task ResetForgottenPasswordAsync_ShouldPublishEvent_WhenResetPasswordNotExpired()
+    {
+        // arrange
+        var user = GetUser();
+        var resetPasswordKey = ResetPasswordKey.Create(user.Id);
+        var newPassword = "password";
+        
+        user.ResetPassword = new ResetPassword
+        {
+            Key = resetPasswordKey,
+            ExpiredAt = DateTime.Now.AddMinutes(5),
+            InvokeAt = DateTime.Now.AddMinutes(-1)
+        };
 
+        var dto = new ResetPasswordDto
+        {
+            ResetPasswordKey = resetPasswordKey,
+            NewPassword = newPassword,
+            ConfirmNewPassword = newPassword
+        };
+        
+        _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
+        
+        // act
+        await _accountService.ResetForgottenPasswordAsync(dto, CancellationToken.None);
+
+        // assert
+        await _messageBroker.Received(1).PublishAsync(Arg.Is<PasswordChanged>(e => e.UserId == user.Id));
+    }
+
+    [Fact]
+    public async Task ResetForgottenPasswordAsync_ShouldThrowResetPasswordKeyExpiredException_WhenResetPasswordExpired()
+    {
+        // arrange
+        var user = GetUser();
+        var resetPasswordKey = ResetPasswordKey.Create(user.Id);
+        var newPassword = "password";
+
+        var now = new DateTime(2022, 01, 01);
+        _timeProvider.Current().Returns(now);
+        
+        user.ResetPassword = new ResetPassword
+        {
+            Key = resetPasswordKey,
+            ExpiredAt = now.AddMinutes(-5),
+            InvokeAt = now.AddMinutes(-10)
+        };
+
+        var dto = new ResetPasswordDto
+        {
+            ResetPasswordKey = resetPasswordKey,
+            NewPassword = newPassword,
+            ConfirmNewPassword = newPassword
+        };
+        
+        _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
+        
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.ResetForgottenPasswordAsync(dto, CancellationToken.None));
+        
+        // assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<ResetPasswordKeyExpiredException>();
+    }
+
+    [Fact]
+    public async Task ResetForgottenPasswordAsync_ShouldThrowResetPasswordKeyExpiredException_WhenUserNeverResetPassword()
+    {
+        // arrange
+        var user = GetUser();
+        var resetPasswordKey = ResetPasswordKey.Create(user.Id);
+        var newPassword = "password";
+
+        user.ResetPassword = null;
+
+        var dto = new ResetPasswordDto
+        {
+            ResetPasswordKey = resetPasswordKey,
+            NewPassword = newPassword,
+            ConfirmNewPassword = newPassword
+        };
+        
+        _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
+        
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.ResetForgottenPasswordAsync(dto, CancellationToken.None));
+        
+        // assert
+        exception.ShouldBeOfType<ResetPasswordKeyExpiredException>();
+    }
+    
+    [Fact]
+    public async Task ResetForgottenPasswordAsync_ShouldThrowUserNotFoundException_WhenIsNoUserWithIdLikeFromDto()
+    {
+        // arrange
+        var resetPasswordKey = ResetPasswordKey.Create(Guid.NewGuid());
+        var newPassword = "password";
+
+        var now = new DateTime(2022, 01, 01);
+        _timeProvider.Current().Returns(now);
+
+        var dto = new ResetPasswordDto
+        {
+            ResetPasswordKey = resetPasswordKey,
+            NewPassword = newPassword,
+            ConfirmNewPassword = newPassword
+        };
+        
+        _userRepository.GetAsync(ResetPasswordKey.GetUserId(resetPasswordKey).ToGuid(), CancellationToken.None).ReturnsNull();
+        
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.ResetForgottenPasswordAsync(dto, CancellationToken.None));
+        
+        // assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<UserNotFoundException>();
+    }
+    
     #endregion
             
     #region RefreshTokenAsync
@@ -540,7 +715,9 @@ public class AccountServiceTests
             new PasswordResetOptions
             {
                 ExpirationMinutes = 10,
-                RedirectTo = "http://redirect-to.com"
+                RedirectTo = "http://redirect-to.com",
+                UseResetPasswordPolicyPolicy = true,
+                ResetPasswordPolicyMultiplierMinutes = 5
             },
             _passwordValidator,
             new AuthOptions
