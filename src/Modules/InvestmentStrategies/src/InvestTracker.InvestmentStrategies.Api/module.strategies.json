@@ -14,7 +14,7 @@
     },
     "InflationRate": {
       "ExternalApiClient": {
-        "Enabled": true,
+        "Enabled": false,
         "MaxErrorsNumber": 3,
         "UpdateMissingFromYear": 2000,
         "DurationDays": 5,
