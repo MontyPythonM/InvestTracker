@@ -5,7 +5,7 @@ namespace InvestTracker.Shared.Infrastructure.Api;
 
 public static class Extensions
 {
-    private const string CorsPolicy = "cors-policy";
+    private const string CorsPolicy = "CorsPolicy";
     
     public static IServiceCollection AddCorsPolicy(this IServiceCollection services)
     {

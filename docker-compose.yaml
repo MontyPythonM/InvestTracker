@@ -16,6 +16,24 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
 
+  investtracker.api:
+    image: investtracker.api
+    container_name: investtracker.api
+    depends_on: 
+      - "investtracker.database"
+    ports:
+      - "5200:5200"
+      - "5201:5201"
+    build:
+      context: .
+      dockerfile: src/Bootstrapper/InvestTracker.Bootstrapper/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5200
+      - ASPNETCORE_HTTPS_PORTS=5201
+#      - Postgres__ConnectionString=Host=localhost;Port=5432;Database=investtracker;Username=postgres;Password=postgres; Include Error Detail=true
+      - Postgres__ConnectionString=User ID=postgres;Password=postgres;Server=investtracker.database;Port=5432;Database=investtracker;Pooling=true;
+      
 volumes:
   postgres:
     driver: local
