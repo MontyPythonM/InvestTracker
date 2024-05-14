@@ -1,18 +1,49 @@
-version: '3'
+version: '3.8'
 
 services:
-  postgres:
-    image: postgres
+  database:
+    image: postgres:latest
     shm_size: '4gb'
-    container_name: postgres
+    container_name: database
     restart: unless-stopped
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      POSTGRES_DB: investtracker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - 5432:5432
+      - "5432:5432"
     volumes:
       - postgres:/var/lib/postgresql/data
+    expose:
+      - 5432
+    networks:
+      - investtracker-network
+
+  api:
+    image: api
+    container_name: api
+    build:
+      context: .
+      dockerfile: src/Bootstrapper/InvestTracker.Bootstrapper/Dockerfile
+    depends_on:
+      - database
+    ports:
+      - "5200:8080"
+    restart: always
+    networks:
+      - investtracker-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "Postgres__Host=database"
+      - "Postgres__Port=5432"
+      - "Postgres__Database=investtracker"
+      - "Postgres__Username=postgres"
+      - "Postgres__Password=postgres"
 
 volumes:
   postgres:
     driver: local
+
+networks:
+  investtracker-network:
+    driver: bridge

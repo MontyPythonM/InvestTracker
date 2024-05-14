@@ -12,11 +12,13 @@ using InvestTracker.Shared.Infrastructure.Exceptions;
 using InvestTracker.Shared.Infrastructure.IntegrationEvents;
 using InvestTracker.Shared.Infrastructure.Messages;
 using InvestTracker.Shared.Infrastructure.Modules;
+using InvestTracker.Shared.Infrastructure.Postgres;
 using InvestTracker.Shared.Infrastructure.Queries;
 using InvestTracker.Shared.Infrastructure.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using TimeProvider = InvestTracker.Shared.Infrastructure.Time.TimeProvider;
 
 [assembly: InternalsVisibleTo("InvestTracker.Bootstrapper")]
@@ -51,7 +53,7 @@ public static class Extensions
         return services;
     }
 
-    internal static WebApplication UseSharedInfrastructure(this WebApplication app, IList<IModule> modules)
+    internal static WebApplication UseSharedInfrastructure(this WebApplication app, IList<Assembly> assemblies, IList<IModule> modules)
     {
         app.UseExceptionHandling();
         app.UseOpenApiDocumentation(modules);
@@ -62,6 +64,11 @@ public static class Extensions
         app.UseAuthorization();
         app.MapControllers();
         app.UseCorsPolicy();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.ApplyDatabaseMigrations(assemblies);
+        }
 
         return app;
     }
