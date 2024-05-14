@@ -23,6 +23,6 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseSharedInfrastructure(modules);
+app.UseSharedInfrastructure(assemblies, modules);
 app.UseNotificationsModule();
 app.Run();

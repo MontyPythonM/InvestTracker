@@ -52,14 +52,25 @@ For example, it contains building blocks for DDD, database connection support or
 
 ## How to start the solution
 
+### Run application and database
+
 Type the following command:
 ```
 docker-compose up -d
 ```
-It will start the required infrastructure using Docker in the background. 
+
+API documentation should be available at ```http://localhost:5200/swagger/index.html```.
+
+### Local development
+For local development, you only need a running database container. Type command:
+```
+docker compose -f docker-compose.local.yaml up -d
+```
+
 Then, you can start the application under src/Bootstrapper/Confab.Bootstrapper/ using your favorite IDE or CLI.
 ```
 cd .\src\Bootstrapper\InvestTracker.Bootstrapper
 dotnet run
 ```
+
 Once the application is up and running, the API documentation is available at ```http://localhost:5200/swagger/index.html```.

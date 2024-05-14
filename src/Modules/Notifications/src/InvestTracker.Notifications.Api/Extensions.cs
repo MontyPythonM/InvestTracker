@@ -25,7 +25,6 @@ internal static class Extensions
     public static WebApplication UseNotificationsModule(this WebApplication app)
     {
         app.MapHub<NotificationHub>("/notification-hub");
-
         return app;
     }
 }

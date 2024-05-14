@@ -1,4 +1,7 @@
-﻿using InvestTracker.Shared.Infrastructure.Postgres.Interceptors;
+﻿using System.Reflection;
+using InvestTracker.Shared.Abstractions.Exceptions;
+using InvestTracker.Shared.Infrastructure.Postgres.Interceptors;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -32,5 +35,30 @@ public static class Extensions
         
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         return services;
+    }
+
+    public static WebApplication ApplyDatabaseMigrations(this WebApplication app, IList<Assembly> assemblies)
+    {
+            using var scope = app.Services.CreateScope();
+            
+            var dbContextTypes = assemblies
+                .SelectMany(assembly => assembly.GetTypes())
+                .Where(type => !type.IsAbstract && !type.IsGenericType && type.IsSubclassOf(typeof(DbContext)))
+                .ToList();
+
+            foreach (var type in dbContextTypes)
+            {
+                var dbContext = scope.ServiceProvider.GetService(type) as DbContext;
+                
+                if (dbContext is null)
+                    continue;
+
+                if (!dbContext.Database.CanConnect())
+                    throw new DatabaseConnectionException($"Cannot connect to database with connection string: {dbContext.Database.GetDbConnection().ConnectionString}"); 
+
+                dbContext.Database.Migrate();
+            }
+
+            return app;
     }
 }

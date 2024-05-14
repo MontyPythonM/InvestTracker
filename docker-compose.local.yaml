@@ -1,17 +1,12 @@
 version: '3.8'
 
-volumes:
-  postgres:
-    driver: local
-
 services:
   database:
-    image: postgres:latest
+    image: postgres
     shm_size: '4gb'
     container_name: database
     restart: unless-stopped
     environment:
-      POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: investtracker
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -21,3 +16,7 @@ services:
       - postgres:/var/lib/postgresql/data
     expose:
       - 5432
+
+volumes:
+  postgres:
+    driver: local
