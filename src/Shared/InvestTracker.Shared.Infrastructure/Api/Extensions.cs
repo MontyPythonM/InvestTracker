@@ -5,11 +5,9 @@ namespace InvestTracker.Shared.Infrastructure.Api;
 
 public static class Extensions
 {
-    private const string CorsPolicy = "CorsPolicy";
-    
     public static IServiceCollection AddCorsPolicy(this IServiceCollection services)
     {
-        var corsOptions = services.GetOptions<CorsOptions>(CorsPolicy);
+        var corsOptions = services.GetOptions<CorsOptions>(CorsOptions.SectionName);
 
         return services
             .AddSingleton(corsOptions)
@@ -19,7 +17,7 @@ public static class Extensions
                 var allowedMethods = corsOptions.AllowedMethods ?? Enumerable.Empty<string>();
                 var allowedOrigins = corsOptions.AllowedOrigins ?? Enumerable.Empty<string>();
                 
-                cors.AddPolicy(CorsPolicy, builder =>
+                cors.AddPolicy(CorsOptions.SectionName, builder =>
                 {
                     var origins = allowedOrigins.ToArray();
                     if (corsOptions.AllowCredentials && origins.FirstOrDefault() != "*")
@@ -39,7 +37,11 @@ public static class Extensions
     }
 
     public static IApplicationBuilder UseCorsPolicy(this IApplicationBuilder app)
-    {
-        return app.UseCors(CorsPolicy);
-    }
+        => app.UseCors(CorsOptions.SectionName);
+    
+    public static IServiceCollection AddCorsHeaderInjector(this IServiceCollection services)
+        => services.AddScoped<CorsHeaderMiddleware>(); 
+    
+    public static IApplicationBuilder UseCorsHeaderInjector(this IApplicationBuilder app) 
+        => app.UseMiddleware<CorsHeaderMiddleware>();
 }
