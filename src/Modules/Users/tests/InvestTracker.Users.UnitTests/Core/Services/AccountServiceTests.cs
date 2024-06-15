@@ -487,6 +487,39 @@ public class AccountServiceTests
         exception.ShouldBeOfType<UserNotFoundException>();
     }
     
+    [Fact]
+    public async Task ResetForgottenPasswordAsync_ShouldThrowPasswordAlreadyResetException_WhenPasswordAlreadyReset()
+    {
+        // arrange
+        var user = GetUser();
+        var resetPasswordKey = ResetPasswordKey.Create(user.Id);
+        var newPassword = "password";
+
+        var now = new DateTime(2022, 01, 01);
+        _timeProvider.Current().Returns(now);
+
+        user.ResetPassword = null;
+
+        var dto = new ResetPasswordDto
+        {
+            ResetPasswordKey = resetPasswordKey,
+            NewPassword = newPassword,
+            ConfirmNewPassword = newPassword
+        };
+        
+        _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
+        
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.ResetForgottenPasswordAsync(dto, CancellationToken.None));
+        
+        // assert
+        exception.ShouldNotBeNull();
+        exception.ShouldBeOfType<PasswordAlreadyResetException>();
+        exception.ShouldNotBeOfType<UserNotFoundException>();
+        exception.ShouldNotBeOfType<ResetPasswordKeyExpiredException>();
+    }
+    
     #endregion
             
     #region RefreshTokenAsync
