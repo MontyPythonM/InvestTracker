@@ -45,7 +45,7 @@ internal sealed class PermissionInjectorMiddleware : IMiddleware
             .ToHashSet();
 
         var userRole = context.User.Claims
-            .FirstOrDefault(claim => claim.Type == ClaimTypes.Role)?.Value;
+            .FirstOrDefault(claim => claim.Type == CustomClaim.Role)?.Value;
 
         var userSubscription = context.User.Claims
             .FirstOrDefault(claim => claim.Type == CustomClaim.Subscription)?.Value;

@@ -148,7 +148,7 @@ internal sealed class AccountService : IAccountService
 
         if (user is null)
         {
-            return;
+            throw new UserNotFoundException(email);
         }
 
         var passwordPolicy = CheckResetPasswordPolicy(user.ResetPassword, now);
@@ -184,18 +184,18 @@ internal sealed class AccountService : IAccountService
         var user = await _userRepository.GetAsync(userId, token);
         
         if (user is null)
-        {
             throw new UserNotFoundException();
-        }
-
-        if (user.ResetPassword is null || user.ResetPassword.ExpiredAt < _timeProvider.Current())
-        {
+        
+        if (user.ResetPassword is null)
+            throw new PasswordAlreadyResetException();
+        
+        if (user.ResetPassword.ExpiredAt < _timeProvider.Current())
             throw new ResetPasswordKeyExpiredException();
-        }
         
         var validPassword = _passwordValidator.Validate(dto.NewPassword, dto.ConfirmNewPassword);
         
         user.Password = _passwordManager.Secure(validPassword);
+        user.ResetPassword = null;
 
         await _userRepository.UpdateAsync(user, token);
         await _messageBroker.PublishAsync(new PasswordChanged(user.Id));

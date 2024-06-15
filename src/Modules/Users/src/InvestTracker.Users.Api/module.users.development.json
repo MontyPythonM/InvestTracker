@@ -2,7 +2,7 @@
   "Password": {
     "Reset": {
       "ExpirationMinutes": 5,
-      "RedirectTo": "https://your-frontend-page-for-reset-password.com",
+      "RedirectTo": "http://localhost:4200/account/reset-password",
       "UseResetPasswordPolicyPolicy": true,
       "ResetPasswordPolicyMultiplierMinutes": 1
     },

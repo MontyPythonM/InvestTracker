@@ -41,7 +41,8 @@ public static class Extensions
             .AddDomainEvents(assemblies)
             .AddAppAuthentication()
             .AddPermissionAuthorization()
-            .AddCorsPolicy();
+            .AddCorsPolicy()
+            .AddCorsHeaderInjector();
         
         services
             .AddControllers()
@@ -57,13 +58,14 @@ public static class Extensions
     {
         app.UseExceptionHandling();
         app.UseOpenApiDocumentation(modules);
-        app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseRouting();
+        app.UseCorsHeaderInjector();
         app.UsePermissionsInjector();
         app.UseAuthorization();
         app.MapControllers();
         app.UseCorsPolicy();
+        app.UseHttpsRedirection();
 
         if (app.Environment.IsDevelopment())
         {

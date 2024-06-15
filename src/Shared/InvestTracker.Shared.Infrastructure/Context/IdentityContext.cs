@@ -20,7 +20,7 @@ public class IdentityContext : IIdentityContext
             : Guid.Empty;
         
         Role = principal.Claims
-            .SingleOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
+            .SingleOrDefault(x => x.Type == CustomClaim.Role)?.Value;
         
         Subscription = principal.Claims
             .SingleOrDefault(x => x.Type == CustomClaim.Subscription)?.Value;

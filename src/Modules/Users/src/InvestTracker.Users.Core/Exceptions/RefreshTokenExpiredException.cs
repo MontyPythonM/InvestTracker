@@ -2,4 +2,4 @@
 
 namespace InvestTracker.Users.Core.Exceptions;
 
-public class RefreshTokenExpiredException() : InvestTrackerException("Refresh token has expired");
+public class RefreshTokenExpiredException() : InvestTrackerException("Your refresh token has expired. Please login again");

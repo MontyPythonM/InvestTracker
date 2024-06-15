@@ -76,8 +76,8 @@ internal class AccountsController : ApiControllerBase
 
     [HttpPost("refresh-token")]
     [AllowAnonymous]
-    [SwaggerOperation("Reset password after invoking forgot-password action")]
-    public async Task<ActionResult<AccessTokenDto>> RefreshToken( CancellationToken token)
+    [SwaggerOperation("Generate new JWT and replace existing refresh token with a new one")]
+    public async Task<ActionResult<AccessTokenDto>> RefreshToken(CancellationToken token)
     {
         var refreshTokenCookie = Request.Cookies["RefreshToken"];
         var (accessToken, refreshToken) = await _accountService.RefreshTokenAsync(refreshTokenCookie, token);

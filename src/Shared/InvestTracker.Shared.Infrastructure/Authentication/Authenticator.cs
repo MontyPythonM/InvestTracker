@@ -38,7 +38,7 @@ internal sealed class Authenticator : IAuthenticator
         
         if (!string.IsNullOrWhiteSpace(role?.Value))
         {
-            jwtClaims.Add(new Claim(ClaimTypes.Role, role));
+            jwtClaims.Add(new Claim(CustomClaim.Role, role));
         }
         
         if (!string.IsNullOrWhiteSpace(subscription?.Value))
