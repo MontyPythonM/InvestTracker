@@ -49,4 +49,7 @@ public static class DateExtensions
     
     public static DateOnly AsFirstDayOfMonth(this DateOnly date) => new(date.Year, date.Month, 01);
     public static DateTime AsFirstDayOfMonth(this DateTime date) => new(date.Year, date.Month, 01);
+
+    public static string ToFormatString(this DateTime dateTime) => $"{dateTime:dd.MM.yyyy HH:mm:ss}";
+    public static string ToFormatString(this DateOnly date) => $"{date:dd.MM.yyyy}";
 }

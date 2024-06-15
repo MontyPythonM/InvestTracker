@@ -148,7 +148,7 @@ internal sealed class AccountService : IAccountService
 
         if (user is null)
         {
-            return;
+            throw new UserNotFoundException(email);
         }
 
         var passwordPolicy = CheckResetPasswordPolicy(user.ResetPassword, now);

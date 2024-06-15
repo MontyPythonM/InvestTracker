@@ -1,4 +1,6 @@
-﻿namespace InvestTracker.Users.Core.Validators;
+﻿using InvestTracker.Users.Core.Exceptions;
+
+namespace InvestTracker.Users.Core.Validators;
 
 public static class ResetPasswordKey
 {
@@ -8,7 +10,7 @@ public static class ResetPasswordKey
     {
         if (!IsValid(key))
         {
-            throw new FormatException("ResetPasswordKey has invalid format");
+            throw new ResetPasswordKeyFormatException();
         }
         
         return key.Split('=')[1];
@@ -18,7 +20,7 @@ public static class ResetPasswordKey
     {
         if (!IsValid(key))
         {
-            throw new FormatException("ResetPasswordKey has invalid format");
+            throw new ResetPasswordKeyFormatException();
         }
         
         return key.Split('=')[0];
