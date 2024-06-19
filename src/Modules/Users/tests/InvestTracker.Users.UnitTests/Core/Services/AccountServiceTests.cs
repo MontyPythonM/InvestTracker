@@ -433,7 +433,42 @@ public class AccountServiceTests
     }
 
     [Fact]
-    public async Task ResetForgottenPasswordAsync_ShouldThrowResetPasswordKeyExpiredException_WhenUserNeverResetPassword()
+    public async Task ResetForgottenPasswordAsync_ShouldThrowResetPasswordKeyExpiredException_WhenUserForgotPasswordButHisResetPasswordKeyExpired()
+    {
+        // arrange
+        var user = GetUser();
+        var resetPasswordKey = ResetPasswordKey.Create(user.Id);
+        var newPassword = "password";
+        var now = new DateTime(2022, 01, 01);
+
+        user.ResetPassword = new ResetPassword
+        {
+            Key = "key",
+            ExpiredAt = now.AddMinutes(-60),
+            InvokeAt = now.AddDays(-1),
+            Counter = 0
+        };
+
+        var dto = new ResetPasswordDto
+        {
+            ResetPasswordKey = resetPasswordKey,
+            NewPassword = newPassword,
+            ConfirmNewPassword = newPassword
+        };
+        
+        _timeProvider.Current().Returns(now);
+        _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
+        
+        // act
+        var exception = await Record.ExceptionAsync(() => 
+            _accountService.ResetForgottenPasswordAsync(dto, CancellationToken.None));
+        
+        // assert
+        exception.ShouldBeOfType<ResetPasswordKeyExpiredException>();
+    }
+    
+    [Fact]
+    public async Task ResetForgottenPasswordAsync_ShouldThrowPasswordAlreadyResetException_WhenUserNotForgotPassword()
     {
         // arrange
         var user = GetUser();
@@ -456,7 +491,7 @@ public class AccountServiceTests
             _accountService.ResetForgottenPasswordAsync(dto, CancellationToken.None));
         
         // assert
-        exception.ShouldBeOfType<ResetPasswordKeyExpiredException>();
+        exception.ShouldBeOfType<PasswordAlreadyResetException>();
     }
     
     [Fact]
