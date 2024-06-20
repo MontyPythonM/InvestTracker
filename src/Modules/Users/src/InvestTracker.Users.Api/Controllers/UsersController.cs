@@ -22,18 +22,18 @@ internal class UsersController : ApiControllerBase
     }
     
     [HttpGet]
-    [Authorize]
-    [SwaggerOperation("Returns current user details")]
-    public async Task<ActionResult<UserDto?>> GetUser(CancellationToken token)
-        => OkOrNotFound(await _userService.GetUserAsync(_requestContext.Identity.UserId, token));
-    
-    [HttpGet("all")]
     [HasPermission(UsersPermission.GetUsers)]
     [SwaggerOperation("Returns list of application users")]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers(CancellationToken token)
         => OkOrNotFound(await _userService.GetUsersAsync(token));
+    
+    [HttpGet("current")]
+    [Authorize]
+    [SwaggerOperation("Returns current user details")]
+    public async Task<ActionResult<UserDto?>> GetUser(CancellationToken token)
+        => OkOrNotFound(await _userService.GetUserAsync(_requestContext.Identity.UserId, token));
 
-    [HttpGet("{id:guid}/details")]
+    [HttpGet("{id:guid}")]
     [HasPermission(UsersPermission.GetUserDetails)]
     [SwaggerOperation("Returns selected user details")]
     public async Task<ActionResult<UserDetailsDto?>> GetUserDetails(Guid id, CancellationToken token)
