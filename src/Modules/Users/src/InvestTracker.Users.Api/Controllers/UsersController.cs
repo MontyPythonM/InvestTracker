@@ -48,15 +48,6 @@ internal class UsersController : ApiControllerBase
         return Ok();
     }
     
-    [HttpPatch("{id:guid}/remove-role")]
-    [HasPermission(UsersPermission.RemoveRole)]
-    [SwaggerOperation("Remove selected user role")]
-    public async Task<ActionResult> RemoveRole(Guid id, CancellationToken token)
-    {
-        await _userService.RemoveRoleAsync(id, token);
-        return Ok();
-    }
-    
     [HttpPatch("{id:guid}/set-subscription")]
     [HasPermission(UsersPermission.SetSubscription)]
     [SwaggerOperation("Set selected user system subscription")]

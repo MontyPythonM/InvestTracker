@@ -121,29 +121,15 @@ internal sealed class UserService : IUserService
         };
         
         await _userRepository.UpdateAsync(user, token);
-        await _messageBroker.PublishAsync(new UserRoleGranted(user.Id, user.Role.Value, modifiedBy));
-    }
-
-    public async Task RemoveRoleAsync(Guid id, CancellationToken token)
-    {
-        var user = await _userRepository.GetAsync(id, token);
-        if (user is null)
+        
+        if (dto.Role is SystemRole.None)
         {
-            throw new UserNotFoundException(id);
+            await _messageBroker.PublishAsync(new UserRoleRemoved(user.Id, modifiedBy));
         }
-
-        var modifiedAt = _timeProvider.Current();
-        var modifiedBy = _requestContext.Identity.UserId;
-        
-        user.Role = new Role
+        else
         {
-            Value = SystemRole.None,
-            GrantedAt = modifiedAt,
-            GrantedBy = modifiedBy
-        };
-        
-        await _userRepository.UpdateAsync(user, token);
-        await _messageBroker.PublishAsync(new UserRoleRemoved(user.Id, modifiedBy));
+            await _messageBroker.PublishAsync(new UserRoleGranted(user.Id, user.Role.Value, modifiedBy));
+        }
     }
 
     public async Task SetSubscriptionAsync(Guid userId, SetSubscriptionDto dto, CancellationToken token)
@@ -184,9 +170,10 @@ internal sealed class UserService : IUserService
     {
         var user = await _userRepository.GetAsync(userId, token);
         if (user is null)
-        {
             throw new UserNotFoundException(userId);
-        }
+        
+        if (_requestContext.Identity.UserId == user.Id)
+            throw new CannotChangeOwnAccountActivationException();
         
         user.IsActive = isActive;
         await _userRepository.UpdateAsync(user, token);

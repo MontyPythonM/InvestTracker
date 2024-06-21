@@ -5,4 +5,5 @@ public enum SubscriptionChangeSource
     NeverChanged = 0,
     FromPayment,
     FromAdministrator,
+    Expired
 }

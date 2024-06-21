@@ -4,7 +4,7 @@ namespace InvestTracker.Users.Core.Exceptions;
 
 internal class InvalidCredentialsException : InvestTrackerException
 {
-    public InvalidCredentialsException() : base("Invalid email or password.")
+    public InvalidCredentialsException() : base("Invalid email or password")
     {
     }
 }

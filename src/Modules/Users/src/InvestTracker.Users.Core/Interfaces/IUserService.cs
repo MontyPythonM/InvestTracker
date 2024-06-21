@@ -8,7 +8,6 @@ public interface IUserService
     Task<IEnumerable<UserDto>> GetUsersAsync(CancellationToken token);
     Task<UserDetailsDto?> GetUserDetailsAsync(Guid id, CancellationToken token);
     Task SetRoleAsync(Guid userId, SetRoleDto dto, CancellationToken token);
-    Task RemoveRoleAsync(Guid id, CancellationToken token);
     Task SetSubscriptionAsync(Guid userId, SetSubscriptionDto dto, CancellationToken token);
     Task SetAccountActivationAsync(Guid userId, bool isActive, CancellationToken token);
 }
