@@ -4,7 +4,7 @@ namespace InvestTracker.Users.Core.Exceptions;
 
 internal class InvalidPasswordException : InvestTrackerException
 {
-    public InvalidPasswordException() : base("Invalid password.")
+    public InvalidPasswordException() : base("Invalid password")
     {
     }
 }

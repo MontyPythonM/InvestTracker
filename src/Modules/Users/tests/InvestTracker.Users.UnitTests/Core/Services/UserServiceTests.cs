@@ -83,8 +83,7 @@ public class UserServiceTests
                 e.Role == user.Role.Value &&
                 e.ModifiedBy == currentUserId));
 
-        await _userRepository.Received(1)
-            .UpdateAsync(user, CancellationToken.None);
+        await _userRepository.Received(1).UpdateAsync(user, CancellationToken.None);
     }
     
     [Fact]
@@ -105,51 +104,21 @@ public class UserServiceTests
         user.Role.ShouldNotBeNull();
         user.Role.Value.ShouldBe(SystemRole.BusinessAdministrator);
     }
-    #endregion
     
-    #region RemoveRoleAsync tests
     [Fact]
-    public async Task RemoveRoleAsync_ShouldThrowUserNotFoundException_WhenUserNotExist()
-    {
-        // arrange
-        var userId = Guid.NewGuid();
-        _userRepository.GetAsync(userId, CancellationToken.None).ReturnsNull();
-        
-        // act
-        var exception = await Record.ExceptionAsync(() =>
-            _userService.RemoveRoleAsync(userId, CancellationToken.None));
-
-        // assert
-        exception.ShouldNotBeNull();
-        exception.ShouldBeOfType<UserNotFoundException>();        
-        await _messageBroker.Received(0).PublishAsync(Arg.Any<UserRoleRemoved>());
-    }
-
-    [Fact]
-    public async Task RemoveRoleAsync_ShouldPublishUserRoleRemovedEvent_WhenRoleRemoved()
+    public async Task SetRoleAsync_ShouldPublishUserRoleRemovedEvent_WhenNewRoleIsNone()
     {
         // arrange
         var user = GetUser();
+        var dto = GetSetRoleDto(SystemRole.None);
+
         _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
 
         // act
-        await _userService.RemoveRoleAsync(user.Id, CancellationToken.None);
+        await _userService.SetRoleAsync(user.Id, dto, CancellationToken.None);
 
         // assert
         await _messageBroker.Received(1).PublishAsync(Arg.Is<UserRoleRemoved>(e => e.Id == user.Id));
-    }
-    
-    [Fact]
-    public async Task RemoveRoleAsync_ShouldClearUserRole_WhenRoleRemoved()
-    {
-        // arrange
-        var user = GetUser();
-        _userRepository.GetAsync(user.Id, CancellationToken.None).Returns(user);
-
-        // act
-        await _userService.RemoveRoleAsync(user.Id, CancellationToken.None);
-
-        // assert
         user.Role.ShouldNotBeNull();
         user.Role.Value.ShouldBe(SystemRole.None);
     }

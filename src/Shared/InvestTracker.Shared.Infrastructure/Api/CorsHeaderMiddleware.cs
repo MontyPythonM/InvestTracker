@@ -15,7 +15,7 @@ public class CorsHeaderMiddleware : IMiddleware
     {
         await next(context);
         
-        if (context.Response.StatusCode == 401)
+        if (context.Response.StatusCode is 401 or 403)
         {
             context.Response.Headers.Add("Access-Control-Allow-Origin", string.Join(", ", _corsOptions.AllowedOrigins ?? []));
             context.Response.Headers.Add("Access-Control-Allow-Methods", string.Join(", ", _corsOptions.AllowedMethods ?? []));

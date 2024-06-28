@@ -5,7 +5,6 @@ public enum UsersPermission
     GetUsers,
     GetUserDetails,
     SetRole,
-    RemoveRole,
     SetSubscription,
     ActivateUserAccount,
     DeactivateUserAccount,

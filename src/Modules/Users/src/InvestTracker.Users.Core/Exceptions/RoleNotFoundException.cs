@@ -4,7 +4,7 @@ namespace InvestTracker.Users.Core.Exceptions;
 
 internal class RoleNotFoundException : InvestTrackerException
 {
-    public RoleNotFoundException(string value) : base($"Role {value} not found.")
+    public RoleNotFoundException(string value) : base($"Role {value} not found")
     {
     }
 }

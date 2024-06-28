@@ -78,6 +78,8 @@ internal sealed class AccountService : IAccountService
 
     public async Task<AuthenticationResponse> SignInAsync(SignInDto dto, CancellationToken token)
     {
+        var now = _timeProvider.Current();
+        
         if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
         {
             throw new InvalidCredentialsException();
@@ -91,7 +93,7 @@ internal sealed class AccountService : IAccountService
 
         if (!user.IsActive)
         {
-            throw new UserNotActiveException(user.Id);
+            throw new UserNotActiveException();
         }
         
         if (!_passwordManager.Validate(dto.Password, user.Password))
@@ -99,9 +101,15 @@ internal sealed class AccountService : IAccountService
             throw new InvalidCredentialsException();
         }
 
+        if (user.Subscription.IsExpired(now))
+        {
+            user.Subscription = Subscription.CreateDefaultSubscription(now);
+            await _messageBroker.PublishAsync(new UserSubscriptionChanged(user.Id, user.FullName, user.Email, user.Subscription.Value, Guid.Empty));
+        }
+        
         var accessToken = _authenticator.CreateAccessToken(user.Id, user.Email.Value, user.Role.Value, user.Subscription.Value);
 
-        user.LastSuccessfulLogin = _timeProvider.Current();
+        user.LastSuccessfulLogin = now;
         user.RefreshToken = null;
         
         if (_authOptions.UseRefreshToken)
@@ -129,7 +137,7 @@ internal sealed class AccountService : IAccountService
 
         if (user.IsActive is false)
         {
-            throw new UserNotActiveException(user.Id);
+            throw new UserNotActiveException();
         }
 
         if (!_passwordManager.Validate(dto.Password, user.Password))

@@ -1,7 +1,9 @@
 ﻿using InvestTracker.Shared.Abstractions.Authorization;
 using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.Messages;
+using InvestTracker.Shared.Abstractions.Pagination;
 using InvestTracker.Shared.Abstractions.Time;
+using InvestTracker.Shared.Infrastructure.Pagination;
 using InvestTracker.Users.Core.Dtos;
 using InvestTracker.Users.Core.Entities;
 using InvestTracker.Users.Core.Enums;
@@ -49,7 +51,7 @@ internal sealed class UserService : IUserService
             })
             .SingleOrDefaultAsync(user => user.Id == id, token);
 
-    public async Task<IEnumerable<UserDto>> GetUsersAsync(CancellationToken token)
+    public async Task<Paged<UserDto>> GetUsersAsync(IPagedQuery query, CancellationToken token)
         => await _context.Users
             .AsNoTracking()
             .Include(user => user.Subscription)
@@ -65,7 +67,7 @@ internal sealed class UserService : IUserService
                 Subscription = user.Subscription.Value,
                 Role = user.Role.Value
             })
-            .ToListAsync(token);
+            .PaginateAsync(query, token);
 
     public async Task<UserDetailsDto?> GetUserDetailsAsync(Guid id, CancellationToken token)
         => await _context.Users
@@ -121,29 +123,15 @@ internal sealed class UserService : IUserService
         };
         
         await _userRepository.UpdateAsync(user, token);
-        await _messageBroker.PublishAsync(new UserRoleGranted(user.Id, user.Role.Value, modifiedBy));
-    }
-
-    public async Task RemoveRoleAsync(Guid id, CancellationToken token)
-    {
-        var user = await _userRepository.GetAsync(id, token);
-        if (user is null)
+        
+        if (dto.Role is SystemRole.None)
         {
-            throw new UserNotFoundException(id);
+            await _messageBroker.PublishAsync(new UserRoleRemoved(user.Id, modifiedBy));
         }
-
-        var modifiedAt = _timeProvider.Current();
-        var modifiedBy = _requestContext.Identity.UserId;
-        
-        user.Role = new Role
+        else
         {
-            Value = SystemRole.None,
-            GrantedAt = modifiedAt,
-            GrantedBy = modifiedBy
-        };
-        
-        await _userRepository.UpdateAsync(user, token);
-        await _messageBroker.PublishAsync(new UserRoleRemoved(user.Id, modifiedBy));
+            await _messageBroker.PublishAsync(new UserRoleGranted(user.Id, user.Role.Value, modifiedBy));
+        }
     }
 
     public async Task SetSubscriptionAsync(Guid userId, SetSubscriptionDto dto, CancellationToken token)
@@ -184,9 +172,10 @@ internal sealed class UserService : IUserService
     {
         var user = await _userRepository.GetAsync(userId, token);
         if (user is null)
-        {
             throw new UserNotFoundException(userId);
-        }
+        
+        if (_requestContext.Identity.UserId == user.Id)
+            throw new CannotChangeOwnAccountActivationException();
         
         user.IsActive = isActive;
         await _userRepository.UpdateAsync(user, token);

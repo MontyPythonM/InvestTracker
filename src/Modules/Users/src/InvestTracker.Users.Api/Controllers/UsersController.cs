@@ -1,4 +1,5 @@
 ﻿using InvestTracker.Shared.Abstractions.Context;
+using InvestTracker.Shared.Abstractions.Pagination;
 using InvestTracker.Shared.Infrastructure.Authorization;
 using InvestTracker.Users.Api.Controllers.Base;
 using InvestTracker.Users.Api.Permissions;
@@ -22,18 +23,18 @@ internal class UsersController : ApiControllerBase
     }
     
     [HttpGet]
+    [HasPermission(UsersPermission.GetUsers)]
+    [SwaggerOperation("Returns list of application users")]
+    public async Task<ActionResult<Paged<UserDto>>> GetUsers(int page, int results, CancellationToken token)
+        => OkOrNotFound(await _userService.GetUsersAsync(new PagedQuery(page, results) ,token));
+    
+    [HttpGet("current")]
     [Authorize]
     [SwaggerOperation("Returns current user details")]
     public async Task<ActionResult<UserDto?>> GetUser(CancellationToken token)
         => OkOrNotFound(await _userService.GetUserAsync(_requestContext.Identity.UserId, token));
-    
-    [HttpGet("all")]
-    [HasPermission(UsersPermission.GetUsers)]
-    [SwaggerOperation("Returns list of application users")]
-    public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers(CancellationToken token)
-        => OkOrNotFound(await _userService.GetUsersAsync(token));
 
-    [HttpGet("{id:guid}/details")]
+    [HttpGet("{id:guid}")]
     [HasPermission(UsersPermission.GetUserDetails)]
     [SwaggerOperation("Returns selected user details")]
     public async Task<ActionResult<UserDetailsDto?>> GetUserDetails(Guid id, CancellationToken token)
@@ -45,15 +46,6 @@ internal class UsersController : ApiControllerBase
     public async Task<ActionResult> SetRole([FromBody] SetRoleDto dto, Guid id, CancellationToken token)
     {
         await _userService.SetRoleAsync(id, dto, token);
-        return Ok();
-    }
-    
-    [HttpPatch("{id:guid}/remove-role")]
-    [HasPermission(UsersPermission.RemoveRole)]
-    [SwaggerOperation("Remove selected user role")]
-    public async Task<ActionResult> RemoveRole(Guid id, CancellationToken token)
-    {
-        await _userService.RemoveRoleAsync(id, token);
         return Ok();
     }
     
