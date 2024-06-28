@@ -1,7 +1,9 @@
 ﻿using InvestTracker.Shared.Abstractions.Authorization;
 using InvestTracker.Shared.Abstractions.Context;
 using InvestTracker.Shared.Abstractions.Messages;
+using InvestTracker.Shared.Abstractions.Pagination;
 using InvestTracker.Shared.Abstractions.Time;
+using InvestTracker.Shared.Infrastructure.Pagination;
 using InvestTracker.Users.Core.Dtos;
 using InvestTracker.Users.Core.Entities;
 using InvestTracker.Users.Core.Enums;
@@ -49,7 +51,7 @@ internal sealed class UserService : IUserService
             })
             .SingleOrDefaultAsync(user => user.Id == id, token);
 
-    public async Task<IEnumerable<UserDto>> GetUsersAsync(CancellationToken token)
+    public async Task<Paged<UserDto>> GetUsersAsync(IPagedQuery query, CancellationToken token)
         => await _context.Users
             .AsNoTracking()
             .Include(user => user.Subscription)
@@ -65,7 +67,7 @@ internal sealed class UserService : IUserService
                 Subscription = user.Subscription.Value,
                 Role = user.Role.Value
             })
-            .ToListAsync(token);
+            .PaginateAsync(query, token);
 
     public async Task<UserDetailsDto?> GetUserDetailsAsync(Guid id, CancellationToken token)
         => await _context.Users

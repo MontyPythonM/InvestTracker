@@ -8,6 +8,7 @@ using InvestTracker.Offers.Core.Features.Offers.Queries.GetOfferDetails.Dtos;
 using InvestTracker.Offers.Core.Features.Offers.Queries.GetOffers;
 using InvestTracker.Shared.Abstractions.Commands;
 using InvestTracker.Shared.Abstractions.Context;
+using InvestTracker.Shared.Abstractions.Pagination;
 using InvestTracker.Shared.Abstractions.Queries;
 using InvestTracker.Shared.Infrastructure.Authorization;
 using Microsoft.AspNetCore.Authorization;
@@ -39,8 +40,8 @@ internal class OffersController : ApiControllerBase
     [HttpGet]
     [AllowAnonymous]
     [SwaggerOperation("Returns all offers")]
-    public async Task<ActionResult<IEnumerable<OfferDto>>> GetOffers(CancellationToken token)
-        => OkOrNotFound(await _queryDispatcher.QueryAsync(new GetOffers(), token));
+    public async Task<ActionResult<Paged<OfferDto>>> GetOffers(int page, int results, CancellationToken token)
+        => OkOrNotFound(await _queryDispatcher.QueryAsync(new GetOffers(page, results), token));
 
     [HttpPost]
     [HasPermission(OffersPermission.CreateOffer)]

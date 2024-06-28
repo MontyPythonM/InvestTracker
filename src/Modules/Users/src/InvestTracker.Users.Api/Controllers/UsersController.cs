@@ -1,4 +1,5 @@
 ﻿using InvestTracker.Shared.Abstractions.Context;
+using InvestTracker.Shared.Abstractions.Pagination;
 using InvestTracker.Shared.Infrastructure.Authorization;
 using InvestTracker.Users.Api.Controllers.Base;
 using InvestTracker.Users.Api.Permissions;
@@ -24,8 +25,8 @@ internal class UsersController : ApiControllerBase
     [HttpGet]
     [HasPermission(UsersPermission.GetUsers)]
     [SwaggerOperation("Returns list of application users")]
-    public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers(CancellationToken token)
-        => OkOrNotFound(await _userService.GetUsersAsync(token));
+    public async Task<ActionResult<Paged<UserDto>>> GetUsers(int page, int results, CancellationToken token)
+        => OkOrNotFound(await _userService.GetUsersAsync(new PagedQuery(page, results) ,token));
     
     [HttpGet("current")]
     [Authorize]

@@ -1,10 +1,12 @@
 ﻿using InvestTracker.Offers.Core.Persistence;
+using InvestTracker.Shared.Abstractions.Pagination;
 using InvestTracker.Shared.Abstractions.Queries;
+using InvestTracker.Shared.Infrastructure.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvestTracker.Offers.Core.Features.Offers.Queries.GetOffers;
 
-internal sealed class GetOffersHandler : IQueryHandler<GetOffers, IEnumerable<OfferDto>>
+internal sealed class GetOffersHandler : IQueryHandler<GetOffers, Paged<OfferDto>>
 {
     private readonly OffersDbContext _context;
 
@@ -13,7 +15,7 @@ internal sealed class GetOffersHandler : IQueryHandler<GetOffers, IEnumerable<Of
         _context = context;
     }
     
-    public async Task<IEnumerable<OfferDto>> HandleAsync(GetOffers query, CancellationToken token = default)
+    public async Task<Paged<OfferDto>> HandleAsync(GetOffers query, CancellationToken token = default)
         => await _context.Offers
             .AsNoTracking()
             .Select(offer => new OfferDto
@@ -23,5 +25,5 @@ internal sealed class GetOffersHandler : IQueryHandler<GetOffers, IEnumerable<Of
                 Description = offer.Description,
                 AdvisorFullName = offer.Advisor.FullName
             })
-            .ToListAsync(token);
+            .PaginateAsync(query, token);
 }
