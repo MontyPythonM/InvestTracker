@@ -16,5 +16,6 @@ public enum OffersPermission
     CancelOwnCollaboration,
     CancelSelectedCollaboration,
     
+    GetAdvisorDetails,
     UpdateAdvisorDetails
 }

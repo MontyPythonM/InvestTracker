@@ -1,8 +1,9 @@
-﻿using InvestTracker.Offers.Core.Exceptions;
+﻿using System.Buffers.Text;
+using InvestTracker.Offers.Core.Exceptions;
 using InvestTracker.Offers.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.Commands;
 
-namespace InvestTracker.Offers.Core.Features.Advisors.UpdateAdvisor;
+namespace InvestTracker.Offers.Core.Features.Advisors.Commands.UpdateAdvisor;
 
 internal sealed class UpdateAdvisorHandler : ICommandHandler<UpdateAdvisor>
 {
@@ -24,7 +25,11 @@ internal sealed class UpdateAdvisorHandler : ICommandHandler<UpdateAdvisor>
         advisor.PhoneNumber = command.PhoneNumber;
         advisor.Bio = command.Bio;
         advisor.CompanyName = command.CompanyName;
-        advisor.AvatarUrl = command.AvatarUrl;
+
+        if (command.Avatar is not null && Base64.IsValid(command.Avatar))
+        {
+            advisor.Avatar = Convert.FromBase64String(command.Avatar);
+        }
         
         await _advisorRepository.UpdateAsync(advisor, token);
     }
