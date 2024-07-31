@@ -35,7 +35,7 @@ internal sealed class UserRoleRemovedHandler : IEventHandler<UserRoleRemoved>
             @event.Id);
         
         var administratorsNotification = new GroupNotification(
-            $"{user.FullName.Value} role was set to '{SystemRole.None}' by {modifiedBy?.FullName.Value ?? "-"}", 
+            $"{user.FullName.Value} role was set to {SystemRole.None} by {modifiedBy?.FullName.Value ?? "-"}", 
             RecipientGroup.SystemAdministrators,
             r => r.AdministratorsActivity,
             new List<Guid> { user.Id });

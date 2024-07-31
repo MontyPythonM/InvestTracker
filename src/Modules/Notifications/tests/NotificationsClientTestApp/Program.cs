@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 
 // arrange
-const string email = "investor@test.com";
-const string password = "test";
+const string email = "test@test.com";
+const string password = "test123!";
 const string methodName = "Notify";
 const string uri = "http://localhost:5200/notification-hub";
 

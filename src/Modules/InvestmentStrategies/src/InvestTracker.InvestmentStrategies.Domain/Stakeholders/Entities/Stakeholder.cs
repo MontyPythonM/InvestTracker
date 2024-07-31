@@ -30,11 +30,6 @@ public class Stakeholder : AggregateRoot<StakeholderId>
 
     public void SetRole(Role role, DateTime modifiedAt, Guid modifiedBy)
     {
-        if (!IsActive)
-        {
-            throw new InactiveStakeholderException(Id);
-        }
-
         Role = role;
         SetModification(modifiedAt, modifiedBy);
         IncrementVersion();
@@ -42,11 +37,6 @@ public class Stakeholder : AggregateRoot<StakeholderId>
 
     public void SetSubscription(Subscription subscription, DateTime modifiedAt, Guid modifiedBy)
     {
-        if (!IsActive)
-        {
-            throw new InactiveStakeholderException(Id);
-        }
-        
         Subscription = subscription;
         SetModification(modifiedAt, modifiedBy);
         IncrementVersion();

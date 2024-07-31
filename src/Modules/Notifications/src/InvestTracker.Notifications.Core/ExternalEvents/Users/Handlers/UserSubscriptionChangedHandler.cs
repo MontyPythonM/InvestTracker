@@ -29,7 +29,7 @@ internal sealed class UserSubscriptionChangedHandler : IEventHandler<UserSubscri
         
         user.Subscription = @event.Subscription;
         
-        var message = $"Your subscription was changed to '{@event.Subscription}'";
+        var message = $"Your subscription was changed to {@event.Subscription}";
         var notification = new PersonalNotification(message, @event.Id);
         var email = new PersonalEmailMessage(@event.Id, "Subscription changed", message);
         

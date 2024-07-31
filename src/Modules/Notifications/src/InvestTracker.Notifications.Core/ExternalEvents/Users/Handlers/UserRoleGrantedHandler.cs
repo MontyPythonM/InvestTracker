@@ -34,7 +34,7 @@ internal sealed class UserRoleGrantedHandler : IEventHandler<UserRoleGranted>
             @event.Id);
         
         var administratorsNotification = new GroupNotification(
-            $"{user.FullName.Value} role was set to '{@event.Role}' by {modifiedBy?.FullName.Value ?? "-"}", 
+            $"{user.FullName.Value} role was set to {@event.Role} by {modifiedBy?.FullName.Value ?? "-"}", 
             RecipientGroup.SystemAdministrators,
             r => r.AdministratorsActivity,
             new List<Guid> { user.Id });
