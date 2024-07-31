@@ -35,7 +35,7 @@ internal sealed class GetOfferDetailsHandler : IQueryHandler<GetOfferDetails, Of
                     PhoneNumber = entity.Advisor.PhoneNumber,
                     Bio = entity.Advisor.Bio,
                     CompanyName = entity.Advisor.CompanyName,
-                    AvatarUrl = entity.Advisor.AvatarUrl
+                    Avatar = entity.Advisor.Avatar == null ? null : Convert.ToBase64String(entity.Advisor.Avatar) 
                 },
                 Tags = entity.Tags.ToList()
             })

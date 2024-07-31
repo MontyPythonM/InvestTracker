@@ -24,12 +24,12 @@ public class FinancialAssetAddedHandler : IEventHandler<FinancialAssetAdded>
         }
         
         var ownerNotification = new PersonalNotification(
-            $"Financial asset '{@event.FinancialAssetName}' was added to '{@event.PortfolioTitle}' portfolio", 
+            $"Financial asset {@event.FinancialAssetName} was added to {@event.PortfolioTitle} portfolio", 
             owner.Id,
             setting => setting.AssetActivity);
         
         var collaboratorNotification = new PersonalNotification(
-            $"Financial asset '{@event.FinancialAssetName}' was added to '{@event.PortfolioTitle}' portfolio owned by {owner.FullName.Value}", 
+            $"Financial asset '{@event.FinancialAssetName}' was added to {@event.PortfolioTitle} portfolio owned by {owner.FullName.Value}", 
             @event.CollaboratorIds,
             setting => setting.AssetActivity);
 

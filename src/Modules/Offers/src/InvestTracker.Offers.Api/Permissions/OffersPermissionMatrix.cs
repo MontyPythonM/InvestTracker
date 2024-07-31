@@ -18,6 +18,7 @@ internal sealed class OffersPermissionMatrix : IModulePermissionMatrix
         new(SystemSubscription.Advisor, OffersPermission.GetUserCollaborations.ToString()),
         new(SystemSubscription.Advisor, OffersPermission.GetUserCollaboration.ToString()),
         new(SystemSubscription.Advisor, OffersPermission.CancelOwnCollaboration.ToString()),
+        new(SystemSubscription.Advisor, OffersPermission.GetAdvisorDetails.ToString()),
         new(SystemSubscription.Advisor, OffersPermission.UpdateAdvisorDetails.ToString()),
         
         new(SystemSubscription.StandardInvestor, OffersPermission.GetUserInvitations.ToString()),
@@ -35,6 +36,7 @@ internal sealed class OffersPermissionMatrix : IModulePermissionMatrix
         new(SystemRole.BusinessAdministrator, OffersPermission.UpdateOffer.ToString()),
         new(SystemRole.BusinessAdministrator, OffersPermission.DeleteOffer.ToString()),
         new(SystemRole.BusinessAdministrator, OffersPermission.GetUserCollaboration.ToString()),
+        new(SystemRole.BusinessAdministrator, OffersPermission.GetAdvisorDetails.ToString()),
         new(SystemRole.BusinessAdministrator, OffersPermission.UpdateAdvisorDetails.ToString()),
         
         new(SystemRole.SystemAdministrator, OffersPermission.UpdateOffer.ToString()),
@@ -43,5 +45,7 @@ internal sealed class OffersPermissionMatrix : IModulePermissionMatrix
         new(SystemRole.SystemAdministrator, OffersPermission.RejectCollaborationInvitation.ToString()),
         new(SystemRole.SystemAdministrator, OffersPermission.GetUserCollaboration.ToString()),
         new(SystemRole.SystemAdministrator, OffersPermission.CancelSelectedCollaboration.ToString()),
+        new(SystemRole.SystemAdministrator, OffersPermission.GetAdvisorDetails.ToString()),
+        new(SystemRole.SystemAdministrator, OffersPermission.UpdateAdvisorDetails.ToString()),
     };
 }

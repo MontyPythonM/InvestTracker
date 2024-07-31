@@ -8,7 +8,7 @@ public class Advisor
     public string? PhoneNumber { get; set; }
     public string? Bio { get; set; }
     public string? CompanyName { get; set; }
-    public string? AvatarUrl { get; set; }
+    public byte[]? Avatar { get; set; }
     public virtual ICollection<Offer> Offers { get; set; } = new List<Offer>();
     public virtual ICollection<Collaboration> Collaborations { get; set; } = new List<Collaboration>();
     

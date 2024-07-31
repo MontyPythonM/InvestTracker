@@ -8,5 +8,5 @@ internal class AdvisorDetailsDto
     public string? PhoneNumber { get; set; }
     public string? Bio { get; set; }
     public string? CompanyName { get; set; }
-    public string? AvatarUrl { get; set; }
+    public string? Avatar { get; set; }
 }

@@ -15,4 +15,8 @@
       <Folder Include="Portfolios\Events\Handlers\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Portfolios\Exceptions\Exceptions.cs" />
+    </ItemGroup>
+
 </Project>

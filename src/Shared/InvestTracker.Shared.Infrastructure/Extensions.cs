@@ -56,15 +56,15 @@ public static class Extensions
 
     internal static WebApplication UseSharedInfrastructure(this WebApplication app, IList<Assembly> assemblies, IList<IModule> modules)
     {
+        app.UseCorsPolicy();
+        app.UseCorsHeaderInjector();
         app.UseExceptionHandling();
         app.UseOpenApiDocumentation(modules);
         app.UseAuthentication();
         app.UseRouting();
-        app.UseCorsHeaderInjector();
         app.UsePermissionsInjector();
         app.UseAuthorization();
         app.MapControllers();
-        app.UseCorsPolicy();
         app.UseHttpsRedirection();
 
         if (app.Environment.IsDevelopment())

@@ -5,20 +5,14 @@ using InvestTracker.Shared.Abstractions.Time;
 
 namespace InvestTracker.Notifications.Core.ExternalEvents.Users.Handlers;
 
-internal sealed class AccountCreatedHandler : IEventHandler<AccountCreated>
+internal sealed class AccountCreatedHandler(
+    IReceiverRepository receiverRepository, 
+    ITimeProvider timeProvider)
+    : IEventHandler<AccountCreated>
 {
-    private readonly IReceiverRepository _receiverRepository;
-    private readonly ITimeProvider _timeProvider;
-
-    public AccountCreatedHandler(IReceiverRepository receiverRepository, ITimeProvider timeProvider)
-    {
-        _receiverRepository = receiverRepository;
-        _timeProvider = timeProvider;
-    }
-
     public async Task HandleAsync(AccountCreated @event)
     {
-        var receiverExists = await _receiverRepository.ExistsAsync(@event.Id);
+        var receiverExists = await receiverRepository.ExistsAsync(@event.Id);
 
         if (receiverExists)
         {
@@ -36,10 +30,10 @@ internal sealed class AccountCreatedHandler : IEventHandler<AccountCreated>
             PersonalSettings = new PersonalSettings
             {
                 Id = Guid.NewGuid(),
-                CreatedAt = _timeProvider.Current(),
+                CreatedAt = timeProvider.Current(),
             }
         };
 
-        await _receiverRepository.CreateAsync(receiver);
+        await receiverRepository.CreateAsync(receiver);
     }
 }

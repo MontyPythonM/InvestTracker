@@ -32,7 +32,7 @@ internal class OffersController : ApiControllerBase
     }
     
     [HttpGet("{id:guid}")]
-    [Authorize]
+    [AllowAnonymous]
     [SwaggerOperation("Returns selected offer details")]
     public async Task<ActionResult<OfferDetailsDto>> GetOffer(Guid id, CancellationToken token)
         => OkOrNotFound(await _queryDispatcher.QueryAsync(new GetOfferDetails(id), token));

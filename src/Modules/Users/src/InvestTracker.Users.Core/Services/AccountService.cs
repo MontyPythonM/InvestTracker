@@ -249,6 +249,7 @@ internal sealed class AccountService : IAccountService
         
         user.RefreshToken = null;
         await _userRepository.UpdateAsync(user, token);
+        await _messageBroker.PublishAsync(new RefreshTokenRevoked(userId, _requestContext.Identity.UserId));
     }
 
     private string CreateResetPasswordUri(string resetPasswordKey) => $"{_passwordResetOptions.RedirectTo}/{resetPasswordKey}";

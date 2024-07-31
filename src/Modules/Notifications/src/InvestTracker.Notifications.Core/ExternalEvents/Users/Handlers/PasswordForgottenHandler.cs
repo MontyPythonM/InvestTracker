@@ -1,23 +1,19 @@
 ﻿using InvestTracker.Notifications.Core.Dto.Emails;
+using InvestTracker.Notifications.Core.Dto.Notifications;
 using InvestTracker.Notifications.Core.Interfaces;
 using InvestTracker.Shared.Abstractions.IntegrationEvents;
 
 namespace InvestTracker.Notifications.Core.ExternalEvents.Users.Handlers;
 
-internal sealed class PasswordForgottenHandler : IEventHandler<PasswordForgotten>
+internal sealed class PasswordForgottenHandler(
+    IReceiverRepository receiverRepository,
+    IEmailPublisher emailPublisher,
+    INotificationPublisher notificationPublisher)
+    : IEventHandler<PasswordForgotten>
 {
-    private readonly IReceiverRepository _receiverRepository;
-    private readonly IEmailPublisher _emailPublisher;
-
-    public PasswordForgottenHandler(IReceiverRepository receiverRepository, IEmailPublisher emailPublisher)
-    {
-        _receiverRepository = receiverRepository;
-        _emailPublisher = emailPublisher;
-    }
-
     public async Task HandleAsync(PasswordForgotten @event)
     {
-        var user = await _receiverRepository.GetAsync(@event.UserId, true);
+        var user = await receiverRepository.GetAsync(@event.UserId, true);
         if (user is null)
         {
             return;
@@ -50,7 +46,9 @@ internal sealed class PasswordForgottenHandler : IEventHandler<PasswordForgotten
                    """;
         
         var email = new DirectEmailMessage(user.Email, subject, body, htmlBody);
+        var notification = new PersonalNotification("Email was sent with a link to reset your password. Check your inbox", user.Id);
         
-        await _emailPublisher.NotifyAsync(email);
+        await emailPublisher.NotifyAsync(email);
+        await notificationPublisher.NotifyAsync(notification);
     }
 }

@@ -13,9 +13,9 @@ public static class Extensions
             .AddSingleton(corsOptions)
             .AddCors(cors =>
             {
-                var allowedHeaders = corsOptions.AllowedHeaders ?? Enumerable.Empty<string>();
-                var allowedMethods = corsOptions.AllowedMethods ?? Enumerable.Empty<string>();
-                var allowedOrigins = corsOptions.AllowedOrigins ?? Enumerable.Empty<string>();
+                var allowedHeaders = corsOptions.AllowedHeaders ?? [];
+                var allowedMethods = corsOptions.AllowedMethods ?? [];
+                var allowedOrigins = corsOptions.AllowedOrigins ?? [];
                 
                 cors.AddPolicy(CorsOptions.SectionName, builder =>
                 {
@@ -29,9 +29,11 @@ public static class Extensions
                         builder.DisallowCredentials();
                     }
 
-                    builder.WithOrigins(origins.ToArray())
+                    builder
+                        .WithOrigins(origins.ToArray())
                         .WithHeaders(allowedHeaders.ToArray())
-                        .WithMethods(allowedMethods.ToArray());
+                        .WithMethods(allowedMethods.ToArray())
+                        .SetIsOriginAllowed((x) => true);
                 });
             });
     }

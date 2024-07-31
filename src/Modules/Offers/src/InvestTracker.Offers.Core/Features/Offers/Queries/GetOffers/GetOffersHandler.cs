@@ -25,5 +25,6 @@ internal sealed class GetOffersHandler : IQueryHandler<GetOffers, Paged<OfferDto
                 Description = offer.Description,
                 AdvisorFullName = offer.Advisor.FullName
             })
+            .OrderBy(offer => offer.Title)
             .PaginateAsync(query, token);
 }
