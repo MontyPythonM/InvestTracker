@@ -6,21 +6,15 @@ using InvestTracker.Shared.Abstractions.IntegrationEvents;
 
 namespace InvestTracker.Notifications.Core.ExternalEvents.Users.Handlers;
 
-internal sealed class UserRoleRemovedHandler : IEventHandler<UserRoleRemoved>
+internal sealed class UserRoleRemovedHandler(
+    IReceiverRepository receiverRepository, 
+    INotificationPublisher notificationPublisher)
+    : IEventHandler<UserRoleRemoved>
 {
-    private readonly IReceiverRepository _receiverRepository;
-    private readonly INotificationPublisher _notificationPublisher;
-    
-    public UserRoleRemovedHandler(IReceiverRepository receiverRepository, INotificationPublisher notificationPublisher)
-    {
-        _receiverRepository = receiverRepository;
-        _notificationPublisher = notificationPublisher;
-    }
-    
     public async Task HandleAsync(UserRoleRemoved @event)
     {
-        var user = await _receiverRepository.GetAsync(@event.Id, true);
-        var modifiedBy = await _receiverRepository.GetAsync(@event.ModifiedBy, true);
+        var user = await receiverRepository.GetAsync(@event.Id, true);
+        var modifiedBy = await receiverRepository.GetAsync(@event.ModifiedBy, true);
 
         if (user is null)
         {
@@ -28,7 +22,7 @@ internal sealed class UserRoleRemovedHandler : IEventHandler<UserRoleRemoved>
         }
         
         user.Role = SystemRole.None;
-        await _receiverRepository.UpdateAsync(user);
+        await receiverRepository.UpdateAsync(user);
 
         var userNotification = new PersonalNotification(
             $"Your role was set to '{SystemRole.None}'", 
@@ -40,7 +34,7 @@ internal sealed class UserRoleRemovedHandler : IEventHandler<UserRoleRemoved>
             r => r.AdministratorsActivity,
             new List<Guid> { user.Id });
         
-        await _notificationPublisher.NotifyAsync(userNotification);
-        await _notificationPublisher.NotifyAsync(administratorsNotification);
+        await notificationPublisher.NotifyAsync(userNotification);
+        await notificationPublisher.NotifyAsync(administratorsNotification);
     }
 }

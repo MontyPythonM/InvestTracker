@@ -4,20 +4,14 @@ using InvestTracker.Shared.Abstractions.IntegrationEvents;
 
 namespace InvestTracker.Notifications.Core.ExternalEvents.Users.Handlers;
 
-internal sealed class PasswordChangedHandler : IEventHandler<PasswordChanged>
+internal sealed class PasswordChangedHandler(
+    IReceiverRepository receiverRepository, 
+    IEmailPublisher emailPublisher)
+    : IEventHandler<PasswordChanged>
 {
-    private readonly IReceiverRepository _receiverRepository;
-    private readonly IEmailPublisher _emailPublisher;
-
-    public PasswordChangedHandler(IReceiverRepository receiverRepository, IEmailPublisher emailPublisher)
-    {
-        _receiverRepository = receiverRepository;
-        _emailPublisher = emailPublisher;
-    }
-
     public async Task HandleAsync(PasswordChanged @event)
     {
-        var user = await _receiverRepository.GetAsync(@event.UserId, true);
+        var user = await receiverRepository.GetAsync(@event.UserId, true);
         if (user is null)
         {
             return;
@@ -36,6 +30,6 @@ internal sealed class PasswordChangedHandler : IEventHandler<PasswordChanged>
         
         var email = new PersonalEmailMessage(user.Id, subject, body);
         
-        await _emailPublisher.NotifyAsync(email);
+        await emailPublisher.NotifyAsync(email);
     }
 }

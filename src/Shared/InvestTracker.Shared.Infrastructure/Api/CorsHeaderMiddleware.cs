@@ -13,14 +13,35 @@ public class CorsHeaderMiddleware : IMiddleware
     
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        await next(context);
-        
-        if (context.Response.StatusCode is 401 or 403)
+        if (context.Request.Method == HttpMethods.Options)
         {
-            context.Response.Headers.Add("Access-Control-Allow-Origin", string.Join(", ", _corsOptions.AllowedOrigins ?? []));
-            context.Response.Headers.Add("Access-Control-Allow-Methods", string.Join(", ", _corsOptions.AllowedMethods ?? []));
-            context.Response.Headers.Add("Access-Control-Allow-Headers", string.Join(", ", _corsOptions.AllowedHeaders ?? []));
-            context.Response.Headers.Add("Access-Control-Allow-Credentials", _corsOptions.AllowCredentials ? "true" : "false");
+            SetHeader(context.Response.Headers, "Access-Control-Allow-Origin", string.Join(", ", _corsOptions.AllowedOrigins ?? []));
+            SetHeader(context.Response.Headers, "Access-Control-Allow-Headers", string.Join(", ", _corsOptions.AllowedHeaders ?? []));
+            SetHeader(context.Response.Headers, "Access-Control-Allow-Headers", string.Join(", ", _corsOptions.AllowedHeaders ?? []));
+            SetHeader(context.Response.Headers, "Access-Control-Allow-Credentials", _corsOptions.AllowCredentials ? "true" : "false");
+            SetHeader(context.Response.Headers, "Content-Type", "application/json");
+            context.Response.StatusCode = StatusCodes.Status200OK;
         }
+        
+        if (context.Response.StatusCode == StatusCodes.Status401Unauthorized || context.Response.StatusCode == StatusCodes.Status403Forbidden)
+        {
+            SetHeader(context.Response.Headers, "Access-Control-Allow-Origin", string.Join(", ", _corsOptions.AllowedOrigins ?? []));
+            SetHeader(context.Response.Headers, "Access-Control-Allow-Methods", string.Join(", ", _corsOptions.AllowedMethods ?? []));
+            SetHeader(context.Response.Headers, "Access-Control-Allow-Headers", string.Join(", ", _corsOptions.AllowedHeaders ?? []));
+            SetHeader(context.Response.Headers, "Access-Control-Allow-Credentials", _corsOptions.AllowCredentials ? "true" : "false");
+        }
+        
+        await next(context);
+    }
+    
+    private static void SetHeader(IHeaderDictionary headers, string key, string value)
+    {
+        if (headers.ContainsKey(key))
+        {
+            headers[key] = value;
+            return;
+        }
+    
+        headers.Add(key, value);
     }
 }
